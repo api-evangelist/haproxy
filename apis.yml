@@ -15,7 +15,7 @@ tags:
 url: >-
   https://raw.githubusercontent.com/api-evangelist/haproxy/refs/heads/main/apis.yml
 created: '2026-03-16'
-modified: '2026-03-16'
+modified: '2026-03-18'
 specificationVersion: '0.19'
 apis:
   - aid: haproxy:haproxy-data-plane-api
@@ -38,6 +38,51 @@ apis:
         url: https://raw.githubusercontent.com/haproxytech/dataplaneapi/master/swagger.yaml
       - type: Getting Started
         url: https://www.haproxy.com/documentation/dataplaneapi/latest/#getting-started
+      - type: GitHubRepository
+        url: https://github.com/haproxytech/dataplaneapi
+      - type: Change Log
+        url: https://github.com/haproxytech/dataplaneapi/releases
+  - aid: haproxy:haproxy-runtime-api
+    name: HAProxy Runtime API
+    description: >-
+      The HAProxy Runtime API (formerly known as the stats socket) is a
+      socket-based interface for dynamically managing HAProxy at runtime. It
+      allows operators to enable or disable servers, adjust weights, inspect
+      stick tables, view statistics, and perform other live configuration
+      changes without reloading the process.
+    humanURL: https://www.haproxy.com/documentation/haproxy-runtime-api/
+    baseURL: https://localhost
+    tags:
+      - Load Balancing
+      - Runtime Management
+      - Statistics
+    properties:
+      - type: Documentation
+        url: https://www.haproxy.com/documentation/haproxy-runtime-api/
+      - type: Reference
+        url: https://www.haproxy.com/documentation/haproxy-runtime-api/reference/
+  - aid: haproxy:haproxy-kubernetes-ingress-controller
+    name: HAProxy Kubernetes Ingress Controller
+    description: >-
+      The HAProxy Kubernetes Ingress Controller implements routing rules defined
+      in Kubernetes Ingress resources, dynamically updating HAProxy configuration
+      as pods are added or removed from the cluster. It supports the Gateway API,
+      custom resources, and certificate management via the HAProxy Runtime API.
+    humanURL: https://www.haproxy.com/documentation/kubernetes-ingress/
+    baseURL: https://localhost
+    tags:
+      - Kubernetes
+      - Ingress Controller
+      - Load Balancing
+    properties:
+      - type: Documentation
+        url: https://www.haproxy.com/documentation/kubernetes-ingress/
+      - type: Getting Started
+        url: https://www.haproxy.com/documentation/kubernetes-ingress/overview/
+      - type: Change Log
+        url: https://www.haproxy.com/documentation/kubernetes-ingress/community/release-notes/
+      - type: GitHubRepository
+        url: https://github.com/haproxytech/kubernetes-ingress
 common:
   - type: Website
     url: https://www.haproxy.org/
@@ -45,10 +90,16 @@ common:
     url: https://docs.haproxy.org/
   - type: GitHub Organization
     url: https://github.com/haproxy
+  - type: GitHub Organization
+    url: https://github.com/haproxytech
   - type: Community
-    url: https://www.haproxy.com/community/
+    url: https://discourse.haproxy.org/
   - type: Blog
     url: https://www.haproxy.com/blog/
+  - type: Support
+    url: https://www.haproxy.com/support/support-options
+  - type: Terms of Service
+    url: https://www.haproxy.com/legal
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
