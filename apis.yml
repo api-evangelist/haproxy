@@ -8,10 +8,10 @@ description: >-
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - Load Balancing
-  - Reverse Proxy
   - High Availability
+  - Load Balancing
   - Networking
+  - Reverse Proxy
 url: >-
   https://raw.githubusercontent.com/api-evangelist/haproxy/refs/heads/main/apis.yml
 created: '2026-03-16'
@@ -28,8 +28,8 @@ apis:
     humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
     baseURL: https://localhost:5555/v2
     tags:
-      - Load Balancing
       - Configuration
+      - Load Balancing
       - REST API
     properties:
       - type: Documentation
@@ -71,8 +71,8 @@ apis:
     humanURL: https://www.haproxy.com/documentation/kubernetes-ingress/
     baseURL: https://localhost
     tags:
-      - Kubernetes
       - Ingress Controller
+      - Kubernetes
       - Load Balancing
     properties:
       - type: Documentation
