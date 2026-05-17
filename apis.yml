@@ -36,11 +36,11 @@ apis:
         url: https://www.haproxy.com/documentation/dataplaneapi/latest/
       - type: OpenAPI
         url: https://raw.githubusercontent.com/haproxytech/dataplaneapi/master/swagger.yaml
-      - type: Getting Started
+      - type: GettingStarted
         url: https://www.haproxy.com/documentation/dataplaneapi/latest/#getting-started
       - type: GitHubRepository
         url: https://github.com/haproxytech/dataplaneapi
-      - type: Change Log
+      - type: ChangeLog
         url: https://github.com/haproxytech/dataplaneapi/releases
   - aid: haproxy:haproxy-runtime-api
     name: HAProxy Runtime API
@@ -77,9 +77,9 @@ apis:
     properties:
       - type: Documentation
         url: https://www.haproxy.com/documentation/kubernetes-ingress/
-      - type: Getting Started
+      - type: GettingStarted
         url: https://www.haproxy.com/documentation/kubernetes-ingress/overview/
-      - type: Change Log
+      - type: ChangeLog
         url: https://www.haproxy.com/documentation/kubernetes-ingress/community/release-notes/
       - type: GitHubRepository
         url: https://github.com/haproxytech/kubernetes-ingress
@@ -88,9 +88,9 @@ common:
     url: https://www.haproxy.org/
   - type: Documentation
     url: https://docs.haproxy.org/
-  - type: GitHub Organization
+  - type: GitHubOrganization
     url: https://github.com/haproxy
-  - type: GitHub Organization
+  - type: GitHubOrganization
     url: https://github.com/haproxytech
   - type: Community
     url: https://discourse.haproxy.org/
@@ -98,7 +98,7 @@ common:
     url: https://www.haproxy.com/blog/
   - type: Support
     url: https://www.haproxy.com/support/support-options
-  - type: Terms of Service
+  - type: TermsOfService
     url: https://www.haproxy.com/legal
 maintainers:
   - FN: Kin Lane
