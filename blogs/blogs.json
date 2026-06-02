@@ -2,12 +2,20 @@
   "repo": "haproxy",
   "feeds": [
     {
-      "source": "https://www.haproxy.com/blog/",
+      "source": "https://www.haproxy.com/blog/feed/",
       "feed_url": "https://www.haproxy.com/blog/feed/",
-      "title": "HAProxy Technologies",
-      "saved": 9
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    },
+    {
+      "source": "https://discourse.haproxy.org/",
+      "feed_url": "https://discourse.haproxy.org/posts.rss",
+      "title": "",
+      "saved": 0,
+      "method": "discovered"
     }
   ],
-  "post_count": 19,
-  "fetched": "2026-05-17T20:20:35Z"
+  "post_count": 21,
+  "fetched": "2026-06-01T23:35:02Z"
 }
