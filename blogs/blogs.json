@@ -2,20 +2,20 @@
   "repo": "haproxy",
   "feeds": [
     {
-      "source": "https://www.haproxy.com/blog/feed/",
-      "feed_url": "https://www.haproxy.com/blog/feed/",
+      "source": "https://www.haproxy.com/feed",
+      "feed_url": "https://www.haproxy.com/feed",
       "title": "",
-      "saved": 0,
+      "saved": 1,
       "method": "feed"
     },
     {
       "source": "https://discourse.haproxy.org/",
       "feed_url": "https://discourse.haproxy.org/posts.rss",
       "title": "",
-      "saved": 0,
+      "saved": 2,
       "method": "discovered"
     }
   ],
-  "post_count": 21,
-  "fetched": "2026-06-01T23:35:02Z"
+  "post_count": 26,
+  "fetched": "2026-06-14T20:42:17Z"
 }
