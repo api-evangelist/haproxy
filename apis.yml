@@ -6,7 +6,7 @@ description: >-
   applications. It exposes a Data Plane API for dynamic configuration
   management and a stats socket for runtime management.
 type: Index
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
   - High Availability
   - Load Balancing
