@@ -84,6 +84,8 @@ apis:
       - type: GitHubRepository
         url: https://github.com/haproxytech/kubernetes-ingress
 common:
+  - type: DomainSecurity
+    url: security/haproxy-domain-security.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/haproxy-technologies
   - type: Website
