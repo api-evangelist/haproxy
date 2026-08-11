@@ -96,6 +96,13 @@ apis:
       - type: GitHubRepository
         url: https://github.com/haproxytech/kubernetes-ingress
 common:
+  - type: IssueTracker
+    url: https://github.com/haproxytech/dataplaneapi/issues
+  - type: ContributionGuide
+    url: https://github.com/haproxytech/dataplaneapi/blob/master/CONTRIBUTING.md
+  - type: License
+    name: Apache-2.0
+    url: https://github.com/haproxytech/dataplaneapi/blob/master/LICENSE
   - type: DomainSecurity
     url: security/haproxy-domain-security.yml
   - type: LinkedIn
