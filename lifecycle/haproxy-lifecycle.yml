@@ -1,0 +1,100 @@
+generated: '2026-08-28'
+method: searched
+source: >-
+  https://www.haproxy.org/ (branch support matrix),
+  https://github.com/haproxytech/dataplaneapi/releases,
+  openapi/haproxy-data-plane-api-openapi.yml
+provider: HAProxy
+providerId: haproxy
+description: >-
+  HAProxy publishes one of the most explicit lifecycle policies of any open-source
+  infrastructure project: every branch is listed on the project home page with its release
+  date, its end-of-life date, and whether it is LTS. Even-numbered branches are LTS and
+  maintained for five years; odd-numbered branches get roughly 12-18 months. That policy
+  applies to the HAProxy engine, and the Data Plane API tracks it — five branches were
+  patched on the same day in August 2026.
+versioning:
+  api:
+    style: uri-path
+    current: v3
+    previous: v2
+    detail: >-
+      The Data Plane API major version is the first URI path segment. v2 is still served by
+      the 2.9.x branch of the Data Plane API; v3 is current.
+  product:
+    style: semver-ish
+    scheme: MAJOR.MINOR.PATCH with a branch per MAJOR.MINOR
+    current: '3.4'
+support_policy:
+  published: true
+  url: https://www.haproxy.org/
+  rule: >-
+    "Branches with an even number are called 'LTS' (for 'long term support') and are
+    maintained for 5 years after their release." Odd-numbered branches are labelled stable
+    and maintained for roughly 12-18 months.
+  branches:
+    - version: 3.5-dev
+      status: development
+      expected: 2026-Q4
+      end_of_life: 2028-Q1
+    - version: '3.4'
+      status: stable
+      lts: true
+      released: '2026-06-03'
+      end_of_life: 2031-Q2
+    - version: '3.3'
+      status: stable
+      lts: false
+      released: '2025-11-26'
+      end_of_life: 2027-Q1
+    - version: '3.2'
+      status: stable
+      lts: true
+      released: '2025-05-28'
+      end_of_life: 2030-Q2
+    - version: '3.1'
+      status: unmaintained
+      lts: false
+      released: '2024-11-26'
+      end_of_life: 2026-Q1
+    - version: '3.0'
+      status: stable
+      lts: true
+      released: '2024-05-29'
+      end_of_life: 2029-Q2
+deprecation_policy:
+  published: true
+  url: https://www.haproxy.org/
+  mechanism: dated end-of-life per branch, published in advance on the project home page
+  sunset_header: false
+  deprecation_header: false
+  detail: >-
+    Deprecation is expressed as branch end-of-life dates, not as RFC 8594 Sunset or
+    Deprecation response headers. Neither header appears anywhere in the Data Plane API
+    contract, and no operation in the 557-operation spec is marked `deprecated: true`.
+  deprecated_operations: []
+release_cadence:
+  detail: >-
+    Backported patch releases ship simultaneously across every maintained Data Plane API
+    branch. On 2026-08-14 v3.4.2, v3.3.7, v3.2.15, v3.0.23 and v2.9.27 were all published
+    together, which is the practical proof that the LTS policy is honoured rather than
+    merely stated.
+  latest:
+    dataplaneapi: v3.4.2 (2026-08-14)
+    kubernetes_ingress: v3.2.14 (2026-08-28)
+    haproxy_engine: 3.4.4 (container image 2026-08-27)
+status_page:
+  published: false
+  detail: >-
+    No status page. status.haproxy.com does not resolve (DNS NXDOMAIN, probed 2026-08-28),
+    and no status host is linked from haproxy.com. This is consistent with the product
+    model — HAProxy is software you run yourself, so there is no HAProxy-operated service
+    whose uptime could be reported. No StatusPage pointer is emitted.
+sla:
+  published: false
+  detail: >-
+    Support SLAs exist under commercial HAProxy Enterprise contracts but are not published;
+    they are negotiated through https://www.haproxy.com/support/support-options.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

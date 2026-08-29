@@ -1,0 +1,144 @@
+generated: '2026-08-28'
+method: derived
+source: >-
+  openapi/haproxy-data-plane-api-openapi.yml, https://www.haproxy.org/,
+  https://github.com/haproxytech
+provider: HAProxy
+providerId: haproxy
+description: >-
+  Standards conformance for the HAProxy Data Plane API and the HAProxy platform around it.
+  The API itself is deliberately plain — Basic auth, JSON, path versioning, no OAuth, no
+  RFC 9457 — but the CONTRACT declares a genuine domain standard for its own market: ACME
+  (RFC 8555) certificate issuance, modelled as first-class configuration and runtime
+  resources rather than described in prose.
+standards:
+  - id: swagger-2.0
+    name: OpenAPI (Swagger) 2.0
+    conforms: true
+    evidence: >-
+      openapi/haproxy-data-plane-api-openapi.yml declares `swagger: "2.0"` with 223 paths,
+      557 operations and 232 definitions. Published first-party at
+      https://github.com/haproxytech/client-native (specification/build/haproxy_spec.yaml).
+  - id: openapi-3
+    name: OpenAPI 3
+    conforms: true
+    evidence: >-
+      A running instance serves an OpenAPI 3 rendering of the same API at
+      GET /v3/specification_openapiv3 (operationId getOpenapiv3Specification, tag
+      SpecificationOpenapiv3). The published artifact is the Swagger 2.0 form.
+  - id: rfc7617
+    name: HTTP Basic Authentication (RFC 7617)
+    conforms: true
+    evidence: >-
+      securityDefinitions declares a single scheme, `basic_auth` of type basic. The docs
+      show `curl --user admin:adminpwd`.
+  - id: rfc8555
+    name: ACME — Automatic Certificate Management Environment
+    conforms: true
+    domain_standard: true
+    market: TLS certificate lifecycle / load balancing
+    evidence: >-
+      The contract models ACME as configuration and runtime resources, not prose:
+      /services/haproxy/configuration/acme, /services/haproxy/configuration/acme/{name} and
+      /services/haproxy/runtime/acme, with an `acme_provider` definition carrying the
+      protocol's own field names — `directory` (the ACME directory URL), `account_key`,
+      `challenge`, `challenge_ready`, `contact`, `profile` and `reuse_key`. Tags Acme and
+      AcmeRuntime. A client that already speaks ACME needs no bespoke connector to drive
+      HAProxy certificate issuance.
+  - id: kubernetes-gateway-api
+    name: Kubernetes Gateway API
+    conforms: true
+    domain_standard: true
+    market: Kubernetes ingress / service networking
+    evidence: >-
+      github.com/haproxytech/haproxy-unified-gateway — "Haproxy controller to handle K8s
+      Gateway API" — shipped as the haproxytech/haproxy-unified-gateway Helm chart 1.2.0
+      (appVersion 1.0.7, 2026-08-17).
+  - id: kubernetes-ingress-api
+    name: Kubernetes Ingress API (networking.k8s.io/v1)
+    conforms: true
+    domain_standard: true
+    market: Kubernetes ingress
+    evidence: >-
+      github.com/haproxytech/kubernetes-ingress implements the Ingress resource and
+      registers its own custom resources under the API groups ingress.v1.haproxy.org and
+      ingress.v3.haproxy.org (crs/definition/*.yaml in the repository).
+  - id: proxy-protocol
+    name: PROXY protocol
+    conforms: true
+    domain_standard: true
+    market: L4/L7 proxying
+    evidence: >-
+      The PROXY protocol specification is authored and maintained by HAProxy Technologies
+      (https://www.haproxy.org/download/2.3/doc/proxy-protocol.txt); HAProxy is the
+      reference implementation on both the sending and receiving side.
+  - id: quic-http3
+    name: QUIC / HTTP-3 (RFC 9000, RFC 9114)
+    conforms: true
+    evidence: >-
+      The contract exposes QUIC as configurable rule and bind surface — tag QUICInitialRule,
+      and quic tuning under global (tune_quic_options).
+  - id: spoe
+    name: Stream Processing Offload Engine / Protocol (SPOE / SPOP)
+    conforms: true
+    domain_standard: true
+    market: proxy extensibility
+    evidence: >-
+      SPOE is HAProxy's own published protocol and is a first-class part of the contract —
+      /services/haproxy/spoe/* including its own transaction lifecycle
+      (startSpoeTransaction, commitSpoeTransaction, deleteSpoeTransaction).
+  - id: opentelemetry
+    name: OpenTelemetry
+    conforms: partial
+    evidence: >-
+      github.com/haproxytech/haproxy-opentelemetry ships an OpenTelemetry filter for
+      HAProxy, and the contract carries a Traces surface
+      (/services/haproxy/configuration/traces). The Data Plane API itself does not emit
+      OTLP.
+  - id: rfc9457
+    name: Problem Details for HTTP APIs (RFC 9457)
+    conforms: false
+    evidence: >-
+      Errors use a custom envelope `{code, message}` with application/json, not
+      application/problem+json. See errors/haproxy-problem-types.yml.
+  - id: oauth2
+    name: OAuth 2.0
+    conforms: false
+    evidence: No oauth2 securityDefinition in the contract and no OAuth in the docs.
+  - id: oidc
+    name: OpenID Connect
+    conforms: false
+    evidence: >-
+      No /.well-known/openid-configuration served on any HAProxy host (probed 2026-08-28,
+      404). Note the separate fact that HAProxy Enterprise can VALIDATE OIDC/JWT for traffic
+      passing through it — that is a product capability, not conformance of this API.
+  - id: pagination
+    name: Collection pagination
+    conforms: false
+    evidence: No page, cursor, limit or offset parameter appears in any of the 223 paths.
+  - id: idempotency-key
+    name: Idempotency-Key header
+    conforms: false
+    evidence: >-
+      No Idempotency-Key header. Write safety is provided instead by an optimistic
+      concurrency `version` parameter and by transactions — see
+      conventions/haproxy-conventions.yml.
+  - id: scim
+    name: SCIM
+    conforms: false
+    evidence: Not applicable — no identity provisioning surface.
+  - id: odata
+    name: OData
+    conforms: false
+    evidence: Not applicable.
+compliance_certifications:
+  published: false
+  detail: >-
+    No trust center and no published SOC 2 / ISO 27001 / PCI / FedRAMP certification pages
+    were found on haproxy.com or haproxy.org (probed 2026-08-28). HAProxy Technologies
+    markets HAProxy Enterprise as an aid to customers' own NIS2 and DORA compliance
+    programmes, which is a product positioning claim about the customer's obligations, not
+    a certification of HAProxy Technologies. No Compliance pointer is emitted.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

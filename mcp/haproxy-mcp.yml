@@ -1,0 +1,101 @@
+generated: '2026-08-28'
+method: derived
+source: openapi/haproxy-data-plane-api-openapi.yml
+provider: HAProxy
+providerId: haproxy
+status: candidate
+description: >-
+  HAProxy Technologies does not ship an MCP server. Searched the haproxytech GitHub
+  organization, the HAProxy documentation and the MCP directories on 2026-08-28: the only
+  HAProxy MCP server that exists is tuannvm/haproxy-mcp-server, a third-party Go project
+  wrapping the Runtime API. It is recorded below as third_party and is deliberately NOT
+  wired as a provider MCP surface. The tools[] list is a CANDIDATE derived from the
+  Data Plane API's own operations — nobody serves it.
+deployment:
+  mode: none
+  auth: none
+  verified: derived
+  note: >-
+    No first-party hosted endpoint and no first-party stdio package. Any MCP server for
+    HAProxy would also be self-hosted by definition, because the Data Plane API it would
+    front runs on the operator's own machine.
+third_party:
+  - name: haproxy-mcp-server
+    url: https://github.com/tuannvm/haproxy-mcp-server
+    author: tuannvm
+    mode: local-stdio
+    transport: HAProxy Runtime API over UNIX socket or TCP, with socat fallback
+    official: false
+    note: >-
+      Community project, not published or endorsed by HAProxy Technologies. Listed for
+      completeness; it does not count as a provider agent surface.
+tools:
+  - name: list_backends
+    description: List every backend defined in the running HAProxy configuration.
+    rest: [getBackends]
+    consequence: read
+  - name: get_backend
+    description: Read one backend by name.
+    rest: [getBackend]
+    consequence: read
+  - name: create_backend
+    description: Create a backend. Requires a current configuration version or an open transaction.
+    rest: [createBackend]
+    consequence: write
+  - name: list_servers
+    description: List the servers attached to a backend.
+    rest: [getAllServerBackend]
+    consequence: read
+  - name: add_server
+    description: Add a server to a backend.
+    rest: [createServerBackend]
+    consequence: write
+  - name: set_server_state
+    description: >-
+      Change a server's runtime state (ready, drain, maint) or weight without a reload,
+      via the Runtime API passthrough.
+    rest: [replaceRuntimeServer]
+    consequence: write
+  - name: list_frontends
+    description: List every frontend.
+    rest: [getFrontends]
+    consequence: read
+  - name: get_stats
+    description: Read HAProxy statistics for the process, frontends, backends and servers.
+    rest: [getStats]
+    consequence: read
+  - name: get_haproxy_info
+    description: Read process information — version, uptime, pid, connection counters.
+    rest: [getHaproxyProcessInfo]
+    consequence: read
+  - name: get_configuration_version
+    description: >-
+      Read the current configuration version, which every write must carry as the
+      version query parameter.
+    rest: [getConfigurationVersion]
+    consequence: read
+  - name: start_transaction
+    description: Open a configuration transaction so several changes commit or roll back together.
+    rest: [startTransaction]
+    consequence: write
+  - name: commit_transaction
+    description: Commit a transaction and apply its changes.
+    rest: [commitTransaction]
+    consequence: write
+    reversible: false
+  - name: delete_transaction
+    description: Discard an uncommitted transaction. This is the rollback path.
+    rest: [deleteTransaction]
+    consequence: write
+  - name: get_specification
+    description: Fetch the running instance's own API contract.
+    rest: [getSpecification]
+    consequence: read
+notes:
+  - >-
+    Any real MCP server here should treat the version/transaction discipline as its
+    safety model: an agent that writes without a version, or outside a transaction,
+    cannot roll back.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

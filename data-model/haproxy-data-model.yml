@@ -1,0 +1,312 @@
+generated: '2026-08-28'
+method: derived
+source: openapi/haproxy-data-plane-api-openapi.yml
+provider: HAProxy
+providerId: haproxy
+description: >-
+  Entity graph for the HAProxy Data Plane API, derived from the 232 definitions and 223
+  paths of the harvested contract. The model is not a typical SaaS object graph: it is a
+  direct projection of an HAProxy configuration file. Entities are configuration SECTIONS,
+  identity is a NAME within a parent section rather than an opaque id, and ordered rule
+  lists are addressed by INDEX — which is the single most important thing an automated
+  client has to understand, because deleting a rule renumbers its siblings.
+identity:
+  scheme: name-within-parent
+  detail: >-
+    There are no opaque, prefixed resource ids anywhere in this API. A backend is addressed
+    by its name; a server is addressed by name under a parent backend name; an HTTP request
+    rule is addressed by its integer index under a parent frontend or backend. Nothing is
+    globally unique on its own — `parent_name` plus `name` (or `index`) is the key.
+  path_parameters:
+    name: The section or object name as written in the HAProxy configuration.
+    parent_name: The enclosing section — a backend, frontend, defaults, peers or ring.
+    index: Zero-based position within an ordered rule list.
+  warning: >-
+    Index-addressed collections are position-dependent. Deleting rule index 2 shifts every
+    later rule down by one, so an agent holding a list of indices must re-read the
+    collection after any delete rather than replaying stale indices.
+top_level_collections:
+  count: 26
+  base: /v3/services/haproxy/configuration/
+  names:
+    - acme
+    - backends
+    - caches
+    - crt_stores
+    - defaults
+    - fcgi_apps
+    - frontends
+    - global
+    - groups
+    - healthchecks
+    - http_errors_sections
+    - log_forwards
+    - log_profiles
+    - mailer_entries
+    - mailers_section
+    - nameservers
+    - peer_entries
+    - peer_section
+    - peers
+    - raw
+    - resolvers
+    - rings
+    - traces
+    - userlists
+    - users
+    - version
+entities:
+  - name: global
+    kind: singleton
+    description: Process-wide settings. Exactly one exists; it is replaced, never created or deleted.
+  - name: defaults
+    kind: section
+    description: Default settings inherited by frontends and backends.
+  - name: frontend
+    kind: section
+    description: A listening proxy — where traffic enters.
+  - name: backend
+    kind: section
+    description: A pool of servers — where traffic goes.
+  - name: server
+    kind: child
+    parent: backend
+    description: An individual origin behind a backend. Also exists under peers and rings.
+  - name: bind
+    kind: child
+    parent: frontend
+    description: A listening socket on a frontend.
+  - name: acl
+    kind: child
+    parent: [frontend, backend, defaults]
+    description: A named condition used by rules. Index-addressed.
+  - name: http_request_rule
+    kind: ordered-child
+    parent: [frontend, backend, defaults]
+    description: Ordered request-phase rule. Index-addressed.
+  - name: http_response_rule
+    kind: ordered-child
+    parent: [frontend, backend, defaults]
+  - name: http_after_response_rule
+    kind: ordered-child
+    parent: [frontend, backend, defaults]
+  - name: http_error_rule
+    kind: ordered-child
+    parent: [frontend, backend, defaults]
+  - name: tcp_request_rule
+    kind: ordered-child
+    parent: [frontend, backend, defaults]
+  - name: tcp_response_rule
+    kind: ordered-child
+    parent: backend
+  - name: quic_initial_rule
+    kind: ordered-child
+    parent: frontend
+  - name: http_check
+    kind: ordered-child
+    parent: [backend, defaults, healthcheck]
+    description: Ordered HTTP health-check step.
+  - name: tcp_check
+    kind: ordered-child
+    parent: [backend, defaults, healthcheck]
+  - name: filter
+    kind: ordered-child
+    parent: [frontend, backend, defaults]
+  - name: log_target
+    kind: ordered-child
+    parent: [global, frontend, backend, defaults, log_forward, peers, ring]
+    description: >-
+      The most widely reused definition in the contract — referenced 43 times. Almost every
+      section can log.
+  - name: server_switching_rule
+    kind: ordered-child
+    parent: backend
+  - name: backend_switching_rule
+    kind: ordered-child
+    parent: frontend
+  - name: stick_rule
+    kind: ordered-child
+    parent: backend
+  - name: resolver
+    kind: section
+    description: DNS resolver configuration used by service discovery.
+  - name: nameserver
+    kind: child
+    parent: resolver
+  - name: userlist
+    kind: section
+    description: >-
+      Users and groups for Basic authentication — including the userlist that authenticates
+      the Data Plane API itself.
+  - name: user
+    kind: child
+    parent: userlist
+  - name: group
+    kind: child
+    parent: userlist
+  - name: peers
+    kind: section
+    description: Peer section for stick-table replication between HAProxy instances.
+  - name: peer_entry
+    kind: child
+    parent: peers
+  - name: ring
+    kind: section
+    description: Log ring buffer.
+  - name: crt_store
+    kind: section
+    description: Certificate store. Holds crt_load entries.
+  - name: crt_load
+    kind: child
+    parent: crt_store
+  - name: acme_provider
+    kind: section
+    description: >-
+      ACME (RFC 8555) issuer configuration — directory URL, account key, challenge type,
+      contact, profile, key reuse.
+  - name: cache
+    kind: section
+  - name: fcgi_app
+    kind: section
+  - name: mailers_section
+    kind: section
+  - name: mailer_entry
+    kind: child
+    parent: mailers_section
+  - name: log_forward
+    kind: section
+  - name: log_profile
+    kind: section
+  - name: http_errors_section
+    kind: section
+  - name: healthcheck
+    kind: section
+  - name: trace
+    kind: section
+relationships:
+  - from: frontend
+    type: has_many
+    to: bind
+    via: parent_name
+  - from: frontend
+    type: has_many
+    to: backend_switching_rule
+    via: parent_name
+  - from: frontend
+    type: has_many
+    to: http_request_rule
+    via: parent_name
+  - from: frontend
+    type: has_many
+    to: quic_initial_rule
+    via: parent_name
+  - from: backend
+    type: has_many
+    to: server
+    via: parent_name
+  - from: backend
+    type: has_many
+    to: server_switching_rule
+    via: parent_name
+  - from: backend
+    type: has_many
+    to: stick_rule
+    via: parent_name
+  - from: backend
+    type: has_many
+    to: http_check
+    via: parent_name
+  - from: backend
+    type: has_one
+    to: balance
+    via: balance
+  - from: backend
+    type: has_one
+    to: cookie
+    via: cookie
+  - from: backend
+    type: has_one
+    to: default_server
+    via: default_server
+  - from: backend
+    type: has_many
+    to: log_target
+    via: parent_name
+  - from: defaults
+    type: has_one
+    to: balance
+    via: balance
+  - from: defaults
+    type: has_many
+    to: errorfile
+    via: error_files
+  - from: global
+    type: has_one
+    to: ssl_options
+    via: ssl_options
+  - from: global
+    type: has_one
+    to: tune_options
+    via: tune_options
+  - from: global
+    type: has_one
+    to: lua_options
+    via: lua_options
+  - from: global
+    type: has_many
+    to: log_target
+    via: parent_name
+  - from: userlist
+    type: has_many
+    to: user
+    via: parent_name
+  - from: userlist
+    type: has_many
+    to: group
+    via: parent_name
+  - from: resolver
+    type: has_many
+    to: nameserver
+    via: parent_name
+  - from: peers
+    type: has_many
+    to: peer_entry
+    via: parent_name
+  - from: peers
+    type: has_many
+    to: server
+    via: parent_name
+  - from: crt_store
+    type: has_many
+    to: crt_load
+    via: parent_name
+  - from: ring
+    type: has_many
+    to: server
+    via: parent_name
+  - from: mailers_section
+    type: has_many
+    to: mailer_entry
+    via: parent_name
+  - from: fcgi_app
+    type: has_many
+    to: fcgi_pass_header
+    via: pass_headers
+  - from: fcgi_app
+    type: has_many
+    to: fcgi_set_param
+    via: set_params
+runtime_projection:
+  detail: >-
+    26 paths under /v3/services/haproxy/runtime/ expose the LIVE state of the same entities
+    — runtime servers, ACL contents, stick tables, SSL CA and CRL files, ACME. These are
+    the same objects seen through the Runtime API rather than the configuration file, and
+    they are not transactional.
+statistics:
+  detail: >-
+    /v3/services/haproxy/stats/native (getStats) returns per-process, per-frontend,
+    per-backend and per-server counters. This is the read-only telemetry projection of the
+    graph.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

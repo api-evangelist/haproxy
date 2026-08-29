@@ -1,0 +1,42 @@
+generated: '2026-08-28'
+method: generated
+source: openapi/haproxy-data-plane-api-openapi.yml
+provider: HAProxy
+providerId: haproxy
+api: HAProxy Data Plane API
+description: >-
+  Packaged agent skills for the HAProxy Data Plane API. Every operationId referenced in
+  these skills was verified against the harvested contract; none is invented. The skills are
+  written around the two things that make this API different from a typical REST API — the
+  optimistic-concurrency version parameter, and the transaction lifecycle that is the only
+  reversible write path.
+skills:
+  - name: haproxy-add-server-to-backend
+    file: haproxy-add-server-to-backend.md
+    summary: Add one server to a backend safely, handling 409 version conflicts and 202 reloads.
+    consequence: write
+  - name: haproxy-transactional-config-change
+    file: haproxy-transactional-config-change.md
+    summary: Stage a multi-call change and commit it or roll it back as a unit.
+    consequence: write
+    reversible: true
+  - name: haproxy-drain-server-for-maintenance
+    file: haproxy-drain-server-for-maintenance.md
+    summary: Drain and restore a server through the Runtime API. Not reversible by the API.
+    consequence: write
+    reversible: false
+  - name: haproxy-inspect-load-balancer-state
+    file: haproxy-inspect-load-balancer-state.md
+    summary: Read-only orientation pass over a running instance.
+    consequence: read
+prerequisites:
+  - A reachable Data Plane API instance — it is self-hosted, there is no vendor endpoint.
+  - HTTP Basic credentials from the userlist the instance was started with.
+references:
+  - conventions/haproxy-conventions.yml
+  - errors/haproxy-problem-types.yml
+  - authentication/haproxy-authentication.yml
+  - data-model/haproxy-data-model.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

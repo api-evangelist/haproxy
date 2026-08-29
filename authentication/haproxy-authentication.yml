@@ -1,0 +1,12 @@
+generated: '2026-08-28'
+method: derived
+source: openapi/haproxy-data-plane-api-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: basic_auth
+  type: http
+  scheme: basic
+  sources:
+  - openapi/haproxy-data-plane-api-openapi.yml

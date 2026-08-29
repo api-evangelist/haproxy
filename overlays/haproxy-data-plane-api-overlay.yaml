@@ -1,0 +1,110 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the HAProxy Data Plane API
+  version: 1.0.0
+x-provenance:
+  generated: '2026-08-28'
+  method: generated
+  source: openapi/haproxy-data-plane-api-openapi.yml
+  extends: openapi/haproxy-data-plane-api-openapi.yml
+  note: >-
+    This overlay records API Evangelist's derived enrichment of the harvested HAProxy Data
+    Plane API contract. The original Swagger 2.0 document is never mutated. Actions add
+    documentation and machine-readable pointers that the upstream spec does not carry:
+    the self-hosted base URL shape, the contact/licence identity, the optimistic-concurrency
+    and transaction semantics, and links to the artifacts derived from this spec.
+actions:
+  - target: $.info
+    description: >-
+      Record where this copy came from and which HAProxy release line it describes.
+    update:
+      x-harvested-from: https://raw.githubusercontent.com/haproxytech/client-native/master/specification/build/haproxy_spec.yaml
+      x-harvested-on: '2026-08-28'
+      x-vendor: HAProxy Technologies
+      x-product-line: HAProxy Data Plane API 3.4
+  - target: $.info
+    description: State the licence of the upstream project, which the spec omits.
+    update:
+      x-license:
+        name: Apache-2.0
+        url: https://github.com/haproxytech/dataplaneapi/blob/master/LICENSE
+  - target: $
+    description: >-
+      The contract declares no `host`, because the Data Plane API is self-hosted software.
+      Record the documented default deployment shape so a client knows what to fill in.
+    update:
+      x-deployment:
+        model: self-hosted
+        default_port: 5555
+        base_path: /v3
+        base_url_template: http://{haproxy-host}:5555/v3
+        note: >-
+          There is no vendor-operated host. Port and base path are the documented defaults;
+          both are configurable via the dataplaneapi --port flag and the URI version.
+  - target: $
+    description: >-
+      Surface the write-safety model at the document level. It is expressed in the spec only
+      as two shared query parameters, which is easy to miss.
+    update:
+      x-write-semantics:
+        concurrency: optimistic
+        version_parameter: version
+        version_read: GET /v3/services/haproxy/configuration/version
+        conflict_status: 409
+        response_header: Configuration-Version
+        transactional: true
+        transaction_open: startTransaction
+        transaction_commit: commitTransaction
+        transaction_rollback: deleteTransaction
+        reversible_until: commit
+        idempotency_key_header: null
+  - target: $
+    description: Record the reload signalling that a 202 response implies.
+    update:
+      x-reload-semantics:
+        accepted_status: 202
+        header: Reload-ID
+        poll: GET /v3/services/haproxy/reloads/{id}
+        note: A 202 is not confirmation the change is live.
+  - target: $
+    description: Link the artifacts derived from this contract.
+    update:
+      x-api-evangelist-artifacts:
+        authentication: authentication/haproxy-authentication.yml
+        conventions: conventions/haproxy-conventions.yml
+        errors: errors/haproxy-problem-types.yml
+        data_model: data-model/haproxy-data-model.yml
+        lifecycle: lifecycle/haproxy-lifecycle.yml
+        conformance: conformance/haproxy-conformance.yml
+        skills: skills/_index.yml
+        mcp: mcp/haproxy-mcp.yml
+  - target: $.definitions.error
+    description: >-
+      The error definition carries no guidance on what a caller should do. Record the
+      remediation the derived error catalog captures.
+    update:
+      x-remediation:
+        '409': >-
+          Re-read the configuration version (or the Configuration-Version response header)
+          and replay the write with the fresh value. Do not retry with the same version.
+        '429': >-
+          Commit or delete open transactions. This 429 is a transaction-concurrency limit,
+          not a request-rate limit.
+      x-error-catalog: errors/haproxy-problem-types.yml
+  - target: $.securityDefinitions.basic_auth
+    description: State how the Basic credentials are provisioned.
+    update:
+      x-credential-source: >-
+        Users defined in the HAProxy userlist referenced by the Data Plane API's --userlist
+        or --userlist-file flag. There are no API keys, no OAuth flows and no scopes.
+  - target: $.parameters.version
+    description: Make the concurrency contract explicit on the parameter itself.
+    update:
+      x-concurrency: optimistic-lock
+      x-read-from: GET /v3/services/haproxy/configuration/version
+      x-on-mismatch: 409
+  - target: $.parameters.transaction_id
+    description: Make the reversibility window explicit on the parameter itself.
+    update:
+      x-reversible-until: commitTransaction
+      x-rollback: DELETE /v3/services/haproxy/transactions/{id}

@@ -1,0 +1,155 @@
+generated: '2026-08-28'
+method: searched
+source: >-
+  https://proxy.golang.org, https://haproxytech.github.io/helm-charts/index.yaml,
+  https://hub.docker.com/u/haproxytech, https://github.com/haproxytech
+provider: HAProxy
+providerId: haproxy
+description: >-
+  HAProxy Technologies distributes its client libraries and runnable artifacts as Go
+  modules, Helm charts and container images rather than as conventional per-language
+  SDK packages. There is no first-party JavaScript, Python, Ruby, Java or .NET client
+  for the Data Plane API; the Go client-native library is the reference client and is
+  what the Data Plane API itself is built on.
+packages:
+  - language: go
+    registry: go
+    name: github.com/haproxytech/client-native/v6
+    url: https://pkg.go.dev/github.com/haproxytech/client-native/v6
+    install: go get github.com/haproxytech/client-native/v6
+    official: true
+    version: v6.4.1
+    published: '2026-07-29'
+    note: >-
+      The first-party Go client for HAProxy configuration and the Runtime API. This
+      module also carries the canonical Data Plane API specification at
+      specification/build/haproxy_spec.yaml, which is the spec harvested into openapi/.
+  - language: go
+    registry: go
+    name: github.com/haproxytech/client-native/v5
+    url: https://pkg.go.dev/github.com/haproxytech/client-native/v5
+    install: go get github.com/haproxytech/client-native/v5
+    official: true
+    version: v5.1.28
+    published: '2026-07-30'
+    note: Maintained previous major line, still receiving releases alongside v6.
+  - language: go
+    registry: go
+    name: github.com/haproxytech/config-parser/v5
+    url: https://pkg.go.dev/github.com/haproxytech/config-parser/v5
+    install: go get github.com/haproxytech/config-parser/v5
+    official: true
+    version: v5.1.6
+    published: '2024-09-24'
+    note: HAProxy configuration file parser used by client-native.
+  - language: go
+    registry: go
+    name: github.com/haproxytech/dataplaneapi
+    url: https://pkg.go.dev/github.com/haproxytech/dataplaneapi
+    install: go install github.com/haproxytech/dataplaneapi@latest
+    official: true
+    version: v1.2.5
+    published: '2020-04-15'
+    note: >-
+      DECAY SIGNAL WITH A KNOWN CAUSE, not abandonment. proxy.golang.org resolves
+      @latest to v1.2.5 (2020-04-15) because releases from v2 onward were tagged
+      without the /v2, /v3 module-path suffix Go requires, so the module proxy cannot
+      see them. The project itself is actively released: v3.4.2 shipped 2026-08-14
+      (https://github.com/haproxytech/dataplaneapi/releases). Consumers must pin by
+      commit or build from source rather than `go get` the latest tag.
+  - language: go
+    registry: go
+    name: github.com/haproxytech/kubernetes-ingress
+    url: https://pkg.go.dev/github.com/haproxytech/kubernetes-ingress
+    install: go get github.com/haproxytech/kubernetes-ingress
+    official: true
+    version: v1.11.12
+    published: '2025-02-25'
+    note: >-
+      Same major-version-path issue as dataplaneapi. The shipped controller is 3.2.14
+      (container image, 2026-08-28); the module proxy still resolves @latest to v1.11.12.
+  - language: helm
+    registry: helm
+    name: haproxytech/haproxy
+    url: https://haproxytech.github.io/helm-charts/
+    install: helm repo add haproxytech https://haproxytech.github.io/helm-charts && helm install haproxy haproxytech/haproxy
+    official: true
+    version: 1.30.1
+    published: '2026-08-17'
+    note: Chart 1.30.1 packages HAProxy appVersion 3.4.3.
+  - language: helm
+    registry: helm
+    name: haproxytech/kubernetes-ingress
+    url: https://haproxytech.github.io/helm-charts/
+    install: helm install kubernetes-ingress haproxytech/kubernetes-ingress
+    official: true
+    version: 1.53.1
+    published: '2026-08-19'
+    note: Chart 1.53.1 packages the ingress controller appVersion 3.2.13.
+  - language: helm
+    registry: helm
+    name: haproxytech/haproxy-unified-gateway
+    url: https://haproxytech.github.io/helm-charts/
+    install: helm install haproxy-unified-gateway haproxytech/haproxy-unified-gateway
+    official: true
+    version: 1.2.0
+    published: '2026-08-17'
+    note: Kubernetes Gateway API implementation, appVersion 1.0.7.
+  - language: container
+    registry: dockerhub
+    name: haproxytech/haproxy-alpine
+    url: https://hub.docker.com/r/haproxytech/haproxy-alpine
+    install: docker pull haproxytech/haproxy-alpine:3.4.4
+    official: true
+    version: 3.4.4
+    published: '2026-08-27'
+  - language: container
+    registry: dockerhub
+    name: haproxytech/kubernetes-ingress
+    url: https://hub.docker.com/r/haproxytech/kubernetes-ingress
+    install: docker pull haproxytech/kubernetes-ingress:3.2.14
+    official: true
+    version: 3.2.14
+    published: '2026-08-28'
+third_party:
+  - language: javascript
+    registry: npm
+    name: haproxy-sdk
+    url: https://www.npmjs.com/package/haproxy-sdk
+    official: false
+    version: 1.0.5
+    published: '2021-01-07'
+    note: Community library published by jackpinetech, unmaintained since 2021.
+  - language: python
+    registry: pypi
+    name: haproxyadmin
+    url: https://pypi.org/project/haproxyadmin/
+    official: false
+    version: 0.2.4
+    published: '2021-03-16'
+    note: Community Runtime API (stats socket) library, not from HAProxy Technologies.
+  - language: python
+    registry: pypi
+    name: haproxy-stats
+    url: https://pypi.org/project/haproxy-stats/
+    official: false
+    version: '1.5'
+    published: '2018-03-26'
+  - language: ruby
+    registry: rubygems
+    name: haproxy
+    url: https://rubygems.org/gems/haproxy
+    official: false
+    version: 0.0.7
+    published: '2013-02-06'
+    note: Community gem (inkel/haproxy-ruby), last released 2013.
+probed_absent:
+  - registry: pypi
+    name: haproxy-dataplaneapi-client
+    status: 404
+  - registry: pypi
+    name: dataplaneapi
+    status: 404
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

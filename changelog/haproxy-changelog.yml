@@ -1,0 +1,64 @@
+generated: '2026-08-28'
+method: searched
+source: https://github.com/haproxytech/dataplaneapi/releases
+provider: HAProxy
+providerId: haproxy
+description: >-
+  Changelog for the HAProxy Data Plane API. Each GitHub release carries a generated release
+  note listing every commit on the branch since the previous tag, prefixed with HAProxy's
+  own severity taxonomy (MAJOR / MEDIUM / MINOR / BUG / BUILD / DOC / CLEANUP). Releases are
+  cut per maintained branch and backported in lockstep.
+scheme: semver-per-branch
+current_version: v3.4.2
+url: https://github.com/haproxytech/dataplaneapi/releases
+other_changelogs:
+  - name: HAProxy Kubernetes Ingress Controller
+    url: https://www.haproxy.com/documentation/kubernetes-ingress/community/release-notes/
+  - name: HAProxy Data Plane API release notes
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/release-notes/
+  - name: HAProxy engine
+    url: https://www.haproxy.org/
+commit_prefix_taxonomy:
+  - MAJOR — breaking or architecturally significant change
+  - MEDIUM — notable change, may need attention on upgrade
+  - MINOR — small change
+  - BUG — defect fix
+  - BUILD — build/dependency change
+  - DOC — documentation
+  - CLEANUP — refactor with no behaviour change
+entries:
+  - version: v3.4.2
+    date: '2026-08-14'
+    breaking: false
+    highlights:
+      - Dependency updates only (BUILD/MINOR) — Go packages, golang.org/x, aws-sdk-go-v2.
+  - version: v3.3.7
+    date: '2026-08-14'
+    breaking: false
+    highlights:
+      - Backport of the same dependency updates to the 3.3 branch.
+  - version: v3.2.15
+    date: '2026-08-14'
+    breaking: false
+    highlights:
+      - Backport of the same dependency updates to the 3.2 LTS branch.
+  - version: v3.0.23
+    date: '2026-08-14'
+    breaking: false
+    highlights:
+      - Backport to the 3.0 LTS branch.
+  - version: v2.9.27
+    date: '2026-08-14'
+    breaking: false
+    highlights:
+      - Backport to the 2.9 branch, which still serves the /v2 API.
+  - version: v3.4.1
+    date: '2026-08-06'
+    breaking: false
+note: >-
+  Recent window only. The five 2026-08-14 releases are a single coordinated backport across
+  every maintained branch, which is the pattern to expect rather than five independent
+  changes.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

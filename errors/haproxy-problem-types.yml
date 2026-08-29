@@ -1,0 +1,120 @@
+generated: '2026-08-28'
+method: derived
+source: openapi/haproxy-data-plane-api-openapi.yml
+provider: HAProxy
+providerId: haproxy
+format: custom-json
+description: >-
+  Error catalog for the HAProxy Data Plane API, derived from the 4xx/5xx and default
+  responses declared in the harvested Swagger 2.0 contract. The API does NOT use RFC 9457
+  problem+json; it returns a compact JSON object with an integer `code` and a string
+  `message`, and permits additional string properties. Every error response also carries
+  a Configuration-Version header, which is what a client needs to retry a write correctly.
+envelope:
+  media_type: application/json
+  schema: '#/definitions/error'
+  required:
+    - code
+    - message
+  fields:
+    code:
+      type: integer
+      nullable: true
+      description: Numeric error code echoing the HTTP status in most responses.
+    message:
+      type: string
+      nullable: true
+      description: Human-readable description of what failed.
+  additional_properties:
+    type: string
+    description: >-
+      The schema allows arbitrary extra string properties, so clients must tolerate
+      unknown keys rather than failing closed.
+  headers:
+    Configuration-Version:
+      description: >-
+        Current configuration file version. Present on 400, 404, 406 and 409 responses.
+        A client that got a 409 for a stale version should read this header and retry.
+shared_responses:
+  - name: BadRequest
+    status: 400
+    description: Bad request
+  - name: NotFound
+    status: 404
+    description: The specified resource was not found
+  - name: AlreadyExists
+    status: 409
+    description: The specified resource already exists
+  - name: NotAcceptable
+    status: 406
+    description: The specified resource cannot be handled
+  - name: DefaultError
+    status: default
+    description: General error response, used on every operation in the contract
+problem_types:
+  - status: 400
+    occurrences: 241
+    title: Bad request
+    causes:
+      - Malformed body that does not validate against the resource definition.
+      - >-
+        Mutually exclusive query parameters supplied together — transaction_id cannot be
+        combined with version or force_reload.
+      - A required parent_name or name path parameter is missing or empty.
+    remediation: >-
+      Validate the payload against the definition in the contract before sending, and pick
+      exactly one write mode: either a transaction_id, or a version.
+  - status: 404
+    occurrences: 297
+    title: The specified resource was not found
+    causes:
+      - The named frontend, backend, server, ACL, rule or transaction does not exist.
+      - The parent section named in parent_name does not exist.
+    remediation: >-
+      List the collection first and use a name returned by it. Rule and filter resources are
+      addressed by index within their parent section, and the index shifts when siblings are
+      deleted.
+  - status: 406
+    occurrences: 1
+    title: The specified resource cannot be handled
+    remediation: >-
+      The request was understood but the resource cannot be acted on in its current state.
+      Re-read the resource and reconcile before retrying.
+  - status: 409
+    occurrences: 97
+    title: Conflict
+    causes:
+      - The resource already exists — creating a duplicate name.
+      - >-
+        The `version` query parameter does not match the current configuration version.
+        This is the optimistic-concurrency failure and it is the one an automated client
+        will hit most often.
+    remediation: >-
+      Re-read GET /v3/services/haproxy/configuration/version (or the Configuration-Version
+      response header) and replay the write with the fresh value. Do not blindly retry with
+      the same version — it will conflict again.
+    retryable: true
+  - status: 429
+    occurrences: 2
+    title: Too many open transactions
+    causes:
+      - >-
+        The number of concurrently open configuration transactions exceeds the server's
+        configured maximum.
+    remediation: >-
+      Commit or delete transactions you have opened. Abandoned transactions are the usual
+      cause; GET /v3/services/haproxy/transactions lists them and DELETE discards one.
+    retryable: true
+  - status: 500
+    occurrences: 1
+    title: Internal Server Error
+    remediation: Inspect the Data Plane API logs; this indicates a fault in the service itself.
+notes:
+  - >-
+    Success codes matter as much as errors here. A configuration write returns 201 or 200
+    when applied directly, but 202 "Configuration change accepted and reload requested"
+    with a Reload-ID header when a reload is needed. A client that treats 202 as done has
+    not confirmed the change is live — poll the reload by its ID.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

@@ -1,0 +1,159 @@
+generated: '2026-08-28'
+method: searched
+source: >-
+  https://www.haproxy.com/documentation/haproxy-data-plane-api/tutorials/backends/ and
+  openapi/haproxy-data-plane-api-openapi.yml
+provider: HAProxy
+providerId: haproxy
+api: HAProxy Data Plane API
+description: >-
+  Cross-cutting runtime semantics for the HAProxy Data Plane API. This API is unusual in
+  two ways that matter to an automated caller: writes are guarded by an explicit
+  optimistic-concurrency version rather than an idempotency key, and a batch of writes can
+  be staged in a transaction that is committed or discarded as a unit. Together those give
+  it a genuine, contract-level undo — which most configuration APIs do not have.
+authentication:
+  style: http-basic
+  scheme: basic_auth
+  detail: >-
+    HTTP Basic against a userlist declared in the HAProxy configuration the Data Plane API
+    is managing. No OAuth, no API keys, no scopes, no token exchange.
+  reference: authentication/haproxy-authentication.yml
+versioning:
+  style: uri-path
+  current: v3
+  base_path: /v3
+  detail: >-
+    The major version is the first path segment. v2 remains served by the v2.9.x branch of
+    the Data Plane API; v3 is current as of 3.4. The `info.version` of the contract (3.4)
+    tracks the Data Plane API release, not the URI version.
+idempotency:
+  supported: true
+  mechanism: optimistic-concurrency
+  parameter: version
+  parameter_in: query
+  response_header: Configuration-Version
+  conflict_status: 409
+  read_current: GET /v3/services/haproxy/configuration/version
+  detail: >-
+    There is no Idempotency-Key header. Instead every configuration write takes a `version`
+    query parameter that must equal the current configuration version; if it does not, the
+    write is rejected with 409 and nothing is applied. This makes a replayed request safe:
+    the second attempt carries a now-stale version and is refused rather than applied
+    twice. The current version is returned on the resource endpoint and echoed in the
+    Configuration-Version response header on both success and error responses.
+  caveats:
+    - >-
+      The guarantee is per configuration version, not per request. Two DIFFERENT writes
+      that each read the same version will collide, and the loser must re-read and replay.
+    - >-
+      `version` and `transaction_id` are mutually exclusive. Inside a transaction the
+      individual calls carry no version; the transaction holds one.
+    - PUT and DELETE on named resources are naturally idempotent apart from the version check.
+reversibility:
+  grade: verified
+  applies_to: configuration writes
+  detail: >-
+    The Data Plane API stages configuration changes in a transaction and only writes them to
+    HAProxy on commit. An uncommitted transaction can be discarded outright, which is a true
+    rollback of every change inside it. The window is explicit and stated in the contract:
+    a transaction is reversible for as long as it is open and uncommitted, and it stops
+    being reversible the moment commitTransaction succeeds.
+  operations:
+    - action: open a reversible change set
+      operationId: startTransaction
+      method: POST
+      path: /v3/services/haproxy/transactions
+    - action: inspect open change sets
+      operationId: getTransactions
+      method: GET
+      path: /v3/services/haproxy/transactions
+    - action: reverse (discard all staged changes)
+      operationId: deleteTransaction
+      method: DELETE
+      path: /v3/services/haproxy/transactions/{id}
+      window: >-
+        Any time before commit. Once committed the transaction no longer exists and this
+        path returns 404.
+    - action: apply (point of no return)
+      operationId: commitTransaction
+      method: PUT
+      path: /v3/services/haproxy/transactions/{id}
+      reversible: false
+      note: >-
+        After commit there is no undo operation in the API. Reverting means issuing the
+        inverse writes yourself, or restoring a previously saved configuration.
+    - action: reverse a staged SPOE change set
+      operationId: deleteSpoeTransaction
+      method: DELETE
+      path: /v3/services/haproxy/spoe/spoe_files/{parent_name}/transactions/{id}
+      window: Any time before commitSpoeTransaction.
+  limits:
+    - >-
+      Open transactions are capped. Exceeding the cap returns 429 "Too many open
+      transactions", so an agent that opens transactions it never resolves will lock itself
+      out of the write path.
+  not_reversible:
+    - >-
+      Runtime API operations (/v3/services/haproxy/runtime/*) apply immediately and are not
+      transactional. Disabling a server, changing a weight or flushing a stick table takes
+      effect at once; the only reversal is the opposite call.
+dry_run_mode:
+  supported: partial
+  detail: >-
+    There is no dry-run flag. The nearest equivalent is opening a transaction, applying the
+    writes, inspecting the result with getTransaction, and deleting it instead of
+    committing — which exercises validation without ever touching the running config.
+reloads:
+  detail: >-
+    A change that requires HAProxy to reload returns 202 "Configuration change accepted and
+    reload requested" with a Reload-ID response header. 202 is not confirmation the change
+    is live.
+  poll:
+    operationId: getReload
+    method: GET
+    path: /v3/services/haproxy/reloads/{id}
+  list:
+    operationId: getReloads
+    path: /v3/services/haproxy/reloads
+  controls:
+    force_reload: >-
+      Query parameter. Reload immediately instead of waiting for the configured
+      reload-delay. Cannot be combined with transaction_id.
+    skip_reload: Query parameter. Apply the change without initiating a reload at all.
+pagination:
+  supported: false
+  detail: >-
+    Collections are returned in full as a single JSON array. There are no page, cursor,
+    limit or offset parameters anywhere in the 223 paths. Collection sizes are bounded by
+    the size of the HAProxy configuration, so this is a deliberate fit rather than a gap.
+filtering:
+  parent_name: >-
+    Most child resources are addressed under a parent section — a server under a backend,
+    a rule under a frontend. `parent_name` is a path parameter, not a filter.
+  full_section: >-
+    Query parameter on section-level writes. Indicates the action affects the specified
+    child resources as well.
+error_envelope:
+  media_type: application/json
+  shape: '{ "code": <integer>, "message": "<string>" }'
+  rfc9457: false
+  reference: errors/haproxy-problem-types.yml
+rate_limit_signaling:
+  supported: false
+  detail: >-
+    Self-hosted software with no quota layer. The only 429 in the contract is "Too many open
+    transactions", which is a concurrency limit on the caller's own staged changes, not a
+    request-rate limit. No X-RateLimit-* or RateLimit-* headers are declared.
+  reference: rate-limits/haproxy-rate-limits.yml
+request_tracing:
+  supported: unknown
+  detail: >-
+    No request-id or correlation header is declared in the contract. Reload-ID is the only
+    correlation identifier the API returns, and it identifies the reload, not the request.
+metadata:
+  supported: false
+  detail: No free-form metadata or annotation field on resources.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

@@ -1,0 +1,141 @@
+generated: '2026-08-28'
+method: searched
+source: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/cli-reference/
+provider: HAProxy
+providerId: haproxy
+description: >-
+  HAProxy Technologies ships two first-party command-line surfaces, and neither is an API
+  client in the usual sense. `dataplaneapi` is the server binary — it is configured
+  entirely by flags at startup, 75 of them, and then serves the REST API. `haproxy` is the
+  load balancer itself. There is no first-party CLI that CALLS the Data Plane API; the
+  documented client is curl.
+clis:
+  - name: dataplaneapi
+    role: server binary for the Data Plane API
+    reference: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/cli-reference/
+    source: https://github.com/haproxytech/dataplaneapi
+    subcommands: []
+    flag_count: 75
+    install:
+      - method: package
+        detail: Bundled with HAProxy Enterprise and available in the HAProxy Technologies packages.
+      - method: source
+        detail: go install from https://github.com/haproxytech/dataplaneapi
+      - method: container
+        detail: Included in the haproxytech container images.
+    flag_groups:
+      - group: Core configuration
+        flags:
+          - flag: --config-file, -c
+            description: Path to the HAProxy configuration file to manage.
+          - flag: -f
+            description: Path to the Data Plane API's own configuration file.
+          - flag: --haproxy-bin, -b
+            description: Path to the HAProxy binary.
+      - group: Listening
+        flags:
+          - flag: --host
+            description: IP address to listen on.
+          - flag: --port
+            description: Port for non-secure connections. Documented default 5555.
+          - flag: --socket-path
+            description: UNIX domain socket path to listen on.
+          - flag: --tls-host
+            description: IP address for TLS connections.
+          - flag: --tls-port
+            description: Port for secure connections.
+      - group: TLS
+        flags:
+          - flag: --tls-certificate
+            description: TLS certificate file.
+          - flag: --tls-key
+            description: TLS private key file.
+          - flag: --tls-ca
+            description: TLS certificate authority file.
+      - group: Authentication
+        flags:
+          - flag: --userlist, -u
+            description: Userlist used for HTTP Basic authentication.
+          - flag: --userlist-file
+            description: External userlist file.
+      - group: Transactions and storage
+        flags:
+          - flag: --transaction-dir, -t
+            description: >-
+              Directory where open transactions are staged. This is where an uncommitted,
+              still-reversible change set physically lives.
+          - flag: --backups-dir
+            description: Directory for configuration backup files.
+          - flag: --maps-dir, -p
+            description: Map files directory.
+          - flag: --ssl-certs-dir
+            description: SSL certificates directory.
+          - flag: --spoe-dir
+            description: SPOE directory.
+          - flag: --dataplane-storage-dir
+            description: Internal storage directory.
+      - group: Reload and restart
+        flags:
+          - flag: --reload-cmd, -r
+            description: Command used to reload HAProxy.
+          - flag: --restart-cmd, -s
+            description: Command used to restart HAProxy.
+          - flag: --reload-delay, -d
+            description: >-
+              Minimum delay between reloads. This is the delay the force_reload query
+              parameter bypasses.
+          - flag: --reload-strategy
+            description: systemd, s6 or custom.
+          - flag: --validate-cmd
+            description: Custom configuration validation command.
+      - group: Timeouts
+        flags:
+          - flag: --read-timeout
+          - flag: --write-timeout
+          - flag: --keep-alive
+          - flag: --cleanup-timeout
+          - flag: --graceful-timeout
+      - group: Logging
+        flags:
+          - flag: --log-level
+            description: trace, debug, info, warning or error.
+          - flag: --log-format
+            description: text or JSON.
+          - flag: --log-to
+            description: stdout, file or syslog.
+          - flag: --log-file
+          - flag: --syslog-address
+          - flag: --syslog-facility
+          - flag: --syslog-level
+          - flag: --syslog-protocol
+          - flag: --syslog-tag
+      - group: Process
+        flags:
+          - flag: --uid
+          - flag: --gid
+          - flag: --pid-file
+          - flag: --master-runtime, -m
+            description: Master Runtime API socket.
+      - group: Utility
+        flags:
+          - flag: --help, -h
+          - flag: --version, -v
+          - flag: --show-system-info, -i
+            description: Display system information on the info endpoint.
+  - name: haproxy
+    role: the load balancer binary itself
+    reference: https://docs.haproxy.org/
+    source: https://github.com/haproxy/haproxy
+    note: >-
+      Not an API client. Included because the Runtime API is reached through the socket
+      this binary opens, and because `haproxy -c` is the configuration check the Data Plane
+      API's --validate-cmd wraps.
+api_client:
+  first_party: false
+  documented_client: curl
+  detail: >-
+    Every example in the Data Plane API tutorials uses curl with --user for Basic auth.
+    There is no first-party `haproxyctl`-style CLI that speaks to the REST API.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

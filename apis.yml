@@ -6,6 +6,19 @@ description: >-
   applications. It exposes a Data Plane API for dynamic configuration
   management and a stats socket for runtime management.
 type: Index
+deliveryModel:
+  model: open-core
+  license: Apache-2.0
+  open_source: true
+  commercial: true
+  callable_host: false
+  label: Open core · an OSS project plus a commercial hosted product
+  confidence: high
+  source:
+  - license
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: unknown
@@ -24,10 +37,16 @@ tags:
   - Load Balancing
   - Networking
   - Reverse Proxy
+  - Proxy
+  - Kubernetes
+  - Ingress
+  - Open Source
+  - Infrastructure
+  - Application Delivery
 url: >-
   https://raw.githubusercontent.com/api-evangelist/haproxy/refs/heads/main/apis.yml
 created: '2026-03-16'
-modified: '2026-03-18'
+modified: '2026-08-28'
 specificationVersion: '0.23'
 apis:
   - aid: haproxy:haproxy-data-plane-api
@@ -38,18 +57,29 @@ apis:
       frontends, backends, servers, ACLs, and other HAProxy objects
       without requiring configuration file changes or restarts.
     humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
-    baseURL: https://localhost:5555/v2
+    baseURL: http://{haproxy-host}:5555/v3
     tags:
       - Configuration
       - Load Balancing
       - REST API
     properties:
       - type: Documentation
-        url: https://www.haproxy.com/documentation/dataplaneapi/latest/
+        url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
       - type: OpenAPI
-        url: https://raw.githubusercontent.com/haproxytech/dataplaneapi/master/swagger.yaml
+        url: openapi/haproxy-data-plane-api-openapi.yml
+      - type: OpenAPI
+        name: Upstream source (haproxytech/client-native)
+        url: https://raw.githubusercontent.com/haproxytech/client-native/master/specification/build/haproxy_spec.yaml
+      - type: APIReference
+        url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
       - type: GettingStarted
-        url: https://www.haproxy.com/documentation/dataplaneapi/latest/#getting-started
+        url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+      - type: Overlay
+        url: overlays/haproxy-data-plane-api-overlay.yaml
+      - type: DataModel
+        url: data-model/haproxy-data-model.yml
+      - type: ErrorCatalog
+        url: errors/haproxy-problem-types.yml
       - type: GitHubRepository
         url: https://github.com/haproxytech/dataplaneapi
       - type: ChangeLog
@@ -61,9 +91,11 @@ apis:
       socket-based interface for dynamically managing HAProxy at runtime. It
       allows operators to enable or disable servers, adjust weights, inspect
       stick tables, view statistics, and perform other live configuration
-      changes without reloading the process.
+      changes without reloading the process. Its native transport is a UNIX socket or a
+      TCP/IP socket, not HTTP; the baseURL recorded here is the HTTP passthrough the Data
+      Plane API exposes for 26 of these operations under /v3/services/haproxy/runtime.
     humanURL: https://www.haproxy.com/documentation/haproxy-runtime-api/
-    baseURL: https://localhost
+    baseURL: http://{haproxy-host}:5555/v3/services/haproxy/runtime
     tags:
       - Load Balancing
       - Runtime Management
@@ -79,9 +111,12 @@ apis:
       The HAProxy Kubernetes Ingress Controller implements routing rules defined
       in Kubernetes Ingress resources, dynamically updating HAProxy configuration
       as pods are added or removed from the cluster. It supports the Gateway API,
-      custom resources, and certificate management via the HAProxy Runtime API.
+      custom resources, and certificate management via the HAProxy Runtime API. It has no
+      standalone HTTP API of its own: its interface is the Kubernetes API server, where it
+      registers custom resources under the ingress.v3.haproxy.org (and legacy
+      ingress.v1.haproxy.org) API groups.
     humanURL: https://www.haproxy.com/documentation/kubernetes-ingress/
-    baseURL: https://localhost
+    baseURL: https://{kubernetes-api-server}/apis/ingress.v3.haproxy.org/v3
     tags:
       - Ingress Controller
       - Kubernetes
@@ -90,12 +125,14 @@ apis:
       - type: Documentation
         url: https://www.haproxy.com/documentation/kubernetes-ingress/
       - type: GettingStarted
-        url: https://www.haproxy.com/documentation/kubernetes-ingress/overview/
+        url: https://www.haproxy.com/documentation/kubernetes-ingress/community/installation/
       - type: ChangeLog
         url: https://www.haproxy.com/documentation/kubernetes-ingress/community/release-notes/
       - type: GitHubRepository
         url: https://github.com/haproxytech/kubernetes-ingress
 common:
+  - type: Authentication
+    url: authentication/haproxy-authentication.yml
   - type: IssueTracker
     url: https://github.com/haproxytech/dataplaneapi/issues
   - type: ContributionGuide
@@ -123,6 +160,47 @@ common:
     url: https://www.haproxy.com/support/support-options
   - type: TermsOfService
     url: https://www.haproxy.com/legal
+  - type: Conventions
+    url: conventions/haproxy-conventions.yml
+  - type: Idempotency
+    url: conventions/haproxy-conventions.yml
+  - type: Packages
+    url: packages/haproxy-packages.yml
+  - type: SDKs
+    url: packages/haproxy-packages.yml
+  - type: CLI
+    url: cli/haproxy-cli.yml
+  - type: Lifecycle
+    url: lifecycle/haproxy-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/haproxy-lifecycle.yml
+  - type: ChangeLog
+    url: changelog/haproxy-changelog.yml
+  - type: Conformance
+    url: conformance/haproxy-conformance.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: LLMsTxt
+    url: llms/haproxy-llms.txt
+  - type: Plans
+    url: plans/haproxy-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/haproxy-rate-limits.yml
+  - type: FinOps
+    url: finops/haproxy-finops.yml
+  - type: PrivacyPolicy
+    url: https://www.haproxy.com/privacy-policy
+  - type: Login
+    url: https://my.haproxy.com/portal/cust/login
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-08-28'
+  status: enriched
+  artifacts_added: 19
+  pass: local-v1

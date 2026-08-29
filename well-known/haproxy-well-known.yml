@@ -1,0 +1,56 @@
+generated: '2026-08-28'
+method: probed
+source: direct HTTPS probes, 2026-08-28
+provider: HAProxy
+providerId: haproxy
+description: >-
+  Probe of the RFC 8615 /.well-known/ discovery surface on every host HAProxy publishes.
+  Nothing was served. www.haproxy.com returns an honest HTTP 404 for every unknown path,
+  including the control probe, so there is no soft-404 credit to strip; the 338,610-byte
+  body is the marketing site's 404 page, not a document. No WellKnown or SecurityTxt
+  pointer is emitted from this file because the provider does not serve one.
+hit_count: 0
+hosts:
+  - host: https://www.haproxy.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: https://www.haproxy.org
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+  - host: https://my.haproxy.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+soft_404_control:
+  url: https://www.haproxy.com/.well-known/thisdoesnotexist-control
+  status: 404
+  bytes: 338610
+  verdict: >-
+    Host returns a real 404 status code for unknown paths. Every /.well-known/ probe above
+    returned the same 404 status and the same body size, confirming none of them is served.
+notes:
+  - >-
+    The Data Plane API itself is self-hosted software, so there is no HAProxy-operated API
+    host to probe for /.well-known/ documents. Discovery is instead served by the running
+    instance: GET /v3/specification returns the Swagger 2.0 contract and GET
+    /v3/specification_openapiv3 returns an OpenAPI 3 rendering of the same API. Both are
+    declared in the harvested spec (tags Specification and SpecificationOpenapiv3).
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
