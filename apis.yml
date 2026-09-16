@@ -60,88 +60,1659 @@ created: '2026-03-16'
 modified: '2026-08-28'
 specificationVersion: '0.23'
 apis:
-  - aid: haproxy:haproxy-data-plane-api
-    name: HAProxy Data Plane API
-    description: >-
-      The HAProxy Data Plane API is a REST API for managing HAProxy
-      configuration dynamically. It allows runtime configuration of
-      frontends, backends, servers, ACLs, and other HAProxy objects
-      without requiring configuration file changes or restarts.
-    humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
-    baseURL: http://{haproxy-host}:5555/v3
-    tags:
-      - Configuration
-      - Load Balancing
-      - REST API
-    properties:
-      - type: Documentation
-        url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
-      - type: OpenAPI
-        url: openapi/haproxy-data-plane-api-openapi.yml
-      - type: OpenAPI
-        name: Upstream source (haproxytech/client-native)
-        url: https://raw.githubusercontent.com/haproxytech/client-native/master/specification/build/haproxy_spec.yaml
-      - type: APIReference
-        url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
-      - type: GettingStarted
-        url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
-      - type: Overlay
-        url: overlays/haproxy-data-plane-api-overlay.yaml
-      - type: DataModel
-        url: data-model/haproxy-data-model.yml
-      - type: ErrorCatalog
-        url: errors/haproxy-problem-types.yml
-      - type: GitHubRepository
-        url: https://github.com/haproxytech/dataplaneapi
-      - type: ChangeLog
-        url: https://github.com/haproxytech/dataplaneapi/releases
-  - aid: haproxy:haproxy-runtime-api
-    name: HAProxy Runtime API
-    description: >-
-      The HAProxy Runtime API (formerly known as the stats socket) is a
-      socket-based interface for dynamically managing HAProxy at runtime. It
-      allows operators to enable or disable servers, adjust weights, inspect
-      stick tables, view statistics, and perform other live configuration
-      changes without reloading the process. Its native transport is a UNIX socket or a
-      TCP/IP socket, not HTTP; the baseURL recorded here is the HTTP passthrough the Data
-      Plane API exposes for 26 of these operations under /v3/services/haproxy/runtime.
-    humanURL: https://www.haproxy.com/documentation/haproxy-runtime-api/
-    baseURL: http://{haproxy-host}:5555/v3/services/haproxy/runtime
-    tags:
-      - Load Balancing
-      - Runtime Management
-      - Statistics
-    properties:
-      - type: Documentation
-        url: https://www.haproxy.com/documentation/haproxy-runtime-api/
-      - type: Reference
-        url: https://www.haproxy.com/documentation/haproxy-runtime-api/reference/
-  - aid: haproxy:haproxy-kubernetes-ingress-controller
-    name: HAProxy Kubernetes Ingress Controller
-    description: >-
-      The HAProxy Kubernetes Ingress Controller implements routing rules defined
-      in Kubernetes Ingress resources, dynamically updating HAProxy configuration
-      as pods are added or removed from the cluster. It supports the Gateway API,
-      custom resources, and certificate management via the HAProxy Runtime API. It has no
-      standalone HTTP API of its own: its interface is the Kubernetes API server, where it
-      registers custom resources under the ingress.v3.haproxy.org (and legacy
-      ingress.v1.haproxy.org) API groups.
-    humanURL: https://www.haproxy.com/documentation/kubernetes-ingress/
-    baseURL: https://{kubernetes-api-server}/apis/ingress.v3.haproxy.org/v3
-    tags:
-      - Ingress Controller
-      - Kubernetes
-      - Load Balancing
-    properties:
-      - type: Documentation
-        url: https://www.haproxy.com/documentation/kubernetes-ingress/
-      - type: GettingStarted
-        url: https://www.haproxy.com/documentation/kubernetes-ingress/community/installation/
-      - type: ChangeLog
-        url: https://www.haproxy.com/documentation/kubernetes-ingress/community/release-notes/
-      - type: GitHubRepository
-        url: https://github.com/haproxytech/kubernetes-ingress
+- aid: haproxy:haproxy-runtime-api
+  name: HAProxy Runtime API
+  description: >-
+    The HAProxy Runtime API (formerly known as the stats socket) is a socket-based interface for dynamically
+    managing HAProxy at runtime. It allows operators to enable or disable servers, adjust weights, inspect
+    stick tables, view statistics, and perform other live configuration changes without reloading the
+    process. Its native transport is a UNIX socket or a TCP/IP socket, not HTTP; the baseURL recorded
+    here is the HTTP passthrough the Data Plane API exposes for 26 of these operations under /v3/services/haproxy/runtime.
+  humanURL: https://www.haproxy.com/documentation/haproxy-runtime-api/
+  baseURL: http://{haproxy-host}:5555/v3/services/haproxy/runtime
+  tags:
+  - Load Balancing
+  - Runtime Management
+  - Statistics
+  properties:
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-runtime-api/
+  - type: Reference
+    url: https://www.haproxy.com/documentation/haproxy-runtime-api/reference/
+- aid: haproxy:haproxy-kubernetes-ingress-controller
+  name: HAProxy Kubernetes Ingress Controller
+  description: >-
+    The HAProxy Kubernetes Ingress Controller implements routing rules defined in Kubernetes Ingress resources,
+    dynamically updating HAProxy configuration as pods are added or removed from the cluster. It supports
+    the Gateway API, custom resources, and certificate management via the HAProxy Runtime API. It has
+    no standalone HTTP API of its own: its interface is the Kubernetes API server, where it registers
+    custom resources under the ingress.v3.haproxy.org (and legacy ingress.v1.haproxy.org) API groups.
+  humanURL: https://www.haproxy.com/documentation/kubernetes-ingress/
+  baseURL: https://{kubernetes-api-server}/apis/ingress.v3.haproxy.org/v3
+  tags:
+  - Ingress Controller
+  - Kubernetes
+  - Load Balancing
+  properties:
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/kubernetes-ingress/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/kubernetes-ingress/community/installation/
+  - type: ChangeLog
+    url: https://www.haproxy.com/documentation/kubernetes-ingress/community/release-notes/
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/kubernetes-ingress
+- aid: haproxy:haproxy-acl-api
+  name: HAProxy ACL API
+  description: The ACL API from HAProxy — 8 operation(s) for acl.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - ACL
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-acl-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-acl-runtime-api
+  name: HAProxy ACL Runtime API
+  description: The ACL Runtime API from HAProxy — 4 operation(s) for acl runtime.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - ACL Runtime
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-acl-runtime-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-acme-api
+  name: HAProxy Acme API
+  description: The Acme API from HAProxy — 2 operation(s) for acme.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Acme
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-acme-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-acmeruntime-api
+  name: HAProxy Acme Runtime API
+  description: The AcmeRuntime API from HAProxy — 1 operation(s) for acmeruntime.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - AcmeRuntime
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-acmeruntime-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-backend-api
+  name: HAProxy Backend API
+  description: Managing backend configurations (advanced mode)
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Backend
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-backend-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-backendswitchingrule-api
+  name: HAProxy Backend Switching Rule API
+  description: The BackendSwitchingRule API from HAProxy — 2 operation(s) for backendswitchingrule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - BackendSwitchingRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-backendswitchingrule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-bind-api
+  name: HAProxy Bind API
+  description: Managing frontend bind configurations (advanced mode)
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Bind
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-bind-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-cache-api
+  name: HAProxy Cache API
+  description: The Cache API from HAProxy — 2 operation(s) for cache.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Cache
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-cache-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-configuration-api
+  name: HAProxy Configuration API
+  description: Raw HAProxy configuration management (advanced mode)
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-configuration-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-crtload-api
+  name: HAProxy Crt Load API
+  description: The CrtLoad API from HAProxy — 2 operation(s) for crtload.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - CrtLoad
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-crtload-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-crtstore-api
+  name: HAProxy Crt Store API
+  description: The CrtStore API from HAProxy — 2 operation(s) for crtstore.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - CrtStore
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-crtstore-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-declarecapture-api
+  name: HAProxy Declare Capture API
+  description: The DeclareCapture API from HAProxy — 2 operation(s) for declarecapture.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - DeclareCapture
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-declarecapture-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-defaults-api
+  name: HAProxy Defaults API
+  description: Managing defaults configuration (advanced mode)
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Defaults
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-defaults-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-dgrambind-api
+  name: HAProxy Dgram Bind API
+  description: The DgramBind API from HAProxy — 2 operation(s) for dgrambind.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - DgramBind
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-dgrambind-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-discovery-api
+  name: HAProxy Discovery API
+  description: API autodiscover endpoints
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Discovery
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-discovery-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-fcgiapp-api
+  name: HAProxy FCGI App API
+  description: The FCGIApp API from HAProxy — 2 operation(s) for fcgiapp.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - FCGIApp
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-fcgiapp-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-filter-api
+  name: HAProxy Filter API
+  description: The Filter API from HAProxy — 4 operation(s) for filter.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Filter
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-filter-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-forcebeswitch-api
+  name: HAProxy Force Be Switch API
+  description: The ForceBeSwitch API from HAProxy — 2 operation(s) for forcebeswitch.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - ForceBeSwitch
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-forcebeswitch-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-frontend-api
+  name: HAProxy Frontend API
+  description: Managing frontend configuration (advanced mode)
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Frontend
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-frontend-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-global-api
+  name: HAProxy Global API
+  description: Managing global configuration (advanced mode)
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Global
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-global-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-group-api
+  name: HAProxy Group API
+  description: The Group API from HAProxy — 2 operation(s) for group.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Group
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-group-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-health-api
+  name: HAProxy Health API
+  description: The Health API from HAProxy — 1 operation(s) for health.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Health
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-health-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-healthcheck-api
+  name: HAProxy Health Check API
+  description: The HealthCheck API from HAProxy — 2 operation(s) for healthcheck.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - HealthCheck
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-healthcheck-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-httpafterresponserule-api
+  name: HAProxy HTTP After Response Rule API
+  description: The HTTPAfterResponseRule API from HAProxy — 6 operation(s) for httpafterresponserule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - HTTPAfterResponseRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-httpafterresponserule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-httpcheck-api
+  name: HAProxy HTTP Check API
+  description: The HTTPCheck API from HAProxy — 6 operation(s) for httpcheck.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - HTTPCheck
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-httpcheck-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-httperrorrule-api
+  name: HAProxy HTTP Error Rule API
+  description: The HTTPErrorRule API from HAProxy — 6 operation(s) for httperrorrule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - HTTPErrorRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-httperrorrule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-httperrors-api
+  name: HAProxy HTTP Errors API
+  description: The HTTPErrors API from HAProxy — 2 operation(s) for httperrors.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - HTTPErrors
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-httperrors-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-httprequestrule-api
+  name: HAProxy HTTP Request Rule API
+  description: The HTTPRequestRule API from HAProxy — 6 operation(s) for httprequestrule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - HTTPRequestRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-httprequestrule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-httpresponserule-api
+  name: HAProxy HTTP Response Rule API
+  description: The HTTPResponseRule API from HAProxy — 6 operation(s) for httpresponserule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - HTTPResponseRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-httpresponserule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-information-api
+  name: HAProxy Information API
+  description: The Information API from HAProxy — 2 operation(s) for information.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Information
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-information-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-logforward-api
+  name: HAProxy Log Forward API
+  description: The LogForward API from HAProxy — 2 operation(s) for logforward.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - LogForward
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-logforward-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-logprofile-api
+  name: HAProxy Log Profile API
+  description: The LogProfile API from HAProxy — 2 operation(s) for logprofile.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - LogProfile
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-logprofile-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-logtarget-api
+  name: HAProxy Log Target API
+  description: The LogTarget API from HAProxy — 12 operation(s) for logtarget.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - LogTarget
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-logtarget-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-mailerentry-api
+  name: HAProxy Mailer Entry API
+  description: The MailerEntry API from HAProxy — 2 operation(s) for mailerentry.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - MailerEntry
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-mailerentry-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-mailers-api
+  name: HAProxy Mailers API
+  description: The Mailers API from HAProxy — 2 operation(s) for mailers.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Mailers
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-mailers-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-maps-api
+  name: HAProxy Maps API
+  description: The Maps API from HAProxy — 4 operation(s) for maps.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Maps
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-maps-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-nameserver-api
+  name: HAProxy Nameserver API
+  description: The Nameserver API from HAProxy — 2 operation(s) for nameserver.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Nameserver
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-nameserver-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-peer-api
+  name: HAProxy Peer API
+  description: The Peer API from HAProxy — 2 operation(s) for peer.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Peer
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-peer-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-peerentry-api
+  name: HAProxy Peer Entry API
+  description: The PeerEntry API from HAProxy — 2 operation(s) for peerentry.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - PeerEntry
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-peerentry-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-quicinitialrule-api
+  name: HAProxy QUIC Initial Rule API
+  description: The QUICInitialRule API from HAProxy — 4 operation(s) for quicinitialrule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - QUICInitialRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-quicinitialrule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-reloads-api
+  name: HAProxy Reloads API
+  description: >-
+    Checking reload success. To avoid constant reloading we reload in intervals that are configurable
+    when
+
+    with reload-delay option. When a change to configuration is made and force_reload url query string
+
+    parameter is false we issue a request for reload, and return the reload ID in response header. You
+    can
+
+    then use reloads endpoints to check the status of that reload ID. If force_reload is true, we override
+    all
+
+    of this and reload immediately.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Reloads
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-reloads-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-resolver-api
+  name: HAProxy Resolver API
+  description: The Resolver API from HAProxy — 2 operation(s) for resolver.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Resolver
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-resolver-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-ring-api
+  name: HAProxy Ring API
+  description: The Ring API from HAProxy — 2 operation(s) for ring.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Ring
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-ring-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-server-api
+  name: HAProxy Server API
+  description: Managing backend server configurations (advanced mode)
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Server
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-server-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-serverswitchingrule-api
+  name: HAProxy Server Switching Rule API
+  description: The ServerSwitchingRule API from HAProxy — 2 operation(s) for serverswitchingrule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - ServerSwitchingRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-serverswitchingrule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-servertemplate-api
+  name: HAProxy Server Template API
+  description: The ServerTemplate API from HAProxy — 2 operation(s) for servertemplate.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - ServerTemplate
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-servertemplate-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-servicediscovery-api
+  name: HAProxy Service Discovery API
+  description: The ServiceDiscovery API from HAProxy — 4 operation(s) for servicediscovery.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - ServiceDiscovery
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-servicediscovery-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-sites-api
+  name: HAProxy Sites API
+  description: >-
+    Managing sites (simple configuration mode). Sites are considered as one frontend with multiple backends
+
+    connected to it via default_backend or use-backend directives.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Sites
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-sites-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-specification-api
+  name: HAProxy Specification API
+  description: The Specification API from HAProxy — 1 operation(s) for specification.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Specification
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-specification-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-specificationopenapiv3-api
+  name: HAProxy Specification Openapiv3 API
+  description: The SpecificationOpenapiv3 API from HAProxy — 1 operation(s) for specificationopenapiv3.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - SpecificationOpenapiv3
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-specificationopenapiv3-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-spoe-api
+  name: HAProxy Spoe API
+  description: The Spoe API from HAProxy — 11 operation(s) for spoe.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Spoe
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-spoe-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-spoetransactions-api
+  name: HAProxy Spoe Transactions API
+  description: The SpoeTransactions API from HAProxy — 2 operation(s) for spoetransactions.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - SpoeTransactions
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-spoetransactions-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-sslfrontuse-api
+  name: HAProxy SSL Front Use API
+  description: The SSLFrontUse API from HAProxy — 2 operation(s) for sslfrontuse.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - SSLFrontUse
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-sslfrontuse-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-sslruntime-api
+  name: HAProxy SSL Runtime API
+  description: The SSLRuntime API from HAProxy — 10 operation(s) for sslruntime.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - SSLRuntime
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-sslruntime-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-stats-api
+  name: HAProxy Stats API
+  description: Stats container
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Stats
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-stats-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-stickrule-api
+  name: HAProxy Stick Rule API
+  description: The StickRule API from HAProxy — 2 operation(s) for stickrule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - StickRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-stickrule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-sticktable-api
+  name: HAProxy Stick Table API
+  description: The StickTable API from HAProxy — 3 operation(s) for sticktable.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - StickTable
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-sticktable-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-storage-api
+  name: HAProxy Storage API
+  description: The Storage API from HAProxy — 9 operation(s) for storage.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Storage
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-storage-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-table-api
+  name: HAProxy Table API
+  description: The Table API from HAProxy — 2 operation(s) for table.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Table
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-table-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-tcpcheck-api
+  name: HAProxy TCP Check API
+  description: The TCPCheck API from HAProxy — 6 operation(s) for tcpcheck.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - TCPCheck
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-tcpcheck-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-tcprequestrule-api
+  name: HAProxy TCP Request Rule API
+  description: The TCPRequestRule API from HAProxy — 6 operation(s) for tcprequestrule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - TCPRequestRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-tcprequestrule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-tcpresponserule-api
+  name: HAProxy TCP Response Rule API
+  description: The TCPResponseRule API from HAProxy — 4 operation(s) for tcpresponserule.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - TCPResponseRule
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-tcpresponserule-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-traces-api
+  name: HAProxy Traces API
+  description: The Traces API from HAProxy — 2 operation(s) for traces.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Traces
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-traces-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-transactions-api
+  name: HAProxy Transactions API
+  description: >-
+    Managing transactions. Configuration changes can be grouped in the transaction. You start the
+
+    transaction with trasactions POST, and call the configuration changes you need with parameter
+
+    transaction_id. When you want to commit the transaction, you call the transactions PUT and all changes
+
+    in that transaction is committed. If you call a configuration change without the transaction_id,
+
+    transaction mechanism is implicitly called with one operation in transaction.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-transactions-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-user-api
+  name: HAProxy User API
+  description: The User API from HAProxy — 2 operation(s) for user.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - User
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-user-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-userlist-api
+  name: HAProxy Userlist API
+  description: The Userlist API from HAProxy — 2 operation(s) for userlist.
+  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
+  baseURL: http://{haproxy-host}:5555/v3
+  tags:
+  - Userlist
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-userlist-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
 common:
+  - type: Overlay
+    url: overlays/haproxy-data-plane-api-overlay.yaml
   - type: Authentication
     url: authentication/haproxy-authentication.yml
   - type: IssueTracker
