@@ -630,30 +630,6 @@ apis:
     url: https://github.com/haproxytech/dataplaneapi
   - type: ChangeLog
     url: https://github.com/haproxytech/dataplaneapi/releases
-- aid: haproxy:haproxy-healthcheck-api
-  name: HAProxy Health Check API
-  description: The HealthCheck API from HAProxy — 2 operation(s) for healthcheck.
-  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
-  baseURL: http://{haproxy-host}:5555/v3
-  tags:
-  - HealthCheck
-  properties:
-  - type: OpenAPI
-    url: openapi/haproxy-healthcheck-api-openapi.yml
-  - type: Documentation
-    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
-  - type: APIReference
-    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
-  - type: GettingStarted
-    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
-  - type: DataModel
-    url: data-model/haproxy-data-model.yml
-  - type: ErrorCatalog
-    url: errors/haproxy-problem-types.yml
-  - type: GitHubRepository
-    url: https://github.com/haproxytech/dataplaneapi
-  - type: ChangeLog
-    url: https://github.com/haproxytech/dataplaneapi/releases
 - aid: haproxy:haproxy-httpafterresponserule-api
   name: HAProxy HTTP After Response Rule API
   description: The HTTPAfterResponseRule API from HAProxy — 6 operation(s) for httpafterresponserule.
@@ -1218,30 +1194,6 @@ apis:
     url: https://github.com/haproxytech/dataplaneapi
   - type: ChangeLog
     url: https://github.com/haproxytech/dataplaneapi/releases
-- aid: haproxy:haproxy-servicediscovery-api
-  name: HAProxy Service Discovery API
-  description: The ServiceDiscovery API from HAProxy — 4 operation(s) for servicediscovery.
-  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
-  baseURL: http://{haproxy-host}:5555/v3
-  tags:
-  - ServiceDiscovery
-  properties:
-  - type: OpenAPI
-    url: openapi/haproxy-servicediscovery-api-openapi.yml
-  - type: Documentation
-    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
-  - type: APIReference
-    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
-  - type: GettingStarted
-    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
-  - type: DataModel
-    url: data-model/haproxy-data-model.yml
-  - type: ErrorCatalog
-    url: errors/haproxy-problem-types.yml
-  - type: GitHubRepository
-    url: https://github.com/haproxytech/dataplaneapi
-  - type: ChangeLog
-    url: https://github.com/haproxytech/dataplaneapi/releases
 - aid: haproxy:haproxy-sites-api
   name: HAProxy Sites API
   description: >-
@@ -1686,16 +1638,64 @@ apis:
     url: https://github.com/haproxytech/dataplaneapi
   - type: ChangeLog
     url: https://github.com/haproxytech/dataplaneapi/releases
-- aid: haproxy:haproxy-userlist-api
-  name: HAProxy Userlist API
-  description: The Userlist API from HAProxy — 2 operation(s) for userlist.
-  humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
-  baseURL: http://{haproxy-host}:5555/v3
+- aid: haproxy:haproxy-health-check-api
+  name: HAProxy Health Check API
+  description: The Health Check API from HAProxy — 2 operation(s) for health check.
+  humanURL: https://www.haproxy.com/documentation/haproxy-runtime-api/
+  baseURL: http://{haproxy-host}:5555/v3/services/haproxy/runtime
   tags:
-  - Userlist
+  - Health Check
   properties:
   - type: OpenAPI
-    url: openapi/haproxy-userlist-api-openapi.yml
+    url: openapi/haproxy-health-check-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-service-discovery-api
+  name: HAProxy Service Discovery API
+  description: The Service Discovery API from HAProxy — 4 operation(s) for service discovery.
+  humanURL: https://www.haproxy.com/documentation/haproxy-runtime-api/
+  baseURL: http://{haproxy-host}:5555/v3/services/haproxy/runtime
+  tags:
+  - Service Discovery
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-service-discovery-api-openapi.yml
+  - type: Documentation
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
+  - type: APIReference
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/reference/
+  - type: GettingStarted
+    url: https://www.haproxy.com/documentation/haproxy-data-plane-api/installation/
+  - type: DataModel
+    url: data-model/haproxy-data-model.yml
+  - type: ErrorCatalog
+    url: errors/haproxy-problem-types.yml
+  - type: GitHubRepository
+    url: https://github.com/haproxytech/dataplaneapi
+  - type: ChangeLog
+    url: https://github.com/haproxytech/dataplaneapi/releases
+- aid: haproxy:haproxy-user-list-api
+  name: HAProxy User List API
+  description: The User List API from HAProxy — 2 operation(s) for user list.
+  humanURL: https://www.haproxy.com/documentation/haproxy-runtime-api/
+  baseURL: http://{haproxy-host}:5555/v3/services/haproxy/runtime
+  tags:
+  - User List
+  properties:
+  - type: OpenAPI
+    url: openapi/haproxy-user-list-api-openapi.yml
   - type: Documentation
     url: https://www.haproxy.com/documentation/haproxy-data-plane-api/
   - type: APIReference
