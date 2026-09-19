@@ -156,6 +156,8 @@ apis:
   humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
   baseURL: http://{haproxy-host}:5555/v3
   tags:
+  - ACME
+  tags_raw:
   - Acme
   properties:
   - type: OpenAPI
@@ -972,6 +974,8 @@ apis:
   humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
   baseURL: http://{haproxy-host}:5555/v3
   tags:
+  - peer
+  tags_raw:
   - Peer
   properties:
   - type: OpenAPI
@@ -1128,6 +1132,8 @@ apis:
   humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
   baseURL: http://{haproxy-host}:5555/v3
   tags:
+  - Servers
+  tags_raw:
   - Server
   properties:
   - type: OpenAPI
@@ -1596,6 +1602,8 @@ apis:
   humanURL: https://www.haproxy.com/documentation/dataplaneapi/latest/
   baseURL: http://{haproxy-host}:5555/v3
   tags:
+  - Transaction
+  tags_raw:
   - Transactions
   properties:
   - type: OpenAPI
