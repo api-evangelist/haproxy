@@ -1,0 +1,1384 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane HTTP Response Rule API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: HTTPResponseRule
+paths:
+  /services/haproxy/configuration/backends/{parent_name}/http_response_rules:
+    get:
+      description: Returns all HTTP Response Rules that are configured in specified parent.
+      operationId: getAllHTTPResponseRuleBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP Response Rules
+      tags:
+      - HTTPResponseRule
+    put:
+      description: Replaces a whole list of HTTP Response Rules with the list given in parameter
+      operationId: replaceAllHTTPResponseRuleBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All HTTP Response Rule lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP Response Rule list
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rules'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/http_response_rules:
+    get:
+      description: Returns all HTTP Response Rules that are configured in specified parent.
+      operationId: getAllHTTPResponseRuleFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP Response Rules
+      tags:
+      - HTTPResponseRule
+    put:
+      description: Replaces a whole list of HTTP Response Rules with the list given in parameter
+      operationId: replaceAllHTTPResponseRuleFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All HTTP Response Rule lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP Response Rule list
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rules'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/http_response_rules:
+    get:
+      description: Returns all HTTP Response Rules that are configured in specified parent.
+      operationId: getAllHTTPResponseRuleDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP Response Rules
+      tags:
+      - HTTPResponseRule
+    put:
+      description: Replaces a whole list of HTTP Response Rules with the list given in parameter
+      operationId: replaceAllHTTPResponseRuleDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All HTTP Response Rule lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP Response Rule list
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rules'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/http_response_rules/{index}:
+    delete:
+      description: Deletes a HTTP Response Rule configuration by it's index from the specified parent.
+      operationId: deleteHTTPResponseRuleBackend
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP Response Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+    get:
+      description: Returns one HTTP Response Rule configuration by it's index in the specified parent.
+      operationId: getHTTPResponseRuleBackend
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+    post:
+      description: Adds a new HTTP Response Rule of the specified type in the specified parent.
+      operationId: createHTTPResponseRuleBackend
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Response Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rule'
+        required: true
+    put:
+      description: Replaces a HTTP Response Rule configuration by it's index in the specified parent.
+      operationId: replaceHTTPResponseRuleBackend
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP Response Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rule'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/http_response_rules/{index}:
+    delete:
+      description: Deletes a HTTP Response Rule configuration by it's index from the specified parent.
+      operationId: deleteHTTPResponseRuleFrontend
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP Response Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+    get:
+      description: Returns one HTTP Response Rule configuration by it's index in the specified parent.
+      operationId: getHTTPResponseRuleFrontend
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+    post:
+      description: Adds a new HTTP Response Rule of the specified type in the specified parent.
+      operationId: createHTTPResponseRuleFrontend
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Response Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rule'
+        required: true
+    put:
+      description: Replaces a HTTP Response Rule configuration by it's index in the specified parent.
+      operationId: replaceHTTPResponseRuleFrontend
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP Response Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rule'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/http_response_rules/{index}:
+    delete:
+      description: Deletes a HTTP Response Rule configuration by it's index from the specified parent.
+      operationId: deleteHTTPResponseRuleDefaults
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP Response Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+    get:
+      description: Returns one HTTP Response Rule configuration by it's index in the specified parent.
+      operationId: getHTTPResponseRuleDefaults
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+    post:
+      description: Adds a new HTTP Response Rule of the specified type in the specified parent.
+      operationId: createHTTPResponseRuleDefaults
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Response Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rule'
+        required: true
+    put:
+      description: Replaces a HTTP Response Rule configuration by it's index in the specified parent.
+      operationId: replaceHTTPResponseRuleDefaults
+      parameters:
+      - description: HTTP Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP Response Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP Response Rule
+      tags:
+      - HTTPResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_response_rule'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    http_response_rules:
+      title: HTTP Response Rules Array
+      description: HAProxy HTTP response rules array (corresponds to http-response directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/http_response_rule'
+    return_header:
+      properties:
+        fmt:
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      - fmt
+      type: object
+      x-go-name: ReturnHeader
+    http_response_rule:
+      additionalProperties: false
+      description: HAProxy HTTP response rule configuration (corresponds to http-response directives)
+      example:
+        cond: unless
+        cond_test: '{ src 192.168.0.0/16 }'
+        hdr_format: '%T'
+        hdr_name: X-Haproxy-Current-Date
+        index: 0
+        type: add-header
+      properties:
+        acl_file:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - add-acl
+              - del-acl
+        acl_keyfmt:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - add-acl
+              - del-acl
+          x-display-name: ACK Key Format
+        bandwidth_limit_limit:
+          type: string
+          x-dependency:
+            type:
+              value: set-bandwidth-limit
+          x-display-name: Standard HAProxy expression
+        bandwidth_limit_name:
+          type: string
+          x-dependency:
+            type:
+              value: set-bandwidth-limit
+          x-display-name: Bandwidth limit name
+        bandwidth_limit_period:
+          type: string
+          x-dependency:
+            type:
+              value: set-bandwidth-limit
+          x-display-name: Standard HAProxy expression
+        cache_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: cache-store
+          x-display-name: Cache Name
+        capture_id:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              required: true
+              value: capture
+          x-display-name: Capture SlotID
+        capture_sample:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: capture
+          x-display-name: Capture Sample
+        cond:
+          enum:
+          - if
+          - unless
+          type: string
+          x-display-name: Condition
+        cond_test:
+          type: string
+          x-dependency:
+            cond:
+              required: true
+          x-display-name: Condition Test
+          x-dynamic-enum:
+            freeFormat: true
+            operation: getACLs
+            property: acl_name
+        deny_status:
+          maximum: 599
+          minimum: 200
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              value: deny
+        expr:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - pause
+              - set-fc-mark
+              - set-fc-tos
+          x-display-name: Standard HAProxy expression
+        hdr_expr:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - add-headers-bin
+              - del-headers-bin
+              - set-headers-bin
+          x-display-name: Binary Headers Expression
+        hdr_format:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - replace-header
+              - replace-value
+              - set-header
+              - add-header
+          x-display-name: Header Format
+        hdr_match:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - replace-header
+              - replace-value
+          x-display-name: Header Match
+        hdr_method:
+          type: string
+          x-dependency:
+            type:
+              value:
+              - del-header
+              - del-headers-bin
+          x-display-name: Header Match Method
+        hdr_name:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - add-header
+              - replace-header
+              - del-header
+              - set-header
+              - replace-value
+          x-display-name: Header Name
+        hdr_prefix:
+          type: string
+          x-dependency:
+            type:
+              value:
+              - add-headers-bin
+              - set-headers-bin
+          x-display-name: Binary Headers Prefix
+        log_level:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          - silent
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-log-level
+        log_profile:
+          type: string
+          x-dependency:
+            type:
+              value: do-log
+          x-display-name: Log Profile
+        lua_action:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: lua
+        lua_params:
+          type: string
+          x-dependency:
+            type:
+              value: lua
+        map_file:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - set-map
+              - del-map
+        map_keyfmt:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - set-map
+              - del-map
+          x-display-name: Map Key Format
+        map_valuefmt:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-map
+          x-display-name: Map Value Format
+        mark_value:
+          pattern: ^(0x[0-9A-Fa-f]+|[0-9]+)$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-mark
+          x-display-name: Mark Value
+        metadata:
+          additionalProperties:
+            type: object
+        nice_value:
+          maximum: 1024
+          minimum: -1024
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value: set-nice
+          x-display-name: Nice Value
+        redir_code:
+          enum:
+          - 301
+          - 302
+          - 303
+          - 307
+          - 308
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              value: redirect
+          x-display-name: Redirect Code
+        redir_option:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: redirect
+          x-display-name: Redirect Option
+        redir_type:
+          enum:
+          - location
+          - prefix
+          - scheme
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: redirect
+          x-display-name: Redirect Type
+        redir_value:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: redirect
+          x-display-name: Redirect Value
+        return_content:
+          type: string
+          x-dependency:
+            return_content_format:
+              required: true
+              value:
+              - errofile
+              - errorfiles
+              - file
+              - lf-file
+              - string
+              - lf-string
+        return_content_format:
+          enum:
+          - default-errorfiles
+          - errorfile
+          - errorfiles
+          - file
+          - lf-file
+          - string
+          - lf-string
+          type: string
+          x-dependency:
+            type:
+              value:
+              - deny
+              - return
+        return_content_type:
+          type:
+          - string
+          - 'null'
+          x-dependency:
+            type:
+              value:
+              - deny
+              - return
+          x-display-name: Return content type
+        return_hdrs:
+          items:
+            $ref: '#/components/schemas/return_header'
+          type: array
+          x-dependency:
+            return_content_format:
+              value:
+              - file
+              - lf-file
+              - string
+              - lf-string
+          x-go-name: ReturnHeaders
+          x-omitempty: true
+        return_status_code:
+          maximum: 599
+          minimum: 200
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              value: return
+          x-display-name: Return Error Code
+        rst_ttl:
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - silent-drop
+          x-display-name: RST TTL
+        sc_expr:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-set-gpt0
+          x-display-name: ScSet Expression Value
+        sc_id:
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-inc-gpc
+              - sc-inc-gpc0
+              - sc-inc-gpc1
+              - sc-set-gpt
+              - sc-set-gpt0
+        sc_idx:
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-inc-gpc
+              - sc-set-gpt
+        sc_int:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-set-gpt0
+          x-display-name: ScSet Integer Value
+        spoe_engine:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: send-spoe-group
+        spoe_group:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: send-spoe-group
+        status:
+          maximum: 999
+          minimum: 100
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value: set-status
+        status_reason:
+          type: string
+          x-dependency:
+            type:
+              value: set-status
+        strict_mode:
+          enum:
+          - 'on'
+          - 'off'
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: strict-mode
+        timeout:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-timeout
+        timeout_type:
+          enum:
+          - client
+          - connect
+          - queue
+          - server
+          - tarpit
+          - tunnel
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-timeout
+        tos_value:
+          pattern: ^(0x[0-9A-Fa-f]+|[0-9]+)$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-tos
+          x-display-name: Tos Value
+        track_sc_key:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: track-sc
+          x-display-name: track-sc Key
+        track_sc_stick_counter:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              value: track-sc
+          x-display-name: track-sc StickCounter
+        track_sc_table:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              value: track-sc
+          x-display-name: track-sc Table
+        type:
+          enum:
+          - add-acl
+          - add-header
+          - add-headers-bin
+          - allow
+          - cache-store
+          - capture
+          - del-acl
+          - del-header
+          - del-headers-bin
+          - del-map
+          - deny
+          - lua
+          - pause
+          - redirect
+          - replace-header
+          - replace-value
+          - return
+          - sc-add-gpc
+          - sc-inc-gpc
+          - sc-inc-gpc0
+          - sc-inc-gpc1
+          - sc-set-gpt
+          - sc-set-gpt0
+          - send-spoe-group
+          - set-fc-mark
+          - set-fc-tos
+          - set-header
+          - set-headers-bin
+          - set-log-level
+          - set-map
+          - set-mark
+          - set-nice
+          - set-status
+          - set-timeout
+          - set-tos
+          - set-var
+          - set-var-fmt
+          - silent-drop
+          - strict-mode
+          - track-sc
+          - unset-var
+          - wait-for-body
+          - set-bandwidth-limit
+          - do-log
+          type: string
+        var_expr:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-var
+          x-display-name: Var Expression
+        var_format:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-var-fmt
+          x-display-name: Var Format
+        var_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - set-var
+              - set-var-fmt
+              - unset-var
+        var_scope:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - set-var
+              - set-var-fmt
+              - unset-var
+        wait_at_least:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              value: wait-for-body
+          x-size: true
+        wait_time:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-dependency:
+            type:
+              required: true
+              value: wait-for-body
+          x-duration: true
+      required:
+      - type
+      title: HTTP Response Rule
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

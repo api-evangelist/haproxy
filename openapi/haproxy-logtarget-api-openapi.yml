@@ -1,0 +1,1573 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Log Target API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: LogTarget
+paths:
+  /services/haproxy/configuration/global/log_targets:
+    get:
+      description: Returns all Log Targets that are configured in specified parent.
+      operationId: getAllLogTargetGlobal
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Log Targets
+      tags:
+      - LogTarget
+    put:
+      description: Replaces a whole list of Log Targets with the list given in parameter
+      operationId: replaceAllLogTargetGlobal
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Log Target lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target list
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_targets'
+        required: true
+  /services/haproxy/configuration/global/log_targets/{index}:
+    delete:
+      description: Deletes a Log Target configuration by it's index from the specified parent.
+      operationId: deleteLogTargetGlobal
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Log Target deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Log Target
+      tags:
+      - LogTarget
+    get:
+      description: Returns one Log Target configuration by it's index in the specified parent.
+      operationId: getLogTargetGlobal
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Log Target
+      tags:
+      - LogTarget
+    post:
+      description: Adds a new Log Target of the specified type in the specified parent.
+      operationId: createLogTargetGlobal
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Log Target created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+    put:
+      description: Replaces a Log Target configuration by it's index in the specified parent.
+      operationId: replaceLogTargetGlobal
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Log Target replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/log_targets:
+    get:
+      description: Returns all Log Targets that are configured in specified parent.
+      operationId: getAllLogTargetBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Log Targets
+      tags:
+      - LogTarget
+    put:
+      description: Replaces a whole list of Log Targets with the list given in parameter
+      operationId: replaceAllLogTargetBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Log Target lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target list
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_targets'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/log_targets:
+    get:
+      description: Returns all Log Targets that are configured in specified parent.
+      operationId: getAllLogTargetFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Log Targets
+      tags:
+      - LogTarget
+    put:
+      description: Replaces a whole list of Log Targets with the list given in parameter
+      operationId: replaceAllLogTargetFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Log Target lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target list
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_targets'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/log_targets:
+    get:
+      description: Returns all Log Targets that are configured in specified parent.
+      operationId: getAllLogTargetDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Log Targets
+      tags:
+      - LogTarget
+    put:
+      description: Replaces a whole list of Log Targets with the list given in parameter
+      operationId: replaceAllLogTargetDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Log Target lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target list
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_targets'
+        required: true
+  /services/haproxy/configuration/peers/{parent_name}/log_targets:
+    get:
+      description: Returns all Log Targets that are configured in specified parent.
+      operationId: getAllLogTargetPeer
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Log Targets
+      tags:
+      - LogTarget
+    put:
+      description: Replaces a whole list of Log Targets with the list given in parameter
+      operationId: replaceAllLogTargetPeer
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Log Target lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target list
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_targets'
+        required: true
+  /services/haproxy/configuration/log_forwards/{parent_name}/log_targets:
+    get:
+      description: Returns all Log Targets that are configured in specified parent.
+      operationId: getAllLogTargetLogForward
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Log Targets
+      tags:
+      - LogTarget
+    put:
+      description: Replaces a whole list of Log Targets with the list given in parameter
+      operationId: replaceAllLogTargetLogForward
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Log Target lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_targets'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target list
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_targets'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/log_targets/{index}:
+    delete:
+      description: Deletes a Log Target configuration by it's index from the specified parent.
+      operationId: deleteLogTargetBackend
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Log Target deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Log Target
+      tags:
+      - LogTarget
+    get:
+      description: Returns one Log Target configuration by it's index in the specified parent.
+      operationId: getLogTargetBackend
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Log Target
+      tags:
+      - LogTarget
+    post:
+      description: Adds a new Log Target of the specified type in the specified parent.
+      operationId: createLogTargetBackend
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Log Target created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+    put:
+      description: Replaces a Log Target configuration by it's index in the specified parent.
+      operationId: replaceLogTargetBackend
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Log Target replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/log_targets/{index}:
+    delete:
+      description: Deletes a Log Target configuration by it's index from the specified parent.
+      operationId: deleteLogTargetFrontend
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Log Target deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Log Target
+      tags:
+      - LogTarget
+    get:
+      description: Returns one Log Target configuration by it's index in the specified parent.
+      operationId: getLogTargetFrontend
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Log Target
+      tags:
+      - LogTarget
+    post:
+      description: Adds a new Log Target of the specified type in the specified parent.
+      operationId: createLogTargetFrontend
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Log Target created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+    put:
+      description: Replaces a Log Target configuration by it's index in the specified parent.
+      operationId: replaceLogTargetFrontend
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Log Target replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/log_targets/{index}:
+    delete:
+      description: Deletes a Log Target configuration by it's index from the specified parent.
+      operationId: deleteLogTargetDefaults
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Log Target deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Log Target
+      tags:
+      - LogTarget
+    get:
+      description: Returns one Log Target configuration by it's index in the specified parent.
+      operationId: getLogTargetDefaults
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Log Target
+      tags:
+      - LogTarget
+    post:
+      description: Adds a new Log Target of the specified type in the specified parent.
+      operationId: createLogTargetDefaults
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Log Target created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+    put:
+      description: Replaces a Log Target configuration by it's index in the specified parent.
+      operationId: replaceLogTargetDefaults
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Log Target replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+  /services/haproxy/configuration/peers/{parent_name}/log_targets/{index}:
+    delete:
+      description: Deletes a Log Target configuration by it's index from the specified parent.
+      operationId: deleteLogTargetPeer
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Log Target deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Log Target
+      tags:
+      - LogTarget
+    get:
+      description: Returns one Log Target configuration by it's index in the specified parent.
+      operationId: getLogTargetPeer
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Log Target
+      tags:
+      - LogTarget
+    post:
+      description: Adds a new Log Target of the specified type in the specified parent.
+      operationId: createLogTargetPeer
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Log Target created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+    put:
+      description: Replaces a Log Target configuration by it's index in the specified parent.
+      operationId: replaceLogTargetPeer
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Log Target replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+  /services/haproxy/configuration/log_forwards/{parent_name}/log_targets/{index}:
+    delete:
+      description: Deletes a Log Target configuration by it's index from the specified parent.
+      operationId: deleteLogTargetLogForward
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Log Target deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Log Target
+      tags:
+      - LogTarget
+    get:
+      description: Returns one Log Target configuration by it's index in the specified parent.
+      operationId: getLogTargetLogForward
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Log Target
+      tags:
+      - LogTarget
+    post:
+      description: Adds a new Log Target of the specified type in the specified parent.
+      operationId: createLogTargetLogForward
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Log Target created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+    put:
+      description: Replaces a Log Target configuration by it's index in the specified parent.
+      operationId: replaceLogTargetLogForward
+      parameters:
+      - description: Log Target Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Log Target replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Log Target
+      tags:
+      - LogTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_target'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    log_target:
+      additionalProperties: false
+      description: Per-instance logging of events and traffic.
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        facility:
+          enum:
+          - kern
+          - user
+          - mail
+          - daemon
+          - auth
+          - syslog
+          - lpr
+          - news
+          - uucp
+          - cron
+          - auth2
+          - ftp
+          - ntp
+          - audit
+          - alert
+          - cron2
+          - local0
+          - local1
+          - local2
+          - local3
+          - local4
+          - local5
+          - local6
+          - local7
+          type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        format:
+          enum:
+          - local
+          - rfc3164
+          - rfc5424
+          - priority
+          - short
+          - timed
+          - iso
+          - raw
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        global:
+          type: boolean
+        length:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        level:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        metadata:
+          additionalProperties:
+            type: object
+        minlevel:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            level:
+              required: false
+            nolog:
+              value: false
+        nolog:
+          type: boolean
+        profile:
+          type: string
+        sample_range:
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        sample_size:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+            sample_range:
+              required: true
+      title: Log Target
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    log_targets:
+      title: Log Target Array
+      description: HAProxy log target array (corresponds to log directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/log_target'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

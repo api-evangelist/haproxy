@@ -1,0 +1,307 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane ACL Runtime API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: ACL Runtime
+paths:
+  /services/haproxy/runtime/acls:
+    get:
+      description: Returns all ACL files using the runtime socket.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acl_files'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all ACL files
+      tags:
+      - ACL Runtime
+      operationId: getServicesHaproxyRuntimeAcls
+      x-operation-id-source: derived
+  /services/haproxy/runtime/acls/{id}:
+    get:
+      description: Returns an ACL file by id using the runtime socket.
+      parameters:
+      - description: ACL file entry ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acl_file'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an ACL file
+      tags:
+      - ACL Runtime
+      operationId: getServicesHaproxyRuntimeAclsById
+      x-operation-id-source: derived
+  /services/haproxy/runtime/acls/{parent_name}/entries:
+    get:
+      description: Returns an ACL runtime setting using the runtime socket.
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acl_files_entries'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an ACL entries
+      tags:
+      - ACL Runtime
+      operationId: getServicesHaproxyRuntimeAclsByParentNameEntries
+      x-operation-id-source: derived
+    post:
+      description: Adds an entry into the ACL file using the runtime socket.
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      responses:
+        '201':
+          description: ACL entry created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acl_file_entry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add entry to an ACL file
+      tags:
+      - ACL Runtime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/acl_file_entry'
+        required: true
+      operationId: postServicesHaproxyRuntimeAclsByParentNameEntries
+      x-operation-id-source: derived
+    put:
+      description: Adds a new ACL payload.
+      operationId: addPayloadRuntimeACL
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      responses:
+        '201':
+          description: ACL payload added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acl_files_entries'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new ACL payload
+      tags:
+      - ACL Runtime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/acl_files_entries'
+        required: true
+  /services/haproxy/runtime/acls/{parent_name}/entries/{id}:
+    delete:
+      description: Deletes the entry from the ACL by its value using the runtime socket.
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: File entry ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete an ACL entry
+      tags:
+      - ACL Runtime
+      operationId: deleteServicesHaproxyRuntimeAclsByParentNameEntriesById
+      x-operation-id-source: derived
+    get:
+      description: Returns the ACL entry by its ID using the runtime socket.
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: File entry ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acl_file_entry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an ACL entry
+      tags:
+      - ACL Runtime
+      operationId: getServicesHaproxyRuntimeAclsByParentNameEntriesById
+      x-operation-id-source: derived
+components:
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    acl_files_entries:
+      title: ACL Files Entries
+      description: Array of entries of one runtime acl file
+      type: array
+      items:
+        $ref: '#/components/schemas/acl_file_entry'
+    acl_file:
+      description: ACL File
+      properties:
+        description:
+          type: string
+        id:
+          type: string
+        storage_name:
+          type: string
+      title: ACL File
+      type: object
+    acl_files:
+      title: ACL Files Array
+      description: Array of runtime acl files
+      type: array
+      items:
+        $ref: '#/components/schemas/acl_file'
+    acl_file_entry:
+      description: One ACL File Entry
+      properties:
+        id:
+          readOnly: true
+          type: string
+        value:
+          type: string
+      title: One ACL File Entry
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

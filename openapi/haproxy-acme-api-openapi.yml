@@ -1,0 +1,400 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Acme API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Acme
+paths:
+  /services/haproxy/configuration/acme:
+    get:
+      description: Returns an array of all the configured ACME providers
+      operationId: getAcmeProviders
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acme_providers'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return all the ACME providers
+      tags:
+      - Acme
+    post:
+      description: Creates a new acme section
+      operationId: createAcmeProvider
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Log Profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acme_provider'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acme_provider'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Acme provider
+      tags:
+      - Acme
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/acme_provider'
+        required: true
+  /services/haproxy/configuration/acme/{name}:
+    delete:
+      description: Deletes an acme section from the configuration
+      operationId: deleteAcmeProvider
+      parameters:
+      - description: acme section name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: acme provider deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete an ACME provider
+      tags:
+      - Acme
+    get:
+      description: Find an acme section by its name
+      operationId: getAcmeProvider
+      parameters:
+      - description: acme section name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acme_provider'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Find an ACME provider
+      tags:
+      - Acme
+    put:
+      description: Modifies a acme_provider's configuration by its name
+      operationId: editAcmeProvider
+      parameters:
+      - description: acme section name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: acme_provider configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acme_provider'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acme_provider'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Modify an ACME provider
+      tags:
+      - Acme
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/acme_provider'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    acme_providers:
+      description: List of ACME sections.
+      type: array
+      items:
+        $ref: '#/components/schemas/acme_provider'
+        x-omitempty: true
+    acme_provider:
+      additionalProperties: false
+      description: Define an ACME provider to generate certificates automatically
+      properties:
+        account_key:
+          description: Path where the the ACME account key is stored
+          type: string
+        acme_provider:
+          description: DNS provider for the dns-01 challenge
+          type: string
+        acme_vars:
+          additionalProperties:
+            type: string
+          description: List of variables passed to the dns-01 provider (typically API keys)
+        bits:
+          description: Number of bits used when generating an RSA certificate. Ignored when keytype is ECDSA (curves is used instead).
+          type:
+          - integer
+          - 'null'
+          x-omitempty: true
+        challenge:
+          description: ACME challenge type.
+          enum:
+          - http-01
+          - dns-01
+          - dns-persist-01
+          type: string
+        challenge_ready:
+          description: 'How to wait for the DNS propagation: either wait for a CLI event on
+
+            the runtime socket (useful with dataplaneapi), or let HAProxy query
+
+            the DNS TXT record by itself using the default resolvers, or both,
+
+            or none at all.
+
+            '
+          items:
+            enum:
+            - cli
+            - dns
+            - none
+            type: string
+          maxItems: 2
+          minItems: 1
+          type: array
+          uniqueItems: true
+          x-omitempty: true
+        contact:
+          description: Contact email for the ACME account
+          type: string
+        curves:
+          description: Curves used with the ECDSA key type
+          type: string
+        directory:
+          description: 'URL to the ACME provider''s directory. For example:
+
+            https://acme-staging-v02.api.letsencrypt.org/directory
+
+            '
+          pattern: ^https://[^\s]+$
+          type: string
+        dns_delay:
+          description: Delay before the first DNS resolution attempt and between retries.
+          type:
+          - integer
+          - 'null'
+          x-default-unit: s
+          x-duration: true
+        dns_timeout:
+          description: Timeout before DNS propagation check fails when using 'dns' in 'challenge_ready'.
+          type:
+          - integer
+          - 'null'
+          x-default-unit: s
+          x-duration: true
+        keytype:
+          description: Type of key to generate
+          enum:
+          - RSA
+          - ECDSA
+          type: string
+        map:
+          description: The map which will be used to store the ACME token (key) and thumbprint
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          description: ACME provider's name
+          type: string
+        profile:
+          description: 'Request a specific certificate profile from the CA by including a ''profile''
+
+            field in the newOrder request (draft-ietf-acme-profiles). Profile names
+
+            are CA-specific short identifiers (e.g. ''classic'', ''shortlived'').
+
+            '
+          type: string
+        reuse_key:
+          description: Try to reuse the private key instead of generating a new one.
+          enum:
+          - enabled
+          - disabled
+          type: string
+      required:
+      - name
+      - directory
+      title: ACME Provider
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

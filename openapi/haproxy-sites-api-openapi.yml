@@ -1,0 +1,1606 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Sites API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Sites
+  description: 'Managing sites (simple configuration mode). Sites are considered as one frontend with multiple backends
+
+    connected to it via default_backend or use-backend directives.'
+paths:
+  /services/haproxy/sites:
+    get:
+      description: Returns an array of all configured sites.
+      operationId: getSites
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sites'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of sites
+      tags:
+      - Sites
+    post:
+      description: Adds a new site to the configuration file.
+      operationId: createSite
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Site created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/site'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/site'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a site
+      tags:
+      - Sites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/site'
+        required: true
+  /services/haproxy/sites/{name}:
+    delete:
+      description: Deletes a site from the configuration by it's name.
+      operationId: deleteSite
+      parameters:
+      - description: Site frontend name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Site deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a site
+      tags:
+      - Sites
+    get:
+      description: Returns one site configuration by it's name.
+      operationId: getSite
+      parameters:
+      - description: Site frontend name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/site'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a site
+      tags:
+      - Sites
+    put:
+      description: Replaces a site configuration by it's name.
+      operationId: replaceSite
+      parameters:
+      - description: Site frontend name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Site replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/site'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/site'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a site
+      tags:
+      - Sites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/site'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    bind:
+      allOf:
+      - $ref: '#/components/schemas/bind_params'
+      - additionalProperties: false
+        properties:
+          address:
+            example: 127.0.0.1
+            pattern: ^[^\s]+$
+            type: string
+          metadata:
+            additionalProperties:
+              type: object
+          name:
+            pattern: ^[^\s]+$
+            type: string
+          port:
+            example: 80
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+          port-range-end:
+            example: 81
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+        required:
+        - name
+        type: object
+      description: HAProxy frontend bind configuration
+      title: Bind
+    sites:
+      title: Sites
+      description: 'Sites array. Sites are considered as one service and all farms connected to that service.
+
+        Farms are connected to service using use-backend and default_backend directives. Sites let you
+
+        configure simple HAProxy configurations, for more advanced options use /haproxy/configuration
+
+        endpoints.
+
+        '
+      type: array
+      items:
+        $ref: '#/components/schemas/site'
+    site:
+      additionalProperties: false
+      description: 'Site configuration. Sites are considered as one service and all farms connected to that service.
+
+        Farms are connected to service using use-backend and default_backend directives. Sites let you
+
+        configure simple HAProxy configurations, for more advanced options use /haproxy/configuration
+
+        endpoints.
+
+        '
+      example:
+        farms:
+        - balance:
+            algorithm: roundrobin
+          mode: http
+          name: www_backend
+          servers:
+          - address: 127.0.1.1
+            name: www_server
+            port: 4567
+          - address: 127.0.1.2
+            name: www_server_new
+            port: 4567
+          use_as: default
+        name: test_site
+        service:
+          http_connection_mode: httpclose
+          maxconn: 2000
+          mode: http
+      properties:
+        farms:
+          items:
+            properties:
+              balance:
+                $ref: '#/components/schemas/balance'
+              cond:
+                enum:
+                - if
+                - unless
+                type: string
+                x-dependency:
+                  use_as:
+                    required: true
+                    value: conditional
+                x-display-name: Condition
+              cond_test:
+                type: string
+                x-dependency:
+                  use_as:
+                    required: true
+                    value: conditional
+                x-display-name: Condition Test
+              forwardfor:
+                $ref: '#/components/schemas/forwardfor'
+              mode:
+                enum:
+                - http
+                - tcp
+                type: string
+              name:
+                pattern: ^[A-Za-z0-9-_.:]+$
+                type: string
+              servers:
+                items:
+                  $ref: '#/components/schemas/server'
+                type: array
+                x-omitempty: true
+              use_as:
+                enum:
+                - default
+                - conditional
+                type: string
+            required:
+            - name
+            - use_as
+            type: object
+            x-go-name: SiteFarm
+          type: array
+          x-omitempty: true
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+        service:
+          properties:
+            http_connection_mode:
+              enum:
+              - http-tunnel
+              - httpclose
+              - forced-close
+              - http-server-close
+              - http-keep-alive
+              type: string
+              x-dependency:
+                mode:
+                  value: http
+              x-display-name: HTTP Connection Mode
+            listeners:
+              items:
+                $ref: '#/components/schemas/bind'
+              type: array
+              x-omitempty: true
+            maxconn:
+              type:
+              - integer
+              - 'null'
+              x-display-name: Max Connections
+            mode:
+              enum:
+              - http
+              - tcp
+              type: string
+          type: object
+      required:
+      - name
+      title: Site
+      type: object
+    server:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/server_params'
+      - properties:
+          address:
+            pattern: ^[^\s]+$
+            type: string
+          id:
+            type:
+            - integer
+            - 'null'
+          metadata:
+            additionalProperties:
+              type: object
+          name:
+            pattern: ^[^\s]+$
+            type: string
+          port:
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+        required:
+        - name
+        - address
+        type: object
+      description: HAProxy backend server configuration
+      example:
+        address: 10.1.1.1
+        name: www
+        port: 8080
+      title: Server
+    forwardfor:
+      properties:
+        enabled:
+          enum:
+          - enabled
+          type: string
+        except:
+          pattern: ^[^\s]+$
+          type: string
+        header:
+          pattern: ^[^\s]+$
+          type: string
+        ifnone:
+          type: boolean
+      required:
+      - enabled
+      type: object
+      x-display-name: ForwardFor
+    balance:
+      properties:
+        algorithm:
+          enum:
+          - first
+          - hash
+          - hdr
+          - leastconn
+          - random
+          - rdp-cookie
+          - roundrobin
+          - source
+          - static-rr
+          - uri
+          - url_param
+          type: string
+        hash_expression:
+          type: string
+          x-dependency:
+            algorithm:
+              value: hash
+          x-display-name: Hash Expression
+        hdr_name:
+          type: string
+          x-dependency:
+            algorithm:
+              required: true
+              value: hdr
+          x-display-name: Header Name
+        hdr_use_domain_only:
+          type: boolean
+          x-dependency:
+            algorithm:
+              value: hdr
+          x-display-name: Header Use Domain Only
+        random_draws:
+          type: integer
+          x-dependency:
+            algorithm:
+              value: random
+          x-display-name: Random Draws
+        rdp_cookie_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            algorithm:
+              value: rdp-cookie
+          x-display-name: Rdp Cookie Name
+        uri_depth:
+          type: integer
+          x-dependency:
+            algorithm:
+              value: uri
+          x-display-name: Uri Depth
+        uri_len:
+          type: integer
+          x-dependency:
+            algorithm:
+              value: uri
+          x-display-name: Uri Len
+        uri_path_only:
+          type: boolean
+          x-dependency:
+            algorithm:
+              value: uri
+          x-display-name: Uri Path Only
+        uri_whole:
+          type: boolean
+          x-dependency:
+            algorithm:
+              value: uri
+          x-display-name: Uri Whole
+        url_param:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            algorithm:
+              required: true
+              value: url_param
+          x-display-name: Url Param
+        url_param_check_post:
+          type: integer
+          x-dependency:
+            algorithm:
+              value: url_param
+          x-display-name: Url Param Check Post
+        url_param_max_wait:
+          type: integer
+          x-dependency:
+            algorithm:
+              value: url_param
+          x-display-name: Url Param Max Weight
+      required:
+      - algorithm
+      type: object
+    server_params:
+      properties:
+        agent-addr:
+          pattern: ^[^\s]+$
+          type: string
+        agent-check:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            agent-port:
+              required: true
+        agent-inter:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        agent-port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        agent-send:
+          type: string
+        allow_0rtt:
+          type: boolean
+        alpn:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: ALPN Protocols
+        backup:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        cc:
+          type: string
+          x-display-name: TCP Congestion Control Algorithm
+        check:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check-pool-conn-name:
+          pattern: ^[^\s]+$
+          type: string
+        check-reuse-pool:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check-send-proxy:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check-sni:
+          pattern: ^[^\s]+$
+          type: string
+        check-ssl:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check_alpn:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: Protocols
+        check_proto:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: Name
+        check_sni_auto:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check_via_socks4:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        ciphers:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        ciphersuites:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        client_sigalgs:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        cookie:
+          pattern: ^[^\s]+$
+          type: string
+        crl_file:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        curves:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        downinter:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        error_limit:
+          type: integer
+          x-display-name: Error count
+        fall:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Nr. of consecutive failed checks
+        fastinter:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        force_sslv3:
+          description: This field is deprecated in favor of sslv3, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        force_tlsv10:
+          description: This field is deprecated in favor of tlsv10, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        force_tlsv11:
+          description: This field is deprecated in favor of tlsv11, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        force_tlsv12:
+          description: This field is deprecated in favor of tlsv12, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        force_tlsv13:
+          description: This field is deprecated in favor of tlsv13, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        guid:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+        hash_key:
+          pattern: ^[^\s]+$
+          type: string
+        health_check_address:
+          pattern: ^[^\s]+$
+          type: string
+        health_check_port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        idle_ping:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        init-addr:
+          pattern: ^[^\s]+$
+          type:
+          - string
+          - 'null'
+        init-state:
+          enum:
+          - fully-up
+          - up
+          - down
+          - fully-down
+          type: string
+        inter:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        ktls:
+          enum:
+          - 'on'
+          - 'off'
+          type: string
+          x-display-name: 'Enables or disables ktls for those sockets. If enabled, kTLS will be used if the kernel supports it and the cipher is compatible.
+
+            This is only available on Linux kernel 4.17 and above.
+
+            EXPERIMENTAL OPTION.'
+        log-bufsize:
+          type:
+          - integer
+          - 'null'
+        log_proto:
+          enum:
+          - legacy
+          - octet-count
+          type: string
+        maintenance:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        max_reuse:
+          type:
+          - integer
+          - 'null'
+        maxconn:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Max Concurrent Connections
+        maxqueue:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Max Number of Connections
+        minconn:
+          type:
+          - integer
+          - 'null'
+        namespace:
+          type: string
+        no_sslv3:
+          description: This field is deprecated in favor of sslv3, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        no_tlsv10:
+          description: This field is deprecated in favor of tlsv10, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        no_tlsv11:
+          description: This field is deprecated in favor of tlsv11, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        no_tlsv12:
+          description: This field is deprecated in favor of tlsv12, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        no_tlsv13:
+          description: This field is deprecated in favor of force_tlsv13, and will be removed in a future release
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-deprecated: true
+        no_verifyhost:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        npn:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        observe:
+          enum:
+          - layer4
+          - layer7
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        on-error:
+          enum:
+          - fastinter
+          - fail-check
+          - sudden-death
+          - mark-down
+          type: string
+        on-marked-down:
+          enum:
+          - shutdown-sessions
+          type: string
+        on-marked-up:
+          enum:
+          - shutdown-backup-sessions
+          type: string
+        pool_conn_name:
+          pattern: ^[^\s]+$
+          type: string
+        pool_low_conn:
+          type:
+          - integer
+          - 'null'
+        pool_max_conn:
+          type:
+          - integer
+          - 'null'
+        pool_purge_delay:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        proto:
+          pattern: ^[^\s]+$
+          type: string
+        proxy-v2-options:
+          items:
+            enum:
+            - authority
+            - cert-cn
+            - cert-key
+            - cert-sig
+            - crc32c
+            - ssl
+            - ssl-cipher
+            - unique-id
+            type: string
+          type: array
+          x-omitempty: true
+        quic-cc-algo:
+          enum:
+          - cubic
+          - newreno
+          - bbr
+          - nocc
+          type: string
+        quic_cc_algo_max_window:
+          maximum: 4194304
+          minimum: 10
+          type:
+          - integer
+          - 'null'
+          x-default-unit: k
+          x-dependency:
+            quic-cc-algo: null
+          x-size: true
+        redir:
+          type: string
+          x-display-name: Prefix
+        renegotiate:
+          description: Toggles the secure renegotiation mechanism for an SSL backend.
+          enum:
+          - enabled
+          - disabled
+          type: string
+        resolve-net:
+          pattern: ^([A-Za-z0-9.:/]+)(,[A-Za-z0-9.:/]+)*$
+          type: string
+        resolve-prefer:
+          enum:
+          - ipv4
+          - ipv6
+          type: string
+        resolve_opts:
+          pattern: ^(allow-dup-ip|ignore-weight|prevent-dup-ip)(,(allow-dup-ip|ignore-weight|prevent-dup-ip))*$
+          type: string
+        resolvers:
+          pattern: ^[^\s]+$
+          type: string
+          x-dynamic-enum:
+            operation: getResolvers
+            property: name
+        rise:
+          type:
+          - integer
+          - 'null'
+        send-proxy:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        send-proxy-v2:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        send_proxy_v2_ssl:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        send_proxy_v2_ssl_cn:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        set-proxy-v2-tlv-fmt:
+          properties:
+            id:
+              type: string
+            value:
+              type: string
+          required:
+          - id
+          - value
+          type: object
+        shard:
+          type: integer
+        sigalgs:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        slowstart:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        sni:
+          pattern: ^[^\s]+$
+          type: string
+        sni_auto:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        socks4:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            check-via-socks4:
+              required: true
+        source:
+          type: string
+        ssl:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        ssl_cafile:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+          x-display-name: SSL CA File
+        ssl_certificate:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        ssl_max_ver:
+          enum:
+          - SSLv3
+          - TLSv1.0
+          - TLSv1.1
+          - TLSv1.2
+          - TLSv1.3
+          type: string
+        ssl_min_ver:
+          enum:
+          - SSLv3
+          - TLSv1.0
+          - TLSv1.1
+          - TLSv1.2
+          - TLSv1.3
+          type: string
+        ssl_reuse:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        sslv3:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        stick:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        strict-maxconn:
+          type: boolean
+        tcp_md5sig:
+          pattern: ^[^\s]+$
+          type: string
+        tcp_ut:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        tfo:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        tls_tickets:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        tlsv10:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        tlsv11:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        tlsv12:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        tlsv13:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        track:
+          type: string
+        verify:
+          enum:
+          - none
+          - required
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        verifyhost:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+            verify:
+              value: required
+        weight:
+          type:
+          - integer
+          - 'null'
+        ws:
+          enum:
+          - auto
+          - h1
+          - h2
+          type: string
+          x-display-name: Relaying websocket stream protocol
+      type: object
+    bind_params:
+      additionalProperties: false
+      properties:
+        accept_netscaler_cip:
+          type: integer
+        accept_proxy:
+          type: boolean
+        allow_0rtt:
+          type: boolean
+        alpn:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: ALPN Protocols
+        backlog:
+          type: string
+        ca_ignore_err:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ca_sign_file:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ca_sign_pass:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+          x-display-name: Passphrase
+        ca_verify_file:
+          type: string
+          x-dependency:
+            ca_file:
+              value: true
+        cc:
+          type: string
+          x-display-name: TCP Congestion Control Algorithm
+        ciphers:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ciphersuites:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        client_sigalgs:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        crl_file:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        crt_ignore_err:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        crt_list:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        curves:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        default_crt_list:
+          items:
+            pattern: ^[^\s]+$
+            type: string
+          type: array
+          x-omitempty: true
+        defer_accept:
+          type: boolean
+        ecdhe:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        expose_fd_listeners:
+          type: boolean
+        force_sslv3:
+          description: This field is deprecated in favor of sslv3, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        force_strict_sni:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        force_tlsv10:
+          description: This field is deprecated in favor of tlsv10, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        force_tlsv11:
+          description: This field is deprecated in favor of tlsv11, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        force_tlsv12:
+          description: This field is deprecated in favor of tlsv12, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        force_tlsv13:
+          description: This field is deprecated in favor of tlsv13, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        generate_certificates:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+        gid:
+          type: integer
+          x-display-name: Group ID
+        group:
+          type: string
+          x-display-name: Group name
+        guid_prefix:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+        id:
+          type: string
+          x-display-name: Socket ID
+        idle_ping:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        interface:
+          type: string
+        ktls:
+          enum:
+          - 'on'
+          - 'off'
+          type: string
+          x-display-name: 'Enables or disables ktls for those sockets. If enabled, kTLS will be used if the kernel supports it and the cipher is compatible.
+
+            This is only available on Linux kernel 4.17 and above.
+
+            EXPERIMENTAL OPTION.'
+        label:
+          type: string
+        level:
+          enum:
+          - user
+          - operator
+          - admin
+          example: user
+          type: string
+        maxconn:
+          example: 1234
+          type: integer
+        mode:
+          type: string
+        mss:
+          type: string
+        namespace:
+          example: app
+          type: string
+        nbconn:
+          type: integer
+          x-display-name: Number of connection
+        nice:
+          example: 1
+          type: integer
+        no_alpn:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+        no_ca_names:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+        no_sslv3:
+          description: This field is deprecated in favor of sslv3, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_strict_sni:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tls_tickets:
+          description: This field is deprecated in favor of tls_tickets, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tlsv10:
+          description: This field is deprecated in favor of tlsv10, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tlsv11:
+          description: This field is deprecated in favor of tlsv11, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tlsv12:
+          description: This field is deprecated in favor of tlsv12, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tlsv13:
+          description: This field is deprecated in favor of tlsv13, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        npn:
+          type: string
+        prefer_client_ciphers:
+          type: boolean
+        proto:
+          type: string
+          x-display-name: Protocol name
+        quic-cc-algo:
+          enum:
+          - cubic
+          - newreno
+          - bbr
+          - nocc
+          type: string
+        quic-force-retry:
+          type: boolean
+        quic-socket:
+          enum:
+          - connection
+          - listener
+          type: string
+        quic_cc_algo_burst_size:
+          maximum: 1024
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            quic-cc-algo: null
+        quic_cc_algo_max_window:
+          maximum: 4194304
+          minimum: 10
+          type:
+          - integer
+          - 'null'
+          x-default-unit: k
+          x-dependency:
+            quic-cc-algo: null
+          x-size: true
+        severity_output:
+          enum:
+          - none
+          - number
+          - string
+          example: none
+          type: string
+          x-display-name: Format
+        shards:
+          pattern: ^(by-thread|by-group|[0-9]+)$
+          type: string
+          x-display-name: Shards
+        sigalgs:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ssl:
+          type: boolean
+        ssl_cafile:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+          x-display-name: SSL CA File
+        ssl_certificate:
+          description: All of the certificates delimited by ':' as mentioned as a crt on the bind line.
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ssl_max_ver:
+          enum:
+          - SSLv3
+          - TLSv1.0
+          - TLSv1.1
+          - TLSv1.2
+          - TLSv1.3
+          type: string
+        ssl_min_ver:
+          enum:
+          - SSLv3
+          - TLSv1.0
+          - TLSv1.1
+          - TLSv1.2
+          - TLSv1.3
+          type: string
+        sslv3:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        strict_sni:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        tcp_md5sig:
+          pattern: ^[^\s]+$
+          type: string
+        tcp_ss:
+          description: Sets the TCP Save SYN option for all incoming connections instantiated from this listening socket
+          enum:
+          - 1
+          - 2
+          - 3
+          type: integer
+        tcp_user_timeout:
+          type:
+          - integer
+          - 'null'
+        tfo:
+          type: boolean
+        thread:
+          type: string
+        tls_ticket_keys:
+          type: string
+        tls_tickets:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        tlsv10:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        tlsv11:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        tlsv12:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        tlsv13:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        transparent:
+          type: boolean
+        uid:
+          type: string
+        user:
+          type: string
+        v4v6:
+          type: boolean
+        v6only:
+          type: boolean
+        verify:
+          enum:
+          - none
+          - optional
+          - required
+          example: none
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

@@ -1,0 +1,410 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Stick Table API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: StickTable
+paths:
+  /services/haproxy/runtime/stick_tables:
+    get:
+      description: Returns an array of all stick tables.
+      operationId: getStickTables
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_tables'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return Stick Tables
+      tags:
+      - StickTable
+  /services/haproxy/runtime/stick_tables/{name}:
+    get:
+      description: Returns one stick table from runtime.
+      operationId: getStickTable
+      parameters:
+      - description: Stick table name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_table'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return Stick Table
+      tags:
+      - StickTable
+  /services/haproxy/runtime/stick_tables/{parent_name}/entries:
+    get:
+      description: Returns an array of all entries in a given stick tables.
+      operationId: getStickTableEntries
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: A list of filters in format data.<type> <operator> <value> separated by comma
+        in: query
+        name: filter
+        schema:
+          type: string
+          pattern: ^[^\r\n;#]+$
+      - description: Key which we want the entries for
+        in: query
+        name: key
+        schema:
+          type: string
+          pattern: ^[^\r\n;#]+$
+      - description: Max number of entries to be returned for pagination
+        in: query
+        name: count
+        schema:
+          type: integer
+      - description: Offset which indicates how many items we skip in pagination
+        in: query
+        name: offset
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_table_entries'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return Stick Table Entries
+      tags:
+      - StickTable
+    post:
+      description: Create or update a stick-table entry in the table.
+      operationId: setStickTableEntries
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      responses:
+        '204':
+          description: Successful operation
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Set Entry to Stick Table
+      tags:
+      - StickTable
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                data_type:
+                  $ref: '#/components/schemas/stick_table_entry'
+                key:
+                  pattern: ^[^\r\n;#]+$
+                  type: string
+              required:
+              - key
+              - data_type
+              type: object
+        description: Stick table entry
+components:
+  schemas:
+    stick_tables:
+      title: Stick Tables Array
+      description: Array of runtime stick tables
+      type: array
+      items:
+        $ref: '#/components/schemas/stick_table'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    stick_table:
+      description: Stick Table Information
+      properties:
+        fields:
+          items:
+            properties:
+              field:
+                enum:
+                - bytes_in_cnt
+                - bytes_in_rate
+                - bytes_out_cnt
+                - bytes_out_rate
+                - conn_cnt
+                - conn_cur
+                - conn_rate
+                - glitch_cnt
+                - glitch_rate
+                - gpc
+                - gpc_rate
+                - gpc0
+                - gpc0_rate
+                - gpc1
+                - gpc1_rate
+                - gpt0
+                - gpt
+                - http_req_cnt
+                - http_req_rate
+                - http_err_cnt
+                - http_err_rate
+                - http_fail_cnt
+                - http_fail_rate
+                - server_id
+                - sess_cnt
+                - sess_rate
+                type: string
+              idx:
+                type: integer
+                x-dependency:
+                  field:
+                    value:
+                    - gpc
+                    - gpc_rate
+                    - gpt
+              period:
+                type: integer
+                x-dependency:
+                  type:
+                    value: rate
+              type:
+                enum:
+                - rate
+                - counter
+                type: string
+            type: object
+            x-go-name: StickTableField
+          type: array
+          x-omitempty: true
+        name:
+          type: string
+        size:
+          type:
+          - integer
+          - 'null'
+        type:
+          enum:
+          - ip
+          - ipv6
+          - integer
+          - string
+          - binary
+          type: string
+        used:
+          type:
+          - integer
+          - 'null'
+      title: Stick Table
+      type: object
+    stick_table_entries:
+      title: Stick Tables Entries
+      description: Entries of one runtime stick table
+      type: array
+      items:
+        $ref: '#/components/schemas/stick_table_entry'
+    stick_table_entry:
+      description: One entry in stick table
+      properties:
+        bytes_in_cnt:
+          type:
+          - integer
+          - 'null'
+        bytes_in_rate:
+          type:
+          - integer
+          - 'null'
+        bytes_out_cnt:
+          type:
+          - integer
+          - 'null'
+        bytes_out_rate:
+          type:
+          - integer
+          - 'null'
+        conn_cnt:
+          type:
+          - integer
+          - 'null'
+        conn_cur:
+          type:
+          - integer
+          - 'null'
+        conn_rate:
+          type:
+          - integer
+          - 'null'
+        exp:
+          type:
+          - integer
+          - 'null'
+        glitch_cnt:
+          type:
+          - integer
+          - 'null'
+        glitch_rate:
+          type:
+          - integer
+          - 'null'
+        gpc:
+          properties:
+            idx:
+              type: integer
+            value:
+              type:
+              - integer
+              - 'null'
+          type: object
+        gpc_rate:
+          properties:
+            idx:
+              type: integer
+            value:
+              type:
+              - integer
+              - 'null'
+          type: object
+        gpc0:
+          type:
+          - integer
+          - 'null'
+        gpc0_rate:
+          type:
+          - integer
+          - 'null'
+        gpc1:
+          type:
+          - integer
+          - 'null'
+        gpc1_rate:
+          type:
+          - integer
+          - 'null'
+        gpt:
+          properties:
+            idx:
+              type: integer
+            value:
+              type:
+              - integer
+              - 'null'
+          type: object
+        gpt0:
+          type:
+          - integer
+          - 'null'
+        http_err_cnt:
+          type:
+          - integer
+          - 'null'
+        http_err_rate:
+          type:
+          - integer
+          - 'null'
+        http_fail_cnt:
+          type:
+          - integer
+          - 'null'
+        http_fail_rate:
+          type:
+          - integer
+          - 'null'
+        http_req_cnt:
+          type:
+          - integer
+          - 'null'
+        http_req_rate:
+          type:
+          - integer
+          - 'null'
+        id:
+          type: string
+        key:
+          type: string
+        server_id:
+          type:
+          - integer
+          - 'null'
+        sess_cnt:
+          type:
+          - integer
+          - 'null'
+        sess_rate:
+          type:
+          - integer
+          - 'null'
+        use:
+          type: boolean
+      title: Stick Table Entry
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

@@ -1,0 +1,353 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Log Profile API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: LogProfile
+paths:
+  /services/haproxy/configuration/log_profiles:
+    get:
+      description: Returns an array of all the configured log_profile sections in HAProxy
+      operationId: getLogProfiles
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_profiles'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return all the Log Profiles
+      tags:
+      - LogProfile
+    post:
+      description: Creates a new log_profile section
+      operationId: createLogProfile
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Log Profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_profile'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_profile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Log Profile
+      tags:
+      - LogProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_profile'
+        required: true
+  /services/haproxy/configuration/log_profiles/{name}:
+    delete:
+      description: Deletes a log_profile section from the configuration
+      operationId: deleteLogProfile
+      parameters:
+      - description: log_profile name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: log_profile deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Log Profile
+      tags:
+      - LogProfile
+    get:
+      description: Find a log_profile section by its name
+      operationId: getLogProfile
+      parameters:
+      - description: log_profile name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_profile'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a Log Profile
+      tags:
+      - LogProfile
+    put:
+      description: Modifies a log_profile's configuration by its name
+      operationId: editLogProfile
+      parameters:
+      - description: log_profile name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: log_profile configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_profile'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/log_profile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Modify a Log Profile
+      tags:
+      - LogProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_profile'
+        required: true
+components:
+  schemas:
+    log_profile_step:
+      description: Defines what to log for a given step.
+      properties:
+        drop:
+          description: If enabled, no log shall be emitted for the given step.
+          enum:
+          - enabled
+          - disabled
+          type: string
+        format:
+          description: Override "log-format" or "error-log-format" strings depending on the step.
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        sd:
+          description: Override the "log-format-sd" string.
+          type: string
+        step:
+          description: Logging step name.
+          enum:
+          - accept
+          - any
+          - close
+          - connect
+          - error
+          - request
+          - response
+          - http-req
+          - http-res
+          - http-after-res
+          - quic-init
+          - tcp-req-conn
+          - tcp-req-cont
+          - tcp-req-sess
+          type: string
+      required:
+      - step
+      title: Log Profile Step
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    log_profile_steps:
+      type: array
+      items:
+        $ref: '#/components/schemas/log_profile_step'
+      description: List of steps where to override the logging.
+      x-omitempty: true
+    log_profiles:
+      description: List of Logging Profiles
+      type: array
+      items:
+        $ref: '#/components/schemas/log_profile'
+    log_profile:
+      description: Defines a logging profile for one or more steps.
+      properties:
+        log_tag:
+          description: Override syslog log tag set by other "log-tag" directives.
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          description: Name of the logging profile.
+          minLength: 1
+          type: string
+        steps:
+          $ref: '#/components/schemas/log_profile_steps'
+      required:
+      - name
+      title: Log Profile
+      type: object
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

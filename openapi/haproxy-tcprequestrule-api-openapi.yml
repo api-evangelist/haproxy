@@ -1,0 +1,1287 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane TCP Request Rule API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: TCPRequestRule
+paths:
+  /services/haproxy/configuration/backends/{parent_name}/tcp_request_rules:
+    get:
+      description: Returns all TCP Request Rules that are configured in specified parent and parent type.
+      operationId: getAllTCPRequestRuleBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all TCP Request Rules
+      tags:
+      - TCPRequestRule
+    put:
+      description: Replaces a whole list of TCP Request Rules with the list given in parameter
+      operationId: replaceAllTCPRequestRuleBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TCP Request Rule lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an TCP Request Rule list
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rules'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/tcp_request_rules:
+    get:
+      description: Returns all TCP Request Rules that are configured in specified parent and parent type.
+      operationId: getAllTCPRequestRuleFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all TCP Request Rules
+      tags:
+      - TCPRequestRule
+    put:
+      description: Replaces a whole list of TCP Request Rules with the list given in parameter
+      operationId: replaceAllTCPRequestRuleFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TCP Request Rule lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an TCP Request Rule list
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rules'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/tcp_request_rules:
+    get:
+      description: Returns all TCP Request Rules that are configured in specified parent and parent type.
+      operationId: getAllTCPRequestRuleDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all TCP Request Rules
+      tags:
+      - TCPRequestRule
+    put:
+      description: Replaces a whole list of TCP Request Rules with the list given in parameter
+      operationId: replaceAllTCPRequestRuleDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TCP Request Rule lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an TCP Request Rule list
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rules'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/tcp_request_rules/{index}:
+    delete:
+      description: Deletes a TCP Request Rule configuration by it's index from the specified parent.
+      operationId: deleteTCPRequestRuleBackend
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: TCP Request Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a TCP Request Rule
+      tags:
+      - TCPRequestRule
+    get:
+      description: Returns one TCP Request Rule configuration by it's index in the specified parent.
+      operationId: getTCPRequestRuleBackend
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one TCP Request Rule
+      tags:
+      - TCPRequestRule
+    post:
+      description: Adds a new TCP Request Rule of the specified type in the specified parent.
+      operationId: createTCPRequestRuleBackend
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: TCP Request Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new TCP Request Rule
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rule'
+        required: true
+    put:
+      description: Replaces a TCP Request Rule configuration by it's index in the specified parent.
+      operationId: replaceTCPRequestRuleBackend
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: TCP Request Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a TCP Request Rule
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rule'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/tcp_request_rules/{index}:
+    delete:
+      description: Deletes a TCP Request Rule configuration by it's index from the specified parent.
+      operationId: deleteTCPRequestRuleFrontend
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: TCP Request Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a TCP Request Rule
+      tags:
+      - TCPRequestRule
+    get:
+      description: Returns one TCP Request Rule configuration by it's index in the specified parent.
+      operationId: getTCPRequestRuleFrontend
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one TCP Request Rule
+      tags:
+      - TCPRequestRule
+    post:
+      description: Adds a new TCP Request Rule of the specified type in the specified parent.
+      operationId: createTCPRequestRuleFrontend
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: TCP Request Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new TCP Request Rule
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rule'
+        required: true
+    put:
+      description: Replaces a TCP Request Rule configuration by it's index in the specified parent.
+      operationId: replaceTCPRequestRuleFrontend
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: TCP Request Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a TCP Request Rule
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rule'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/tcp_request_rules/{index}:
+    delete:
+      description: Deletes a TCP Request Rule configuration by it's index from the specified parent.
+      operationId: deleteTCPRequestRuleDefaults
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: TCP Request Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a TCP Request Rule
+      tags:
+      - TCPRequestRule
+    get:
+      description: Returns one TCP Request Rule configuration by it's index in the specified parent.
+      operationId: getTCPRequestRuleDefaults
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one TCP Request Rule
+      tags:
+      - TCPRequestRule
+    post:
+      description: Adds a new TCP Request Rule of the specified type in the specified parent.
+      operationId: createTCPRequestRuleDefaults
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: TCP Request Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new TCP Request Rule
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rule'
+        required: true
+    put:
+      description: Replaces a TCP Request Rule configuration by it's index in the specified parent.
+      operationId: replaceTCPRequestRuleDefaults
+      parameters:
+      - description: TCP Request Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: TCP Request Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_request_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a TCP Request Rule
+      tags:
+      - TCPRequestRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_request_rule'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    tcp_request_rule:
+      additionalProperties: false
+      description: HAProxy TCP Request Rule configuration (corresponds to tcp-request)
+      example:
+        cond: if
+        cond_test: '{ src 192.168.0.0/16 }'
+        index: 0
+        type: connection
+      properties:
+        action:
+          enum:
+          - accept
+          - attach-srv
+          - capture
+          - do-resolve
+          - expect-netscaler-cip
+          - expect-proxy
+          - lua
+          - reject
+          - sc-add-gpc
+          - sc-inc-gpc
+          - sc-inc-gpc0
+          - sc-inc-gpc1
+          - sc-set-gpt
+          - sc-set-gpt0
+          - send-spoe-group
+          - set-bandwidth-limit
+          - set-bc-mark
+          - set-bc-tos
+          - set-dst-port
+          - set-dst
+          - set-fc-mark
+          - set-fc-tos
+          - set-log-level
+          - set-mark
+          - set-nice
+          - set-priority-class
+          - set-priority-offset
+          - set-src
+          - set-src-port
+          - set-tos
+          - set-var
+          - set-var-fmt
+          - silent-drop
+          - switch-mode
+          - track-sc
+          - unset-var
+          - use-service
+          - set-retries
+          - do-log
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - connection
+              - content
+              - session
+        bandwidth_limit_limit:
+          type: string
+          x-dependency:
+            action:
+              value: set-bandwidth-limit
+            type:
+              value: content
+          x-display-name: Standard HAProxy expression
+        bandwidth_limit_name:
+          type: string
+          x-dependency:
+            action:
+              value: set-bandwidth-limit
+            type:
+              value: content
+          x-display-name: Bandwidth limit name
+        bandwidth_limit_period:
+          type: string
+          x-dependency:
+            action:
+              value: set-bandwidth-limit
+            type:
+              value: content
+          x-display-name: Standard HAProxy expression
+        capture_len:
+          type: integer
+          x-dependency:
+            action:
+              required: true
+              value: capture
+            type:
+              required: true
+              value:
+              - connection
+              - content
+          x-display-name: Capture Length
+        capture_sample:
+          pattern: ^(?:[A-Za-z]+\("([A-Za-z\s]+)"\)|[A-Za-z]+)
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: capture
+            type:
+              required: true
+              value:
+              - connection
+              - content
+          x-display-name: Capture Sample
+        cond:
+          enum:
+          - if
+          - unless
+          type: string
+          x-dependency:
+            type:
+              value:
+              - connection
+              - content
+              - session
+          x-display-name: Condition
+        cond_test:
+          type: string
+          x-dependency:
+            cond:
+              required: true
+            type:
+              required: true
+              value:
+              - connection
+              - content
+              - session
+          x-display-name: Condition Test
+          x-dynamic-enum:
+            freeFormat: true
+            operation: getACLs
+            property: acl_name
+        expr:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - do-resolve
+              - set-bc-mark
+              - set-bc-tos
+              - set-dst
+              - set-dst-port
+              - set-fc-mark
+              - set-fc-tos
+              - set-priority-class
+              - set-priority-offset
+              - set-src
+              - set-src-port
+              - set-var
+              - set-retries
+            type:
+              value:
+              - session
+              - connection
+              - content
+          x-display-name: Standard HAProxy expression
+        gpt_value:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: sc-set-gpt0
+            type:
+              required: true
+              value:
+              - connection
+              - content
+              - session
+          x-display-name: Sticky counter value
+        log_level:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          - silent
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: set-log-level
+            type:
+              value: content
+        log_profile:
+          type: string
+          x-dependency:
+            action:
+              value: do-log
+          x-display-name: Log Profile
+        lua_action:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: lua
+            type:
+              value:
+              - connection
+              - content
+          x-display-name: Lua action name
+        lua_params:
+          type: string
+          x-dependency:
+            action:
+              value: lua
+            type:
+              value:
+              - connection
+              - content
+          x-display-name: Lua action params
+        mark_value:
+          pattern: ^(0x[0-9A-Fa-f]+|[0-9]+)$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: set-mark
+            type:
+              value:
+              - connection
+              - content
+          x-display-name: Mark Value
+        metadata:
+          additionalProperties:
+            type: object
+        nice_value:
+          maximum: 1024
+          minimum: -1024
+          type: integer
+          x-dependency:
+            action:
+              required: true
+              value: set-nice
+            type:
+              value: content
+          x-display-name: Nice Value
+        resolve_protocol:
+          enum:
+          - ipv4
+          - ipv6
+          type: string
+          x-dependency:
+            action:
+              required: false
+              value: do-resolve
+            type:
+              required: true
+              value:
+              - content
+          x-display-name: Protocol
+        resolve_resolvers:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: do-resolve
+            type:
+              required: true
+              value:
+              - content
+          x-display-name: Resolvers
+        resolve_var:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: do-resolve
+            type:
+              required: true
+              value:
+              - content
+          x-display-name: Variable name
+        rst_ttl:
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - silent-drop
+          x-display-name: RST TTL
+        sc_idx:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - sc-set-gpt
+            type:
+              required: true
+              value:
+              - connection
+              - content
+              - session
+          x-display-name: Sticky counter Index
+        sc_inc_id:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-inc-gpc
+              - sc-inc-gpc0
+              - sc-inc-gpc1
+              - sc-set-gpt
+              - sc-set-gpt0
+            type:
+              required: true
+              value:
+              - connection
+              - content
+              - session
+          x-display-name: Sticky counter ID
+        sc_int:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-set-gpt0
+          x-display-name: ScSet Integer Value
+        server_name:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: attach-srv
+            type:
+              value: session
+          x-display-name: Server name
+        service_name:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: use-service
+            type:
+              value: content
+          x-display-name: Service name
+        spoe_engine_name:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send-spoe-group
+            type:
+              required: true
+              value:
+              - content
+          x-display-name: Engine name
+        spoe_group_name:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send-spoe-group
+            type:
+              required: true
+              value:
+              - content
+          x-display-name: Group name
+        switch_mode_proto:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: switch-mode
+            type:
+              value: content
+          x-display-name: Switch Mode Proto
+        timeout:
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-dependency:
+            type:
+              required: true
+              value: inspect-delay
+          x-duration: true
+        tos_value:
+          pattern: ^(0x[0-9A-Fa-f]+|[0-9]+)$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: set-tos
+            type:
+              value:
+              - connection
+              - content
+          x-display-name: Tos Value
+        track_key:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - track-sc
+            type:
+              value:
+              - session
+              - connection
+              - content
+          x-display-name: Sample expression rule
+        track_stick_counter:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            action:
+              required: false
+              value:
+              - track-sc
+            type:
+              value:
+              - session
+              - connection
+              - content
+          x-display-name: Track Stick Counter
+        track_table:
+          type: string
+          x-dependency:
+            action:
+              required: false
+              value:
+              - track-sc
+            type:
+              value:
+              - session
+              - connection
+              - content
+          x-display-name: Optional table name
+        type:
+          enum:
+          - connection
+          - content
+          - inspect-delay
+          - session
+          type: string
+        var_format:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: set-var-fmt
+            type:
+              value:
+              - session
+              - connection
+              - content
+          x-display-name: Var Format
+        var_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var
+              - unset-var
+              - set-var-fmt
+            type:
+              value:
+              - session
+              - connection
+              - content
+          x-display-name: Variable name
+        var_scope:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var
+              - unset-var
+              - set-var-fmt
+            type:
+              value:
+              - session
+              - connection
+              - content
+          x-display-name: Variable scope
+      required:
+      - type
+      title: TCP Request Rule
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    tcp_request_rules:
+      title: TCP Request Rules Array
+      description: HAProxy TCP request rules array (corresponds to tcp-request directive)
+      type: array
+      items:
+        $ref: '#/components/schemas/tcp_request_rule'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

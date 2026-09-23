@@ -1,0 +1,342 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane HTTP Errors API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: HTTPErrors
+paths:
+  /services/haproxy/configuration/http_errors_sections:
+    get:
+      description: Returns an array of all configured http-error sections.
+      operationId: getHTTPErrorsSections
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_errors_sections'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of http-error sections
+      tags:
+      - HTTPErrors
+    post:
+      description: Adds a new http-error section to the configuration.
+      operationId: createHTTPErrorsSection
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: http-error section created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_errors_section'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_errors_section'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new http-error section
+      tags:
+      - HTTPErrors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_errors_section'
+        required: true
+  /services/haproxy/configuration/http_errors_sections/{name}:
+    delete:
+      description: Deletes a http-error section with a given name from the configuration.
+      operationId: deleteHTTPErrorsSection
+      parameters:
+      - description: http-error section name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: http-error section deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a http-error section
+      tags:
+      - HTTPErrors
+    get:
+      description: Returns one http-error section with a given name from the configuration.
+      operationId: getHTTPErrorsSection
+      parameters:
+      - description: http-error section name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_errors_section'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a http-error section
+      tags:
+      - HTTPErrors
+    put:
+      description: Replaces a http-error section with a given name in the configuration.
+      operationId: replaceHTTPErrorsSection
+      parameters:
+      - description: http-error section name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: http-error section updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_errors_section'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_errors_section'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a http-error section
+      tags:
+      - HTTPErrors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_errors_section'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    http_errors_section:
+      additionalProperties: false
+      description: A globally declared group of HTTP errors
+      example:
+        error_files:
+        - code: 400
+          name: /etc/haproxy/errorfiles/site1/400.http
+        - code: 404
+          name: /etc/haproxy/errorfiles/site1/404.http
+        name: website-1
+      properties:
+        error_files:
+          items:
+            $ref: '#/components/schemas/errorfile'
+          type: array
+          x-go-name: ErrorFiles
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_]+$
+          type: string
+      required:
+      - name
+      - error_files
+      title: http-errors section
+      type: object
+    http_errors_sections:
+      title: http-errors sections
+      description: An array of HAProxy http-error sections
+      type: array
+      items:
+        $ref: '#/components/schemas/http_errors_section'
+    errorfile:
+      properties:
+        code:
+          enum:
+          - 200
+          - 400
+          - 401
+          - 403
+          - 404
+          - 405
+          - 407
+          - 408
+          - 410
+          - 413
+          - 425
+          - 429
+          - 500
+          - 501
+          - 502
+          - 503
+          - 504
+          type: integer
+        file:
+          type: string
+      type: object
+      x-display-name: Error File
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

@@ -1,0 +1,363 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Crt Load API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: CrtLoad
+paths:
+  /services/haproxy/configuration/crt_stores/{crt_store}/crt_loads:
+    get:
+      description: Returns the list of loaded certificates from the specified crt_store
+      operationId: getCrtLoads
+      parameters:
+      - description: Parent crt_store name
+        in: path
+        name: crt_store
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_loads'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of loaded certificates
+      tags:
+      - CrtLoad
+    post:
+      description: Adds a new load entry to the specified crt_store section in the configuration
+      operationId: createCrtLoad
+      parameters:
+      - description: Parent crt_store section name
+        in: path
+        name: crt_store
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Certificate load entry created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_load'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_load'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new certificate to load
+      tags:
+      - CrtLoad
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crt_load'
+        required: true
+  /services/haproxy/configuration/crt_stores/{crt_store}/crt_loads/{certificate}:
+    delete:
+      description: Deletes a load entry by its certificate name in the specified crt_store section
+      operationId: deleteCrtLoad
+      parameters:
+      - description: Certificate filename
+        in: path
+        name: certificate
+        required: true
+        schema:
+          type: string
+      - description: Parent crt_store section name
+        in: path
+        name: crt_store
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Certificate load entry deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a certificate load entry
+      tags:
+      - CrtLoad
+    get:
+      description: Returns one load entry by its certificate name in the specified crt_store
+      operationId: getCrtLoad
+      parameters:
+      - description: Certificate filename
+        in: path
+        name: certificate
+        required: true
+        schema:
+          type: string
+      - description: Parent crt_store name
+        in: path
+        name: crt_store
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_load'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one certificate load entry
+      tags:
+      - CrtLoad
+    put:
+      description: Replaces a load entry by its certificate name in the specified crt_store section
+      operationId: replaceCrtLoad
+      parameters:
+      - description: Certificate filename
+        in: path
+        name: certificate
+        required: true
+        schema:
+          type: string
+      - description: Parent crt_store section name
+        in: path
+        name: crt_store
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Certificate load entry replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_load'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_load'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a certificate load entry
+      tags:
+      - CrtLoad
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crt_load'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    crt_load:
+      description: Loads a certificate from a store with options
+      properties:
+        acme:
+          description: ACME section name to use
+          type: string
+        alias:
+          description: Certificate alias
+          type: string
+        certificate:
+          description: Certificate filename
+          type: string
+        domains:
+          description: List of domains used to generate the certificate with ACME
+          items:
+            type: string
+          type: array
+          x-go-name: Domains
+          x-omitempty: true
+        issuer:
+          description: OCSP issuer filename
+          type: string
+        key:
+          description: Private key filename
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        ocsp:
+          description: OCSP response filename
+          type: string
+        ocsp_update:
+          description: Automatic OCSP response update
+          enum:
+          - enabled
+          - disabled
+          type: string
+        sctl:
+          description: Signed Certificate Timestamp List filename
+          type: string
+      required:
+      - certificate
+      title: Certificate load action
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    crt_loads:
+      description: List of certificates to load from a Certificate Store
+      type: array
+      items:
+        $ref: '#/components/schemas/crt_load'
+      x-omitempty: true
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

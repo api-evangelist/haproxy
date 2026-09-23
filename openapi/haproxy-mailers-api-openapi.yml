@@ -1,0 +1,361 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Mailers API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Mailers
+paths:
+  /services/haproxy/configuration/mailers_section:
+    get:
+      deprecated: true
+      description: Returns an array of all the configured mailers in HAProxy
+      operationId: getMailersSections
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailers_sections'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of mailers sections
+      tags:
+      - Mailers
+    post:
+      deprecated: true
+      description: Creates a new empty Mailers section
+      operationId: createMailersSection
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '201':
+          description: Mailers created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailers_section'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailers_section'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Mailers section
+      tags:
+      - Mailers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mailers_section'
+        required: true
+  /services/haproxy/configuration/mailers_section/{name}:
+    delete:
+      deprecated: true
+      description: Deletes a mailers from the configuration by it's name.
+      operationId: deleteMailersSection
+      parameters:
+      - description: Mailers name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Mailers deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Mailers section
+      tags:
+      - Mailers
+    get:
+      deprecated: true
+      description: Returns one mailers configuration by it's name.
+      operationId: getMailersSection
+      parameters:
+      - description: Mailers name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailers_section'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a Mailers section
+      tags:
+      - Mailers
+    put:
+      deprecated: true
+      description: Modifies a mailers configuration by it's name.
+      operationId: editMailersSection
+      parameters:
+      - description: Mailers name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Mailers configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailers_section'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailers_section'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Modify a Mailers section
+      tags:
+      - Mailers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mailers_section'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    mailers_section:
+      allOf:
+      - $ref: '#/components/schemas/mailers_section_base'
+      - properties:
+          mailer_entries:
+            additionalProperties:
+              $ref: '#/components/schemas/mailer_entry'
+        type: object
+      description: MailersSection with all its children resources
+      type: object
+      x-go-name: MailersSection
+    mailer_entry:
+      description: Mailer entry of a Mailers section
+      properties:
+        address:
+          pattern: ^\S+$
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_${}"]+$
+          type: string
+        port:
+          maximum: 65535
+          minimum: 1
+          type: integer
+      required:
+      - name
+      - address
+      - port
+      title: Mailer Entry
+      type: object
+    mailers_sections:
+      title: Mailers Sections
+      description: HAProxy mailers_section array
+      type: array
+      items:
+        $ref: '#/components/schemas/mailers_section'
+    mailers_section_base:
+      additionalProperties: false
+      description: A list of SMTP servers used by HAProxy to send emails.
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_]+$
+          type: string
+        timeout:
+          description: Timeout to send an email in milliseconds
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+      required:
+      - name
+      title: Mailers Section Base
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

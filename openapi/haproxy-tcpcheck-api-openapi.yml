@@ -1,0 +1,1018 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane TCP Check API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: TCPCheck
+paths:
+  /services/haproxy/configuration/backends/{parent_name}/tcp_checks:
+    get:
+      description: Returns all TCP checks that are configured in specified parent.
+      operationId: getAllTCPCheckBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of TCP checks
+      tags:
+      - TCPCheck
+    put:
+      description: Replaces a whole list of TCP Checks with the list given in parameter
+      operationId: replaceAllTCPCheckBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TCP Check lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an TCP Check list
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_checks'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/tcp_checks:
+    get:
+      description: Returns all TCP checks that are configured in specified parent.
+      operationId: getAllTCPCheckDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of TCP checks
+      tags:
+      - TCPCheck
+    put:
+      description: Replaces a whole list of TCP Checks with the list given in parameter
+      operationId: replaceAllTCPCheckDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TCP Check lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an TCP Check list
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_checks'
+        required: true
+  /services/haproxy/configuration/healthchecks/{parent_name}/tcp_checks:
+    get:
+      description: Returns all TCP checks that are configured in specified parent.
+      operationId: getAllTCPCheckHealthcheck
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of TCP checks
+      tags:
+      - TCPCheck
+    put:
+      description: Replaces a whole list of TCP Checks with the list given in parameter
+      operationId: replaceAllTCPCheckHealthcheck
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TCP Check lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_checks'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an TCP Check list
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_checks'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/tcp_checks/{index}:
+    delete:
+      description: Deletes a TCP check configuration by it's index from the specified parent.
+      operationId: deleteTCPCheckBackend
+      parameters:
+      - description: TCP check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: TCP check deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a TCP check
+      tags:
+      - TCPCheck
+    get:
+      description: Returns one TCP check configuration by it's index in the specified parent.
+      operationId: getTCPCheckBackend
+      parameters:
+      - description: TCP Check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one TCP check
+      tags:
+      - TCPCheck
+    post:
+      description: Adds a new TCP check of the specified type in the specified parent.
+      operationId: createTCPCheckBackend
+      parameters:
+      - description: TCP check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: TCP check created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new TCP check
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_check'
+        required: true
+    put:
+      description: Replaces a TCP Check configuration by it's index in the specified parent.
+      operationId: replaceTCPCheckBackend
+      parameters:
+      - description: TCP Check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: TCP check replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a TCP check
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_check'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/tcp_checks/{index}:
+    delete:
+      description: Deletes a TCP check configuration by it's index from the specified parent.
+      operationId: deleteTCPCheckDefaults
+      parameters:
+      - description: TCP check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: TCP check deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a TCP check
+      tags:
+      - TCPCheck
+    get:
+      description: Returns one TCP check configuration by it's index in the specified parent.
+      operationId: getTCPCheckDefaults
+      parameters:
+      - description: TCP Check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one TCP check
+      tags:
+      - TCPCheck
+    post:
+      description: Adds a new TCP check of the specified type in the specified parent.
+      operationId: createTCPCheckDefaults
+      parameters:
+      - description: TCP check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: TCP check created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new TCP check
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_check'
+        required: true
+    put:
+      description: Replaces a TCP Check configuration by it's index in the specified parent.
+      operationId: replaceTCPCheckDefaults
+      parameters:
+      - description: TCP Check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: TCP check replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a TCP check
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_check'
+        required: true
+  /services/haproxy/configuration/healthchecks/{parent_name}/tcp_checks/{index}:
+    delete:
+      description: Deletes a TCP check configuration by it's index from the specified parent.
+      operationId: deleteTCPCheckHealthcheck
+      parameters:
+      - description: TCP check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: TCP check deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a TCP check
+      tags:
+      - TCPCheck
+    get:
+      description: Returns one TCP check configuration by it's index in the specified parent.
+      operationId: getTCPCheckHealthcheck
+      parameters:
+      - description: TCP Check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one TCP check
+      tags:
+      - TCPCheck
+    post:
+      description: Adds a new TCP check of the specified type in the specified parent.
+      operationId: createTCPCheckHealthcheck
+      parameters:
+      - description: TCP check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: TCP check created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new TCP check
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_check'
+        required: true
+    put:
+      description: Replaces a TCP Check configuration by it's index in the specified parent.
+      operationId: replaceTCPCheckHealthcheck
+      parameters:
+      - description: TCP Check Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: TCP check replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tcp_check'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a TCP check
+      tags:
+      - TCPCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tcp_check'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    tcp_checks:
+      title: TCP Checks Array
+      type: array
+      items:
+        $ref: '#/components/schemas/tcp_check'
+    tcp_check:
+      properties:
+        action:
+          enum:
+          - comment
+          - connect
+          - expect
+          - send
+          - send-lf
+          - send-binary
+          - send-binary-lf
+          - set-var
+          - set-var-fmt
+          - unset-var
+          type: string
+        addr:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              value: connect
+        alpn:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              value: connect
+          x-display-name: ALPN Protocols
+        check_comment:
+          type: string
+          x-dependency:
+            action:
+              value:
+              - connect
+              - expect
+              - send
+              - send-lf
+              - send-binary
+              - send-binary-lf
+        data:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send
+        default:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+        error_status:
+          enum:
+          - L7OKC
+          - L7RSP
+          - L7STS
+          - L6RSP
+          - L4CON
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        exclamation_mark:
+          type: boolean
+          x-dependency:
+            action:
+              value: expect
+          x-display-name: Expect Exclamation Mark
+        fmt:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send-lf
+        hex_fmt:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send-binary-lf
+        hex_string:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send-binary
+        linger:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+        match:
+          enum:
+          - string
+          - rstring
+          - string-lf
+          - binary
+          - rbinary
+          - binary-lf
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: expect
+          x-display-name: Expect Match
+        metadata:
+          additionalProperties:
+            type: object
+        min_recv:
+          type: integer
+          x-dependency:
+            action:
+              value: expect
+        ok_status:
+          enum:
+          - L7OK
+          - L7OKC
+          - L6OK
+          - L4OK
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        on_error:
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        on_success:
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        pattern:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: expect
+        port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            action:
+              value: connect
+        port_string:
+          type: string
+          x-dependency:
+            action:
+              value: connect
+        proto:
+          type: string
+          x-dependency:
+            action:
+              value: connect
+        send_proxy:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+        sni:
+          type: string
+          x-dependency:
+            action:
+              value: connect
+        ssl:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+        status-code:
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        tout_status:
+          enum:
+          - L7TOUT
+          - L6TOUT
+          - L4TOUT
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        var_expr:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var
+          x-display-name: Var Expression
+        var_fmt:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var-fmt
+          x-display-name: Var Log format
+        var_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var
+              - set-var-fmt
+              - unset-var
+        var_scope:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var
+              - set-var-fmt
+              - unset-var
+        via_socks4:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+      required:
+      - action
+      title: TCP Check
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

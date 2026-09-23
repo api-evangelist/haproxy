@@ -1,0 +1,384 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Server Switching Rule API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: ServerSwitchingRule
+paths:
+  /services/haproxy/configuration/backends/{parent_name}/server_switching_rules:
+    get:
+      description: Returns all Backend Switching Rules that are configured in specified backend.
+      operationId: getServerSwitchingRules
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_switching_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Server Switching Rules
+      tags:
+      - ServerSwitchingRule
+    put:
+      description: Replaces a whole list of Server Switching Rules with the list given in parameter
+      operationId: replaceServerSwitchingRules
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Server Switching Rule lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_switching_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_switching_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an Server Switching Rule list
+      tags:
+      - ServerSwitchingRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/server_switching_rules'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/server_switching_rules/{index}:
+    delete:
+      description: Deletes a Server Switching Rule configuration by it's index from the specified backend.
+      operationId: deleteServerSwitchingRule
+      parameters:
+      - description: Switching Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Server Switching Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Server Switching Rule
+      tags:
+      - ServerSwitchingRule
+    get:
+      description: Returns one Server Switching Rule configuration by it's index in the specified backend.
+      operationId: getServerSwitchingRule
+      parameters:
+      - description: Switching Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_switching_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Server Switching Rule
+      tags:
+      - ServerSwitchingRule
+    post:
+      description: Adds a new Server Switching Rule of the specified type in the specified backend.
+      operationId: createServerSwitchingRule
+      parameters:
+      - description: Switching Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Server Switching Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_switching_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_switching_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Server Switching Rule
+      tags:
+      - ServerSwitchingRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/server_switching_rule'
+        required: true
+    put:
+      description: Replaces a Server Switching Rule configuration by it's index in the specified backend.
+      operationId: replaceServerSwitchingRule
+      parameters:
+      - description: Switching Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Server Switching Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_switching_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server_switching_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Server Switching Rule
+      tags:
+      - ServerSwitchingRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/server_switching_rule'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    server_switching_rules:
+      title: Server Switching Rules Array
+      description: HAProxy backend server switching rules array (corresponds to use-server directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/server_switching_rule'
+    server_switching_rule:
+      additionalProperties: false
+      description: HAProxy server switching rule configuration (corresponds to use-server directive)
+      example:
+        cond: if
+        cond_test: '{ req.ssl_sni -i www.example.com }'
+        target_server: www
+      properties:
+        cond:
+          enum:
+          - if
+          - unless
+          type: string
+          x-display-name: Condition
+        cond_test:
+          type: string
+          x-dependency:
+            cond:
+              required: true
+          x-display-name: Condition Test
+          x-dynamic-enum:
+            freeFormat: true
+            operation: getACLs
+            property: acl_name
+        metadata:
+          additionalProperties:
+            type: object
+        target_server:
+          pattern: ^[^\s]+$
+          type: string
+          x-dynamic-enum:
+            operation: getServers
+            property: name
+      required:
+      - target_server
+      title: Server Switching Rule
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

@@ -1,0 +1,1092 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane HTTP After Response Rule API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: HTTPAfterResponseRule
+paths:
+  /services/haproxy/configuration/backends/{parent_name}/http_after_response_rules:
+    get:
+      description: Returns all HTTP After Response Rules that are configured in specified parent.
+      operationId: getAllHTTPAfterResponseRuleBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP After Response Rules
+      tags:
+      - HTTPAfterResponseRule
+    put:
+      description: Replaces a whole list of HTTP After Response Rules with the list given in parameter
+      operationId: replaceAllHTTPAfterResponseRuleBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TTP After Response Rules lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP After Response Rules list
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rules'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/http_after_response_rules:
+    get:
+      description: Returns all HTTP After Response Rules that are configured in specified parent.
+      operationId: getAllHTTPAfterResponseRuleFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP After Response Rules
+      tags:
+      - HTTPAfterResponseRule
+    put:
+      description: Replaces a whole list of HTTP After Response Rules with the list given in parameter
+      operationId: replaceAllHTTPAfterResponseRuleFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TTP After Response Rules lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP After Response Rules list
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rules'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/http_after_response_rules:
+    get:
+      description: Returns all HTTP After Response Rules that are configured in specified parent.
+      operationId: getAllHTTPAfterResponseRuleDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP After Response Rules
+      tags:
+      - HTTPAfterResponseRule
+    put:
+      description: Replaces a whole list of HTTP After Response Rules with the list given in parameter
+      operationId: replaceAllHTTPAfterResponseRuleDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All TTP After Response Rules lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP After Response Rules list
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rules'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/http_after_response_rules/{index}:
+    delete:
+      description: Deletes a HTTP After Response Rule configuration by it's index from the specified parent.
+      operationId: deleteHTTPAfterResponseRuleBackend
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP After Response Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+    get:
+      description: Returns one HTTP After Response Rule configuration by it's index in the specified parent.
+      operationId: getHTTPAfterResponseRuleBackend
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+    post:
+      description: Adds a new HTTP After Response Rule of the specified type in the specified parent.
+      operationId: createHTTPAfterResponseRuleBackend
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Response Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rule'
+        required: true
+    put:
+      description: Replaces a HTTP After Response Rule configuration by it's index in the specified parent.
+      operationId: replaceHTTPAfterResponseRuleBackend
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP After Response Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rule'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/http_after_response_rules/{index}:
+    delete:
+      description: Deletes a HTTP After Response Rule configuration by it's index from the specified parent.
+      operationId: deleteHTTPAfterResponseRuleFrontend
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP After Response Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+    get:
+      description: Returns one HTTP After Response Rule configuration by it's index in the specified parent.
+      operationId: getHTTPAfterResponseRuleFrontend
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+    post:
+      description: Adds a new HTTP After Response Rule of the specified type in the specified parent.
+      operationId: createHTTPAfterResponseRuleFrontend
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Response Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rule'
+        required: true
+    put:
+      description: Replaces a HTTP After Response Rule configuration by it's index in the specified parent.
+      operationId: replaceHTTPAfterResponseRuleFrontend
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP After Response Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rule'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/http_after_response_rules/{index}:
+    delete:
+      description: Deletes a HTTP After Response Rule configuration by it's index from the specified parent.
+      operationId: deleteHTTPAfterResponseRuleDefaults
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP After Response Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+    get:
+      description: Returns one HTTP After Response Rule configuration by it's index in the specified parent.
+      operationId: getHTTPAfterResponseRuleDefaults
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+    post:
+      description: Adds a new HTTP After Response Rule of the specified type in the specified parent.
+      operationId: createHTTPAfterResponseRuleDefaults
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Response Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rule'
+        required: true
+    put:
+      description: Replaces a HTTP After Response Rule configuration by it's index in the specified parent.
+      operationId: replaceHTTPAfterResponseRuleDefaults
+      parameters:
+      - description: HTTP After Response Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP After Response Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_after_response_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP After Response Rule
+      tags:
+      - HTTPAfterResponseRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_after_response_rule'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    http_after_response_rule:
+      additionalProperties: false
+      description: HAProxy HTTP after response rule configuration (corresponds to http-after-response directives)
+      example:
+        cond: unless
+        cond_test: '{ src 192.168.0.0/16 }'
+        hdr_format: max-age=31536000
+        hdr_name: Strict-Transport-Security
+        type: set-header
+      properties:
+        acl_file:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - del-acl
+        acl_keyfmt:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - del-acl
+          x-display-name: ACK Key Format
+        capture_id:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              value: capture
+          x-display-name: Capture SlotID
+        capture_len:
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value: capture
+          x-display-name: Capture Len
+        capture_sample:
+          pattern: ^(?:[A-Za-z]+\("([A-Za-z\s]+)"\)|[A-Za-z]+)
+          type: string
+          x-dependency:
+            type:
+              value: capture
+          x-display-name: Capture Sample
+        cond:
+          enum:
+          - if
+          - unless
+          type: string
+          x-display-name: Condition
+        cond_test:
+          type: string
+          x-dependency:
+            cond:
+              required: true
+          x-display-name: Condition Test
+          x-dynamic-enum:
+            freeFormat: true
+            operation: getACLs
+            property: acl_name
+        hdr_expr:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - add-headers-bin
+              - del-headers-bin
+              - set-headers-bin
+          x-display-name: Binary Headers Expression
+        hdr_format:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - replace-header
+              - replace-value
+              - set-header
+              - add-header
+          x-display-name: Header Format
+        hdr_match:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - replace-header
+              - replace-value
+          x-display-name: Header Match
+        hdr_method:
+          type: string
+          x-dependency:
+            type:
+              value:
+              - del-header
+              - del-headers-bin
+          x-display-name: Header Match Method
+        hdr_name:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - add-header
+              - replace-header
+              - del-header
+              - set-header
+              - replace-value
+          x-display-name: Header Name
+        hdr_prefix:
+          type: string
+          x-dependency:
+            type:
+              value:
+              - add-headers-bin
+              - set-headers-bin
+          x-display-name: Binary Headers Prefix
+        log_level:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          - silent
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-log-level
+        log_profile:
+          type: string
+          x-dependency:
+            type:
+              value: do-log
+          x-display-name: Log Profile
+        map_file:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - set-map
+              - del-map
+        map_keyfmt:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - set-map
+              - del-map
+          x-display-name: Map Key Format
+        map_valuefmt:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-map
+          x-display-name: Map Value Format
+        metadata:
+          additionalProperties:
+            type: object
+        sc_expr:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-set-gpt0
+          x-display-name: ScSet Expression Value
+        sc_id:
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-inc-gpc
+              - sc-inc-gpc0
+              - sc-inc-gpc1
+              - sc-set-gpt
+              - sc-set-gpt0
+        sc_idx:
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-inc-gpc
+              - sc-set-gpt
+        sc_int:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              required: true
+              value:
+              - sc-add-gpc
+              - sc-set-gpt0
+          x-display-name: ScSet Integer Value
+        status:
+          maximum: 999
+          minimum: 100
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value: set-status
+        status_reason:
+          type: string
+          x-dependency:
+            type:
+              value: set-status
+        strict_mode:
+          enum:
+          - 'on'
+          - 'off'
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: strict-mode
+        type:
+          enum:
+          - add-header
+          - add-headers-bin
+          - allow
+          - capture
+          - del-acl
+          - del-header
+          - del-headers-bin
+          - del-map
+          - replace-header
+          - replace-value
+          - sc-add-gpc
+          - sc-inc-gpc
+          - sc-inc-gpc0
+          - sc-inc-gpc1
+          - sc-set-gpt
+          - sc-set-gpt0
+          - set-header
+          - set-headers-bin
+          - set-log-level
+          - set-map
+          - set-status
+          - set-var
+          - set-var-fmt
+          - strict-mode
+          - unset-var
+          - do-log
+          type: string
+        var_expr:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-var
+          x-display-name: Var Expression
+        var_format:
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: set-var-fmt
+          x-display-name: Var Format
+        var_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - set-var
+              - set-var-fmt
+              - unset-var
+        var_scope:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - set-var
+              - set-var-fmt
+              - unset-var
+      required:
+      - type
+      title: HTTP after Response Rule
+      type: object
+    http_after_response_rules:
+      title: HTTP After Response Rules Array
+      description: HAProxy HTTP after response rules array (corresponds to http-after-response directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/http_after_response_rule'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

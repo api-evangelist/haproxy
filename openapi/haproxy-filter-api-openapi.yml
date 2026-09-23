@@ -1,0 +1,768 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Filter API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Filter
+paths:
+  /services/haproxy/configuration/backends/{parent_name}/filters:
+    get:
+      description: Returns all Filters that are configured in specified parent.
+      operationId: getAllFilterBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Filters
+      tags:
+      - Filter
+    put:
+      description: Replaces a whole list of Filters with the list given in parameter
+      operationId: replaceAllFilterBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Filter lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Filter list
+      tags:
+      - Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filters'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/filters:
+    get:
+      description: Returns all Filters that are configured in specified parent.
+      operationId: getAllFilterFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Filters
+      tags:
+      - Filter
+    put:
+      description: Replaces a whole list of Filters with the list given in parameter
+      operationId: replaceAllFilterFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Filter lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filters'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Filter list
+      tags:
+      - Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filters'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/filters/{index}:
+    delete:
+      description: Deletes a Filter configuration by it's index from the specified parent.
+      operationId: deleteFilterBackend
+      parameters:
+      - description: Filter Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Filter deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Filter
+      tags:
+      - Filter
+    get:
+      description: Returns one Filter configuration by it's index in the specified parent.
+      operationId: getFilterBackend
+      parameters:
+      - description: Filter Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Filter
+      tags:
+      - Filter
+    post:
+      description: Adds a new Filter of the specified type in the specified parent.
+      operationId: createFilterBackend
+      parameters:
+      - description: Filter Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Filter created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Filter
+      tags:
+      - Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filter'
+        required: true
+    put:
+      description: Replaces a Filter configuration by it's index in the specified parent.
+      operationId: replaceFilterBackend
+      parameters:
+      - description: Filter Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Filter replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Filter
+      tags:
+      - Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filter'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/filters/{index}:
+    delete:
+      description: Deletes a Filter configuration by it's index from the specified parent.
+      operationId: deleteFilterFrontend
+      parameters:
+      - description: Filter Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Filter deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Filter
+      tags:
+      - Filter
+    get:
+      description: Returns one Filter configuration by it's index in the specified parent.
+      operationId: getFilterFrontend
+      parameters:
+      - description: Filter Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Filter
+      tags:
+      - Filter
+    post:
+      description: Adds a new Filter of the specified type in the specified parent.
+      operationId: createFilterFrontend
+      parameters:
+      - description: Filter Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Filter created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Filter
+      tags:
+      - Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filter'
+        required: true
+    put:
+      description: Replaces a Filter configuration by it's index in the specified parent.
+      operationId: replaceFilterFrontend
+      parameters:
+      - description: Filter Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Filter replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filter'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Filter
+      tags:
+      - Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filter'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    filters:
+      title: Filters Array
+      description: HAProxy filters array (corresponds to filter directive)
+      type: array
+      items:
+        $ref: '#/components/schemas/filter'
+    filter:
+      additionalProperties: false
+      description: HAProxy filters
+      example:
+        trace_name: name
+        trace_rnd_parsing: true
+        type: trace
+      properties:
+        app_name:
+          description: Name of the fcgi-app section this filter will use.
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: fcgi-app
+        bandwidth_limit_name:
+          description: Filter name that will be used by 'set-bandwidth-limit' actions to reference a specific bandwidth limitation filter
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value:
+              - bwlim-in
+              - bwlim-out
+        cache_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: cache
+        default_limit:
+          description: 'The max number of bytes that can be forwarded over the period.
+
+            The value must be specified for per-stream and shared bandwidth limitation filters.
+
+            It follows the HAProxy size format and is expressed in bytes.'
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - bwlim-in
+              - bwlim-out
+          x-size: true
+        default_period:
+          description: 'The default time period used to evaluate the bandwidth limitation rate.
+
+            It can be specified for per-stream bandwidth limitation filters only.
+
+            It follows the HAProxy time format and is expressed in milliseconds.'
+          type: integer
+          x-default-unit: ms
+          x-dependency:
+            default_limit:
+              required: true
+            type:
+              required: true
+              value:
+              - bwlim-in
+              - bwlim-out
+          x-duration: true
+        key:
+          description: 'A sample expression rule.
+
+            It describes what elements will be analyzed, extracted, combined, and used to select which table entry to update the counters.
+
+            It must be specified for shared bandwidth limitation filters only.'
+          type: string
+          x-dependency:
+            limit:
+              required: true
+            type:
+              required: true
+              value:
+              - bwlim-in
+              - bwlim-out
+        limit:
+          description: 'The max number of bytes that can be forwarded over the period.
+
+            The value must be specified for per-stream and shared bandwidth limitation filters.
+
+            It follows the HAProxy size format and is expressed in bytes.'
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - bwlim-in
+              - bwlim-out
+          x-size: true
+        lua_args:
+          description: Optional arguments passed to the Lua filter constructor.
+          items:
+            type: string
+          type: array
+          x-dependency:
+            type:
+              value: lua
+          x-omitempty: true
+        lua_name:
+          description: Name of the Lua filter as registered by core.register_filter(), used in the 'filter lua.<name>' directive.
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: lua
+        metadata:
+          additionalProperties:
+            type: object
+        min_size:
+          description: 'The optional minimum number of bytes forwarded at a time by a stream excluding the last packet that may be smaller.
+
+            This value can be specified for per-stream and shared bandwidth limitation filters.
+
+            It follows the HAProxy size format and is expressed in bytes.'
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value:
+              - bwlim-in
+              - bwlim-out
+          x-size: true
+        spoe_config:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              required: true
+              value: spoe
+        spoe_engine:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              value: spoe
+        table:
+          description: 'An optional table to be used instead of the default one, which is the stick-table declared in the current proxy.
+
+            It can be specified for shared bandwidth limitation filters only.'
+          type: string
+          x-dependency:
+            limit:
+              required: true
+            type:
+              required: true
+              value:
+              - bwlim-in
+              - bwlim-out
+        trace_hexdump:
+          type: boolean
+          x-dependency:
+            type:
+              value: trace
+        trace_max_fwd:
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            type:
+              value: trace
+          x-display-name: Trace Max Forward
+        trace_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            type:
+              value: trace
+        trace_rnd_forwarding:
+          type: boolean
+          x-dependency:
+            type:
+              value: trace
+          x-display-name: Trace Random Forwarding
+        trace_rnd_parsing:
+          type: boolean
+          x-dependency:
+            type:
+              value: trace
+          x-display-name: Trace Random Parsing
+        type:
+          enum:
+          - bwlim-in
+          - bwlim-out
+          - cache
+          - compression
+          - comp-req
+          - comp-res
+          - fcgi-app
+          - spoe
+          - trace
+          - lua
+          type: string
+      required:
+      - type
+      title: Filter
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

@@ -1,0 +1,376 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Crt Store API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: CrtStore
+paths:
+  /services/haproxy/configuration/crt_stores:
+    get:
+      description: Returns an array of all the configured crt_store sections in HAProxy
+      operationId: getCrtStores
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_stores'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return all the Certificate Stores
+      tags:
+      - CrtStore
+    post:
+      description: Creates a new crt_store section
+      operationId: createCrtStore
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '201':
+          description: Certificate Store created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_store'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_store'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Certificate Store
+      tags:
+      - CrtStore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crt_store'
+        required: true
+  /services/haproxy/configuration/crt_stores/{name}:
+    delete:
+      description: Deletes a crt_store section from the configuration
+      operationId: deleteCrtStore
+      parameters:
+      - description: crt_store name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: crt_store deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Certificate Store
+      tags:
+      - CrtStore
+    get:
+      description: Returns crt_store section by its name
+      operationId: getCrtStore
+      parameters:
+      - description: crt_store name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_store'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a Certificate Store
+      tags:
+      - CrtStore
+    put:
+      description: Modifies a crt_store's configuration by its name
+      operationId: editCrtStore
+      parameters:
+      - description: crt_store name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: crt_store configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_store'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crt_store'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Modify a Certificate Store
+      tags:
+      - CrtStore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crt_store'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    crt_store:
+      allOf:
+      - $ref: '#/components/schemas/crt_store_base'
+      - properties:
+          crt_loads:
+            additionalProperties:
+              $ref: '#/components/schemas/crt_load'
+        type: object
+      description: Storage mechanism to load and store certificates used in the configuration
+      title: Certificate Store
+      x-go-name: CrtStore
+    crt_load:
+      description: Loads a certificate from a store with options
+      properties:
+        acme:
+          description: ACME section name to use
+          type: string
+        alias:
+          description: Certificate alias
+          type: string
+        certificate:
+          description: Certificate filename
+          type: string
+        domains:
+          description: List of domains used to generate the certificate with ACME
+          items:
+            type: string
+          type: array
+          x-go-name: Domains
+          x-omitempty: true
+        issuer:
+          description: OCSP issuer filename
+          type: string
+        key:
+          description: Private key filename
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        ocsp:
+          description: OCSP response filename
+          type: string
+        ocsp_update:
+          description: Automatic OCSP response update
+          enum:
+          - enabled
+          - disabled
+          type: string
+        sctl:
+          description: Signed Certificate Timestamp List filename
+          type: string
+      required:
+      - certificate
+      title: Certificate load action
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    crt_stores:
+      description: List of Certificate Stores
+      type: array
+      items:
+        $ref: '#/components/schemas/crt_store'
+    crt_store_base:
+      additionalProperties: false
+      description: Storage mechanism to load and store certificates used in the configuration
+      properties:
+        crt_base:
+          description: Default directory to fetch SSL certificates from
+          type: string
+        key_base:
+          description: Default directory to fetch SSL private keys from
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_]+$
+          type: string
+      required:
+      - name
+      title: Certificate Store
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

@@ -1,0 +1,413 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Resolver API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Resolver
+paths:
+  /services/haproxy/configuration/resolvers:
+    get:
+      description: Returns an array of all configured resolvers.
+      operationId: getResolvers
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resolvers'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of resolvers
+      tags:
+      - Resolver
+    post:
+      description: Adds a new resolver section to the configuration file.
+      operationId: createResolver
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '201':
+          description: Resolver created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resolver'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resolver'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a resolver
+      tags:
+      - Resolver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/resolver'
+        required: true
+  /services/haproxy/configuration/resolvers/{name}:
+    delete:
+      description: Deletes a resolver from the configuration by it's name.
+      operationId: deleteResolver
+      parameters:
+      - description: Resolver name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Resolver deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a resolver
+      tags:
+      - Resolver
+    get:
+      description: Returns one resolver section configuration by it's name.
+      operationId: getResolver
+      parameters:
+      - description: Resolver name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resolver'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a resolver
+      tags:
+      - Resolver
+    put:
+      description: Replaces a resolver configuration by it's name.
+      operationId: replaceResolver
+      parameters:
+      - description: Resolver name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Resolver replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resolver'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resolver'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a resolver
+      tags:
+      - Resolver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/resolver'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    resolver:
+      allOf:
+      - $ref: '#/components/schemas/resolver_base'
+      - properties:
+          nameservers:
+            additionalProperties:
+              $ref: '#/components/schemas/nameserver'
+        type: object
+      description: Resolver with all its children resources
+      type: object
+      x-go-name: Resolver
+    resolvers:
+      title: Resolvers
+      description: HAProxy resolvers array
+      type: array
+      items:
+        $ref: '#/components/schemas/resolver'
+    nameserver:
+      description: Nameserver used in Runtime DNS configuration
+      example:
+        address: 10.0.0.1
+        name: ns1
+        port: 53
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:${}"]+$
+          type: string
+        port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+      required:
+      - name
+      - address
+      title: Nameserver
+      type: object
+    resolver_base:
+      description: Runtime DNS configuration
+      properties:
+        accepted_payload_size:
+          maximum: 8192
+          minimum: 512
+          type: integer
+        hold_nx:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        hold_obsolete:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        hold_other:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        hold_refused:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        hold_timeout:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        hold_valid:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+        parse-resolv-conf:
+          type: boolean
+        resolve_retries:
+          minimum: 1
+          type: integer
+        timeout_resolve:
+          minimum: 0
+          type: integer
+          x-default-unit: ms
+          x-duration: true
+        timeout_retry:
+          minimum: 0
+          type: integer
+          x-default-unit: ms
+          x-duration: true
+      required:
+      - name
+      title: Resolver Base
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

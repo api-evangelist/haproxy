@@ -1,0 +1,346 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Mailer Entry API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: MailerEntry
+paths:
+  /services/haproxy/configuration/mailer_entries:
+    get:
+      deprecated: true
+      description: Returns an array of all the mailer_entries configured in the specified mailers section.
+      operationId: getMailerEntries
+      parameters:
+      - description: Parent mailers section name
+        in: query
+        name: mailers_section
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailer_entries'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of mailer_entries
+      tags:
+      - MailerEntry
+    post:
+      deprecated: true
+      description: Adds a new mailer entry to the specified mailers section in the configuration file.
+      operationId: createMailerEntry
+      parameters:
+      - description: Parent mailers section name
+        in: query
+        name: mailers_section
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: MailerEntry created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailer_entry'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailer_entry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new mailer_entry
+      tags:
+      - MailerEntry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mailer_entry'
+        required: true
+  /services/haproxy/configuration/mailer_entries/{name}:
+    delete:
+      deprecated: true
+      description: Deletes a mailer entry configuration by it's name in the specified mailers section.
+      operationId: deleteMailerEntry
+      parameters:
+      - description: MailerEntry name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Parent mailers section name
+        in: query
+        name: mailers_section
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: MailerEntry deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a mailer_entry
+      tags:
+      - MailerEntry
+    get:
+      deprecated: true
+      description: Returns one mailer_entry configuration by it's name in the specified mailers section.
+      operationId: getMailerEntry
+      parameters:
+      - description: MailerEntry name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Parent mailers name
+        in: query
+        name: mailers_section
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailer_entry'
+        '404':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one mailer_entry
+      tags:
+      - MailerEntry
+    put:
+      deprecated: true
+      description: Replaces a mailer entry configuration by it's name in the specified mailers section.
+      operationId: replaceMailerEntry
+      parameters:
+      - description: MailerEntry name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Parent mailers section name
+        in: query
+        name: mailers_section
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: MailerEntry replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailer_entry'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mailer_entry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a mailer_entry
+      tags:
+      - MailerEntry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mailer_entry'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    mailer_entry:
+      description: Mailer entry of a Mailers section
+      properties:
+        address:
+          pattern: ^\S+$
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_${}"]+$
+          type: string
+        port:
+          maximum: 65535
+          minimum: 1
+          type: integer
+      required:
+      - name
+      - address
+      - port
+      title: Mailer Entry
+      type: object
+    mailer_entries:
+      title: Mailer Entries
+      description: HAProxy mailer entries
+      type: array
+      items:
+        $ref: '#/components/schemas/mailer_entry'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

@@ -1,0 +1,146 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Reloads API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Reloads
+  description: 'Checking reload success. To avoid constant reloading we reload in intervals that are configurable when
+
+    with reload-delay option. When a change to configuration is made and force_reload url query string
+
+    parameter is false we issue a request for reload, and return the reload ID in response header. You can
+
+    then use reloads endpoints to check the status of that reload ID. If force_reload is true, we override all
+
+    of this and reload immediately.'
+paths:
+  /services/haproxy/reloads:
+    get:
+      description: Returns a list of HAProxy reloads.
+      operationId: getReloads
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reloads'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return list of HAProxy Reloads
+      tags:
+      - Reloads
+  /services/haproxy/reloads/{id}:
+    get:
+      description: Returns one HAProxy reload status.
+      operationId: getReload
+      parameters:
+      - description: Reload id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}-\d+$
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reload'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HAProxy reload status
+      tags:
+      - Reloads
+components:
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    reload:
+      description: HAProxy reload
+      example:
+        id: 2019-01-03-44
+        status: in_progress
+      properties:
+        id:
+          pattern: ^\d{4}-\d{2}-\d{2}-\d+$
+          type: string
+        reload_timestamp:
+          type: integer
+        response:
+          type: string
+        status:
+          enum:
+          - failed
+          - in_progress
+          - succeeded
+          type: string
+      title: HAProxy reload
+      type: object
+    reloads:
+      title: HAProxy Reloads Array
+      description: HAProxy reloads array
+      type: array
+      items:
+        $ref: '#/components/schemas/reload'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

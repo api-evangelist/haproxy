@@ -1,0 +1,526 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Service Discovery API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Service Discovery
+paths:
+  /service_discovery/aws:
+    get:
+      description: Return all configured AWS regions.
+      operationId: getAWSRegions
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/awsRegions'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all configured AWS regions
+      tags:
+      - Service Discovery
+    post:
+      description: 'Add a new AWS region.
+
+        Credentials are not required in case Dataplane API is running in an EC2 instance with proper IAM role attached.'
+      operationId: createAWSRegion
+      responses:
+        201:
+          description: Resource created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/awsRegion'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        409:
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new AWS region
+      tags:
+      - Service Discovery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/awsRegion'
+        required: true
+  /service_discovery/aws/{id}:
+    delete:
+      description: Delete an AWS region configuration by it's id.
+      operationId: deleteAWSRegion
+      parameters:
+      - description: AWS region ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Resource deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete an AWS region
+      tags:
+      - Service Discovery
+    get:
+      description: Return one AWS Region configuration by it's id.
+      operationId: getAWSRegion
+      parameters:
+      - description: AWS region id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/awsRegion'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an AWS region
+      tags:
+      - Service Discovery
+    put:
+      description: Replace an AWS region configuration by its id.
+      operationId: replaceAWSRegion
+      parameters:
+      - description: AWS Region ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Resource updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/awsRegion'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an AWS region
+      tags:
+      - Service Discovery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/awsRegion'
+        required: true
+  /service_discovery/consul:
+    get:
+      description: Returns all configured Consul servers.
+      operationId: getConsuls
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/consuls'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all configured Consul servers
+      tags:
+      - Service Discovery
+    post:
+      description: Adds a new Consul server.
+      operationId: createConsul
+      responses:
+        '201':
+          description: Consul created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/consul'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Consul server
+      tags:
+      - Service Discovery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/consul'
+        required: true
+  /service_discovery/consul/{id}:
+    delete:
+      description: Deletes a Consul server configuration by it's id.
+      operationId: deleteConsul
+      parameters:
+      - description: Consul server Index
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Consul server deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Consul server
+      tags:
+      - Service Discovery
+    get:
+      description: Returns one Consul server configuration by it's id.
+      operationId: getConsul
+      parameters:
+      - description: Consul server id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/consul'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Consul server
+      tags:
+      - Service Discovery
+    put:
+      description: Replaces a Consul server configuration by it's id.
+      operationId: replaceConsul
+      parameters:
+      - description: Consul Index
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Consul server replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/consul'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Consul server
+      tags:
+      - Service Discovery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/consul'
+        required: true
+components:
+  schemas:
+    consul:
+      additionalProperties: false
+      description: Consul server configuration
+      example:
+        address: 127.0.0.1
+        enabled: true
+        id: '0'
+        port: 90
+        retry_timeout: 10
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+        defaults:
+          description: Name of the defaults section to be used in backends created by this service
+          type: string
+        description:
+          type: string
+        enabled:
+          type: boolean
+        health_check_policy:
+          default: none
+          description: "Defines the health check conditions required for each node to be considered valid for the service.\n  none: all nodes are considered valid\n  any: a node is considered valid if any one health check is 'passing'\n  all: a node is considered valid if all health checks are 'passing'\n  min: a node is considered valid if the number of 'passing' checks is greater or equal to the 'health_check_policy_min' value.\n    If the node has less health checks configured then 'health_check_policy_min' it is considered invalid."
+          enum:
+          - none
+          - any
+          - all
+          - min
+          type: string
+        health_check_policy_min:
+          type: integer
+          x-dependency:
+            health_check_policy:
+              value: min
+        id:
+          description: Auto generated ID.
+          pattern: ^[^\s]+$
+          type:
+          - string
+          - 'null'
+        mode:
+          default: http
+          enum:
+          - http
+          - https
+          type: string
+        name:
+          type: string
+        namespace:
+          type: string
+        port:
+          maximum: 65535
+          minimum: 1
+          type: integer
+        retry_timeout:
+          description: Duration in seconds in-between data pulling requests to the consul server
+          minimum: 1
+          type: integer
+        server_slots_base:
+          default: 10
+          type: integer
+        server_slots_growth_increment:
+          type: integer
+        server_slots_growth_type:
+          default: exponential
+          enum:
+          - linear
+          - exponential
+          type: string
+        service_allowlist:
+          items:
+            pattern: ^[^\s]+$
+            type: string
+          type: array
+          x-omitempty: true
+        service_denylist:
+          items:
+            pattern: ^[^\s]+$
+            type: string
+          type: array
+          x-omitempty: true
+        service_name_regexp:
+          description: Regular expression used to filter services by name.
+          type: string
+        token:
+          pattern: ^[^\s]+$
+          type: string
+      required:
+      - address
+      - port
+      - enabled
+      - retry_timeout
+      title: Consul server
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    awsRegion:
+      description: AWS region configuration
+      example:
+        access_key_id: '****************L7GT'
+        allowlist:
+        - key: tag-key
+          value: Instance:Having:This:Tag
+        denylist:
+        - key: tag:Environment
+          value: development
+        enabled: true
+        id: '0'
+        ipv4_address: private
+        name: frontend-service
+        region: us-east-1
+        retry_timeout: 1
+        secret_access_key: '****************soLl'
+      properties:
+        access_key_id:
+          description: AWS Access Key ID.
+          type: string
+        allowlist:
+          description: Specify the AWS filters used to filter the EC2 instances to add
+          items:
+            $ref: '#/components/schemas/awsFilters'
+          type: array
+          x-omitempty: true
+        denylist:
+          description: Specify the AWS filters used to filter the EC2 instances to ignore
+          items:
+            $ref: '#/components/schemas/awsFilters'
+          type: array
+          x-omitempty: true
+        description:
+          type: string
+        enabled:
+          type: boolean
+        id:
+          description: Auto generated ID.
+          pattern: ^[^\s]+$
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        ipv4_address:
+          description: Select which IPv4 address the Service Discovery has to use for the backend server entry
+          enum:
+          - private
+          - public
+          type: string
+        name:
+          type: string
+        region:
+          type: string
+        retry_timeout:
+          description: Duration in seconds in-between data pulling requests to the AWS region
+          minimum: 1
+          type: integer
+        secret_access_key:
+          description: AWS Secret Access Key.
+          type: string
+        server_slots_base:
+          default: 10
+          type: integer
+        server_slots_growth_increment:
+          type: integer
+        server_slots_growth_type:
+          default: exponential
+          enum:
+          - linear
+          - exponential
+          type: string
+      required:
+      - name
+      - region
+      - enabled
+      - retry_timeout
+      - ipv4_address
+      title: AWS region
+      type: object
+    awsRegions:
+      title: AWS
+      description: AWS regions array
+      type: array
+      items:
+        $ref: '#/components/schemas/awsRegion'
+    awsFilters:
+      properties:
+        key:
+          description: Key to use as filter, using the format specified at https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html#options
+          type: string
+        value:
+          description: Value of the filter to use
+          type: string
+      required:
+      - key
+      - value
+      type: object
+    consuls:
+      title: Consuls
+      description: Consuls array
+      type: array
+      items:
+        $ref: '#/components/schemas/consul'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

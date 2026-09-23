@@ -1,0 +1,888 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane HTTP Error Rule API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: HTTPErrorRule
+paths:
+  /services/haproxy/configuration/backends/{parent_name}/http_error_rules:
+    get:
+      description: Returns all HTTP Error Rules that are configured in the specified parent.
+      operationId: getAllHTTPErrorRuleBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP Error Rules
+      tags:
+      - HTTPErrorRule
+    put:
+      description: Replaces a whole list of HTTP Error Rules with the list given in parameter
+      operationId: replaceAllHTTPErrorRuleBackend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All HTTP Error Rules lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP Error Rules list
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rules'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/http_error_rules:
+    get:
+      description: Returns all HTTP Error Rules that are configured in the specified parent.
+      operationId: getAllHTTPErrorRuleFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP Error Rules
+      tags:
+      - HTTPErrorRule
+    put:
+      description: Replaces a whole list of HTTP Error Rules with the list given in parameter
+      operationId: replaceAllHTTPErrorRuleFrontend
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All HTTP Error Rules lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP Error Rules list
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rules'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/http_error_rules:
+    get:
+      description: Returns all HTTP Error Rules that are configured in the specified parent.
+      operationId: getAllHTTPErrorRuleDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all HTTP Error Rules
+      tags:
+      - HTTPErrorRule
+    put:
+      description: Replaces a whole list of HTTP Error Rules with the list given in parameter
+      operationId: replaceAllHTTPErrorRuleDefaults
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All HTTP Error Rules lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace an HTTP Error Rules list
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rules'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/http_error_rules/{index}:
+    delete:
+      description: Deletes a HTTP Error Rule configuration by its index from the specified parent.
+      operationId: deleteHTTPErrorRuleBackend
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP Error Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+    get:
+      description: Returns one HTTP Error Rule configuration by its index in the specified parent.
+      operationId: getHTTPErrorRuleBackend
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+    post:
+      description: Adds a new HTTP Error Rule of the specified type in the specified parent.
+      operationId: createHTTPErrorRuleBackend
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Error Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rule'
+        required: true
+    put:
+      description: Replaces a HTTP Error Rule configuration by its index in the specified parent.
+      operationId: replaceHTTPErrorRuleBackend
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP Error Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rule'
+        required: true
+  /services/haproxy/configuration/frontends/{parent_name}/http_error_rules/{index}:
+    delete:
+      description: Deletes a HTTP Error Rule configuration by its index from the specified parent.
+      operationId: deleteHTTPErrorRuleFrontend
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP Error Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+    get:
+      description: Returns one HTTP Error Rule configuration by its index in the specified parent.
+      operationId: getHTTPErrorRuleFrontend
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+    post:
+      description: Adds a new HTTP Error Rule of the specified type in the specified parent.
+      operationId: createHTTPErrorRuleFrontend
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Error Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rule'
+        required: true
+    put:
+      description: Replaces a HTTP Error Rule configuration by its index in the specified parent.
+      operationId: replaceHTTPErrorRuleFrontend
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP Error Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rule'
+        required: true
+  /services/haproxy/configuration/defaults/{parent_name}/http_error_rules/{index}:
+    delete:
+      description: Deletes a HTTP Error Rule configuration by its index from the specified parent.
+      operationId: deleteHTTPErrorRuleDefaults
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: HTTP Error Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+    get:
+      description: Returns one HTTP Error Rule configuration by its index in the specified parent.
+      operationId: getHTTPErrorRuleDefaults
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+    post:
+      description: Adds a new HTTP Error Rule of the specified type in the specified parent.
+      operationId: createHTTPErrorRuleDefaults
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: HTTP Error Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rule'
+        required: true
+    put:
+      description: Replaces a HTTP Error Rule configuration by its index in the specified parent.
+      operationId: replaceHTTPErrorRuleDefaults
+      parameters:
+      - description: HTTP Error Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: HTTP Error Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_error_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a HTTP Error Rule
+      tags:
+      - HTTPErrorRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/http_error_rule'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    return_header:
+      properties:
+        fmt:
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      - fmt
+      type: object
+      x-go-name: ReturnHeader
+    http_error_rule:
+      additionalProperties: false
+      description: HAProxy HTTP error rule configuration (corresponds to http-error directives)
+      example:
+        index: 0
+        status: 425
+        type: status
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        return_content:
+          type: string
+          x-dependency:
+            return_content_format:
+              required: true
+              value:
+              - errofile
+              - errorfiles
+              - file
+              - lf-file
+              - string
+              - lf-string
+        return_content_format:
+          enum:
+          - default-errorfiles
+          - errorfile
+          - errorfiles
+          - file
+          - lf-file
+          - string
+          - lf-string
+          type: string
+          x-dependency:
+            type:
+              value: status
+        return_content_type:
+          type:
+          - string
+          - 'null'
+          x-dependency:
+            type:
+              value: status
+          x-display-name: Return content type
+        return_hdrs:
+          items:
+            $ref: '#/components/schemas/return_header'
+          type: array
+          x-dependency:
+            return_content_format:
+              value:
+              - file
+              - lf-file
+              - string
+              - lf-string
+          x-go-name: ReturnHeaders
+          x-omitempty: true
+        status:
+          enum:
+          - 200
+          - 400
+          - 401
+          - 403
+          - 404
+          - 405
+          - 407
+          - 408
+          - 410
+          - 413
+          - 425
+          - 429
+          - 500
+          - 501
+          - 502
+          - 503
+          - 504
+          type: integer
+          x-dependency:
+            type:
+              required: true
+              value: status
+        type:
+          enum:
+          - status
+          type: string
+      required:
+      - type
+      - status
+      title: HTTP Error Rule
+      type: object
+    http_error_rules:
+      title: HTTP Error Rules Array
+      description: HAProxy HTTP error rules array (corresponds to http-error directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/http_error_rule'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

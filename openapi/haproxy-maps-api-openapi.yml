@@ -1,0 +1,416 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Maps API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Maps
+paths:
+  /services/haproxy/runtime/maps:
+    get:
+      description: Returns runtime map files.
+      operationId: getAllRuntimeMapFiles
+      parameters:
+      - description: If true, also show unmanaged map files loaded in haproxy
+        in: query
+        name: include_unmanaged
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/maps'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return runtime map files
+      tags:
+      - Maps
+  /services/haproxy/runtime/maps/{name}:
+    delete:
+      description: Remove all map entries from the map file.
+      operationId: clearRuntimeMap
+      parameters:
+      - description: Map file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - description: If true, deletes file from disk
+        in: query
+        name: forceDelete
+        schema:
+          type: boolean
+      - description: If true, immediately syncs changes to disk
+        in: query
+        name: force_sync
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '204':
+          description: All map entries deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Remove all map entries from the map file
+      tags:
+      - Maps
+    get:
+      description: Returns one runtime map file.
+      operationId: getOneRuntimeMap
+      parameters:
+      - description: Map file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/map'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one runtime map file
+      tags:
+      - Maps
+    put:
+      description: Adds a new map payload.
+      operationId: addPayloadRuntimeMap
+      parameters:
+      - description: Map file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - description: If true, immediately syncs changes to disk
+        in: query
+        name: force_sync
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '201':
+          description: Map payload added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/map_entries'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new map payload
+      tags:
+      - Maps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/map_entries'
+        required: true
+  /services/haproxy/runtime/maps/{parent_name}/entries:
+    get:
+      description: Returns an array of all entries in a given runtime map file.
+      operationId: showRuntimeMap
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/map_entries'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one map runtime entries
+      tags:
+      - Maps
+    post:
+      description: Adds an entry into the map file.
+      operationId: addMapEntry
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: If true, immediately syncs changes to disk
+        in: query
+        name: force_sync
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '201':
+          description: Map entry created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/map_entry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Adds an entry into the map file
+      tags:
+      - Maps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/map_entry'
+        required: true
+  /services/haproxy/runtime/maps/{parent_name}/entries/{id}:
+    delete:
+      description: Delete all the map entries from the map by its id.
+      operationId: deleteRuntimeMapEntry
+      parameters:
+      - description: Map id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - $ref: '#/components/parameters/parent_name'
+      - description: If true, immediately syncs changes to disk
+        in: query
+        name: force_sync
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '204':
+          description: Map key/value deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Deletes all the map entries from the map by its id
+      tags:
+      - Maps
+    get:
+      description: Returns one map runtime setting by it's id.
+      operationId: getRuntimeMapEntry
+      parameters:
+      - description: Map id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - $ref: '#/components/parameters/parent_name'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/map_entry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one map runtime setting
+      tags:
+      - Maps
+    put:
+      description: Replaces the value corresponding to each id in a map.
+      operationId: replaceRuntimeMapEntry
+      parameters:
+      - description: Map id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - $ref: '#/components/parameters/parent_name'
+      - description: If true, immediately syncs changes to disk
+        in: query
+        name: force_sync
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Map value replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/map_entry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace the value corresponding to each id in a map
+      tags:
+      - Maps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  description: Map value
+                  type: string
+              required:
+              - value
+              type: object
+        required: true
+components:
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    map_entries:
+      title: Maps Entries
+      description: Entries of one runtime map
+      type: array
+      items:
+        $ref: '#/components/schemas/map_entry'
+    map_entry:
+      description: One Map Entry
+      properties:
+        id:
+          readOnly: true
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+      title: One Map Entry
+      type: object
+    map:
+      description: Map File
+      properties:
+        description:
+          type: string
+        file:
+          type: string
+        id:
+          type: string
+        size:
+          description: File size in bytes.
+          type:
+          - integer
+          - 'null'
+        storage_name:
+          type: string
+      title: Map File
+      type: object
+    maps:
+      title: Map Files Array
+      description: Array of runtime map files
+      type: array
+      items:
+        $ref: '#/components/schemas/map'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

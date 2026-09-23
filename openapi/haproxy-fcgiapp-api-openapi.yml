@@ -1,0 +1,507 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane FCGI App API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: FCGIApp
+paths:
+  /services/haproxy/configuration/fcgi_apps:
+    get:
+      description: Returns an array of all configured FCGI applications.
+      operationId: getFCGIApps
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fcgi_apps'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of FCGI apps
+      tags:
+      - FCGIApp
+    post:
+      description: Adds a new FCGI application to the configuration file.
+      operationId: createFCGIApp
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '201':
+          description: Application created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fcgi_app'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fcgi_app'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add an FCGI app
+      tags:
+      - FCGIApp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/fcgi_app'
+        required: true
+  /services/haproxy/configuration/fcgi_apps/{name}:
+    delete:
+      description: Deletes an FCGI application from the configuration by its name.
+      operationId: deleteFCGIApp
+      parameters:
+      - description: Application name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Application deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete an FCGI app
+      tags:
+      - FCGIApp
+    get:
+      description: Returns one FCGI application configuration by its name.
+      operationId: getFCGIApp
+      parameters:
+      - description: Application name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fcgi_app'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a FCGI app
+      tags:
+      - FCGIApp
+    put:
+      description: Replaces a FCGI application configuration by its name.
+      operationId: replaceFCGIApp
+      parameters:
+      - description: Application name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Application replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fcgi_app'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fcgi_app'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a FCGI app
+      tags:
+      - FCGIApp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/fcgi_app'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    fcgi_pass_header:
+      description: 'Specifies the name of a request header to pass to the FastCGI application.
+
+        Optionally, you can follow it with an ACL-based condition, in which case the FastCGI application evaluates it only if the condition is true.
+
+        Most request headers are already available to the FastCGI application with the prefix "HTTP".
+
+        Thus, you only need this directive to pass headers that are purposefully omitted.
+
+        Currently, the headers "Authorization", "Proxy-Authorization", and hop-by-hop headers are omitted.
+
+        Note that the headers "Content-type" and "Content-length" never pass to the FastCGI application because they are already converted into parameters.'
+      properties:
+        cond:
+          enum:
+          - if
+          - unless
+          type: string
+          x-display-name: Condition
+        cond_test:
+          type: string
+          x-dependency:
+            cond:
+              required: true
+          x-display-name: Condition Test
+        name:
+          type: string
+      type: object
+    fcgi_apps:
+      type: array
+      items:
+        $ref: '#/components/schemas/fcgi_app'
+    fcgi_app_base:
+      description: HAProxy FastCGI application configuration
+      properties:
+        docroot:
+          description: Defines the document root on the remote host. The parameter serves to build the default value of FastCGI parameters SCRIPT_FILENAME and PATH_TRANSLATED. It is a mandatory setting.
+          type: string
+        get_values:
+          description: Enables or disables the retrieval of variables related to connection management.
+          enum:
+          - enabled
+          - disabled
+          type: string
+        index:
+          description: Defines the script name to append after a URI that ends with a slash ("/") to set the default value for the FastCGI parameter SCRIPT_NAME. It is an optional setting.
+          type: string
+        keep_conn:
+          description: Tells the FastCGI application whether or not to keep the connection open after it sends a response. If disabled, the FastCGI application closes the connection after responding to this request.
+          enum:
+          - enabled
+          - disabled
+          type: string
+        log_stderrs:
+          items:
+            $ref: '#/components/schemas/fcgi_log_stderr'
+            x-go-name: FCGIAppLogStderr
+          type: array
+          x-omitempty: true
+        max_reqs:
+          default: 1
+          description: Defines the maximum number of concurrent requests this application can accept. If the FastCGI application retrieves the variable FCGI_MAX_REQS during connection establishment, it can override this option. Furthermore, if the application does not do multiplexing, it will ignore this option.
+          minimum: 1
+          type: integer
+        metadata:
+          additionalProperties:
+            type: object
+        mpxs_conns:
+          description: Enables or disables the support of connection multiplexing. If the FastCGI application retrieves the variable FCGI_MPXS_CONNS during connection establishment, it can override this option.
+          enum:
+          - enabled
+          - disabled
+          type: string
+        name:
+          description: Declares a FastCGI application
+          pattern: ^[^\s]+$
+          type: string
+        pass_headers:
+          items:
+            $ref: '#/components/schemas/fcgi_pass_header'
+            x-go-name: FCGIAppLogPassHeader
+          type: array
+          x-omitempty: true
+        path_info:
+          description: 'Defines a regular expression to extract the script-name and the path-info from the URI.
+
+            Thus, <regex> must have two captures: the first to capture the script name, and the second to capture the path- info.
+
+            If not defined, it does not perform matching on the URI, and does not fill the FastCGI parameters PATH_INFO and PATH_TRANSLATED.'
+          type: string
+        set_params:
+          items:
+            $ref: '#/components/schemas/fcgi_set_param'
+          type: array
+          x-omitempty: true
+      required:
+      - name
+      - docroot
+      title: FCGI application base
+      type: object
+    fcgi_app:
+      allOf:
+      - $ref: '#/components/schemas/fcgi_app_base'
+      - properties:
+          acl_list:
+            $ref: '#/components/schemas/acls'
+            x-go-name: AclList
+        type: object
+      description: App with all its children resources
+      type: object
+      x-go-name: FCGIApp
+    acls:
+      title: ACL Lines Array
+      description: HAProxy ACL lines array (corresponds to acl directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/acl'
+    fcgi_set_param:
+      description: 'Sets a FastCGI parameter to pass to this application.
+
+        Its value, defined by <format> can take a formatted string, the same as the log directive.
+
+        Optionally, you can follow it with an ACL-based condition, in which case the FastCGI application evaluates it only if the condition is true.'
+      properties:
+        cond:
+          enum:
+          - if
+          - unless
+          type: string
+          x-display-name: Condition
+        cond_test:
+          type: string
+          x-dependency:
+            cond:
+              required: true
+          x-display-name: Condition Test
+        format:
+          type: string
+        name:
+          type: string
+      type: object
+    acl:
+      additionalProperties: false
+      description: 'The use of Access Control Lists (ACL) provides a flexible solution to perform
+
+        content switching and generally to take decisions based on content extracted
+
+        from the request, the response or any environmental status.
+
+        '
+      properties:
+        acl_name:
+          pattern: ^[^\s]+$
+          type: string
+        criterion:
+          pattern: ^[^\s]+$
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        value:
+          type: string
+      required:
+      - acl_name
+      - criterion
+      title: ACL Lines
+      type: object
+    fcgi_log_stderr:
+      description: 'Enables logging of STDERR messages that the FastCGI application reports.
+
+        It is an optional setting. By default, HAProxy Enterprise ignores STDERR messages.'
+      properties:
+        address:
+          type: string
+        facility:
+          title: Facility
+          type: string
+        format:
+          title: Format
+          type: string
+        global:
+          title: Global
+          type: boolean
+        len:
+          title: Length
+          type: integer
+        level:
+          title: Level
+          type: string
+          x-dependency:
+            facility:
+              required: true
+        minlevel:
+          title: Minimum level
+          type: string
+          x-dependency:
+            facility:
+              required: true
+        sample:
+          properties:
+            ranges:
+              title: Range
+              type: string
+            size:
+              title: Size
+              type: integer
+          required:
+          - ranges
+          - size
+          title: Sample
+          type: object
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

@@ -1,0 +1,317 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Userlist API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: User List
+paths:
+  /services/haproxy/configuration/userlists:
+    get:
+      description: Returns an array of all configured userlists.
+      operationId: getUserlists
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userlists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of userlists
+      tags:
+      - User List
+    post:
+      description: Adds a new userlist to the configuration file.
+      operationId: createUserlist
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '201':
+          description: Userlist created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userlist'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userlist'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new userlist
+      tags:
+      - User List
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userlist'
+        required: true
+  /services/haproxy/configuration/userlists/{name}:
+    delete:
+      description: Deletes a userlist configuration by it's name.
+      operationId: deleteUserlist
+      parameters:
+      - description: Userlist name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Userlist deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a userlist
+      tags:
+      - User List
+    get:
+      description: Returns one userlist configuration by it's name.
+      operationId: getUserlist
+      parameters:
+      - description: Userlist name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/full_section'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userlist'
+        '404':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one userlist
+      tags:
+      - User List
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    userlist_base:
+      description: HAProxy configuration of access control
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+      required:
+      - name
+      title: Userlist Base
+      type: object
+    userlists:
+      title: Userlists
+      description: HAProxy userlists array
+      type: array
+      items:
+        $ref: '#/components/schemas/userlist'
+    userlist:
+      allOf:
+      - $ref: '#/components/schemas/userlist_base'
+      - properties:
+          groups:
+            additionalProperties:
+              $ref: '#/components/schemas/group'
+          users:
+            additionalProperties:
+              $ref: '#/components/schemas/user'
+        type: object
+      description: Userlist with all its children resources
+      type: object
+      x-go-name: Userlist
+    user:
+      description: HAProxy userlist user
+      properties:
+        groups:
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        password:
+          type: string
+        secure_password:
+          type: boolean
+        username:
+          pattern: ^[A-Za-z0-9-_.:${}"]+$
+          type: string
+      required:
+      - username
+      - secure_password
+      - password
+      title: User
+      type: object
+    group:
+      description: HAProxy userlist group
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:${}"]+$
+          type: string
+        users:
+          type: string
+      required:
+      - name
+      title: Group
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

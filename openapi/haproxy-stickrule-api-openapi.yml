@@ -1,0 +1,391 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Stick Rule API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: StickRule
+paths:
+  /services/haproxy/configuration/backends/{parent_name}/stick_rules:
+    get:
+      description: Returns all Stick Rules that are configured in specified backend.
+      operationId: getStickRules
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_rules'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all Stick Rules
+      tags:
+      - StickRule
+    put:
+      description: Replaces a whole list of Stick Rules with the list given in parameter
+      operationId: replaceStickRules
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: All Stick Rule lines replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_rules'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_rules'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Stick Rule list
+      tags:
+      - StickRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/stick_rules'
+        required: true
+  /services/haproxy/configuration/backends/{parent_name}/stick_rules/{index}:
+    delete:
+      description: Deletes a Stick Rule configuration by it's index from the specified backend.
+      operationId: deleteStickRule
+      parameters:
+      - description: Stick Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+        '204':
+          description: Stick Rule deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a Stick Rule
+      tags:
+      - StickRule
+    get:
+      description: Returns one Stick Rule configuration by it's index in the specified backend.
+      operationId: getStickRule
+      parameters:
+      - description: Stick Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_rule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one Stick Rule
+      tags:
+      - StickRule
+    post:
+      description: Adds a new Stick Rule of the specified type in the specified backend.
+      operationId: createStickRule
+      parameters:
+      - description: Stick Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '201':
+          description: Stick Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new Stick Rule
+      tags:
+      - StickRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/stick_rule'
+        required: true
+    put:
+      description: Replaces a Stick Rule configuration by it's index in the specified backend.
+      operationId: replaceStickRule
+      parameters:
+      - description: Stick Rule Index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Stick Rule replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_rule'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stick_rule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a Stick Rule
+      tags:
+      - StickRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/stick_rule'
+        required: true
+components:
+  parameters:
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    stick_rule:
+      additionalProperties: false
+      description: Define a pattern used to create an entry in a stickiness table or matching condition or associate a user to a server.
+      example:
+        pattern: src
+        type: match
+      properties:
+        cond:
+          enum:
+          - if
+          - unless
+          type: string
+          x-display-name: Condition
+        cond_test:
+          type: string
+          x-dependency:
+            cond:
+              required: true
+          x-display-name: Condition Test
+          x-dynamic-enum:
+            freeFormat: true
+            operation: getACLs
+            property: acl_name
+        metadata:
+          additionalProperties:
+            type: object
+        pattern:
+          pattern: ^[^\s]+$
+          type: string
+        table:
+          pattern: ^[^\s]+$
+          type: string
+        type:
+          enum:
+          - match
+          - 'on'
+          - store-request
+          - store-response
+          type: string
+      required:
+      - type
+      - pattern
+      title: Stick Rule
+      type: object
+    stick_rules:
+      title: Stick Rules Array
+      description: HAProxy backend stick rules array (corresponds to stick store-request, stick match, stick on, stick store-response)
+      type: array
+      items:
+        $ref: '#/components/schemas/stick_rule'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

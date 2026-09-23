@@ -1,0 +1,833 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane SSL Runtime API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: SSLRuntime
+paths:
+  /services/haproxy/runtime/ssl_ca_files:
+    get:
+      description: Returns all SSL CA files using the runtime socket.
+      operationId: getAllCaFiles
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_ca_files'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all SSL CA files
+      tags:
+      - SSLRuntime
+    post:
+      description: Creates a new SSL CA file using the runtime socket.
+      operationId: createCaFile
+      responses:
+        '201':
+          description: SSL CA file created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Creates a new SSL CA file
+      tags:
+      - SSLRuntime
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file_upload:
+                  type: string
+                  description: CA certificate file
+                  format: binary
+              required:
+              - file_upload
+  /services/haproxy/runtime/ssl_ca_files/{name}:
+    delete:
+      operationId: deleteCaFile
+      parameters:
+      - description: SSL CA file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '204':
+          description: SSL CA deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Deletes a CA file
+      tags:
+      - SSLRuntime
+    get:
+      description: Returns an SSL CA file by name using the runtime socket.
+      operationId: getCaFile
+      parameters:
+      - description: SSL CA file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_ca_file'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an SSL CA file
+      tags:
+      - SSLRuntime
+    put:
+      description: Replace the contents of a CA file using the runtime socket.
+      operationId: setCaFile
+      parameters:
+      - description: SSL CA file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: SSL CA payload added
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Update the contents of a CA file
+      tags:
+      - SSLRuntime
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file_upload:
+                  type: string
+                  format: binary
+              required:
+              - file_upload
+  /services/haproxy/runtime/ssl_ca_files/{name}/entries:
+    post:
+      description: Adds an entry to an existing CA file using the runtime socket.
+      operationId: addCaEntry
+      parameters:
+      - description: SSL CA file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_certificate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a certificate to a CA file
+      tags:
+      - SSLRuntime
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file_upload:
+                  type: string
+                  description: Payload of the cert entry
+                  format: binary
+              required:
+              - file_upload
+  /services/haproxy/runtime/ssl_ca_files/{name}/entries/{index}:
+    get:
+      description: Returns an SSL CA file cert entry.
+      operationId: getCaEntry
+      parameters:
+      - description: SSL CA file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - description: SSL CA file index
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_certificate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an SSL CA file cert entry
+      tags:
+      - SSLRuntime
+  /services/haproxy/runtime/ssl_certs:
+    get:
+      description: Returns certificate files descriptions from runtime.
+      operationId: getAllCerts
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_certificates'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a list of SSL certificate files
+      tags:
+      - SSLRuntime
+    post:
+      description: Creates a new SSL certificate file using the runtime socket.
+      operationId: createCert
+      responses:
+        '201':
+          description: Certificate created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Create a new SSL certificate file
+      tags:
+      - SSLRuntime
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file_upload:
+                  type: string
+                  description: Certificate file
+                  format: binary
+              required:
+              - file_upload
+  /services/haproxy/runtime/ssl_certs/{name}:
+    delete:
+      description: Deletes a certificate using the runtime socket.
+      operationId: deleteCert
+      parameters:
+      - description: SSL certificate name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '204':
+          description: File deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a certificate
+      tags:
+      - SSLRuntime
+    get:
+      description: Returns one structured certificate using the runtime socket.
+      operationId: getCert
+      parameters:
+      - description: SSL certificate name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_certificate'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one structured certificate
+      tags:
+      - SSLRuntime
+    put:
+      description: Sets a certificate payload using the runtime socket.
+      operationId: replaceCert
+      parameters:
+      - description: SSL certificate name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: File updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace the contents of a certificate
+      tags:
+      - SSLRuntime
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file_upload:
+                  type: string
+                  format: binary
+              required:
+              - file_upload
+  /services/haproxy/runtime/ssl_crl_files:
+    get:
+      description: Returns all the certificate revocation list files using the runtime socket.
+      operationId: getAllCrl
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_crls'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of all the CRL files
+      tags:
+      - SSLRuntime
+    post:
+      description: Creates a new CRL file with its contents using the runtime socket.
+      operationId: createCrl
+      responses:
+        '201':
+          description: CRL file created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Create a new CRL file
+      tags:
+      - SSLRuntime
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file_upload:
+                  type: string
+                  description: CRL file
+                  format: binary
+              required:
+              - file_upload
+  /services/haproxy/runtime/ssl_crl_files/{name}:
+    delete:
+      description: Deletes a CRL file using the runtime socket.
+      operationId: deleteCrl
+      parameters:
+      - description: CRL file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '204':
+          description: File deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a CRL file
+      tags:
+      - SSLRuntime
+    get:
+      description: Returns one or all entries in a CRL file using the runtime socket.
+      operationId: getCrl
+      parameters:
+      - description: CRL file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - description: Entry index to return. Starts at 1. If not provided, all entries are returned.
+        in: query
+        name: index
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_crl_entries'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Get the contents of a CRL file
+      tags:
+      - SSLRuntime
+    put:
+      description: Replaces the contents of a CRL file using the runtime socket.
+      operationId: replaceCrl
+      parameters:
+      - description: CRL file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: File modified
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace the contents of a CRL file
+      tags:
+      - SSLRuntime
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file_upload:
+                  type: string
+                  description: CRL file contents
+                  format: binary
+              required:
+              - file_upload
+  /services/haproxy/runtime/ssl_crt_lists:
+    get:
+      description: Returns an array of crt-list file descriptions from runtime.
+      operationId: getAllCrtLists
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_crt_lists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Get the list of all crt-list files
+      tags:
+      - SSLRuntime
+  /services/haproxy/runtime/ssl_crt_lists/entries:
+    delete:
+      description: Deletes a single entry from the given crt-list using the runtime socket.
+      operationId: deleteCrtListEntry
+      parameters:
+      - description: SSL crt list name
+        in: query
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - description: SSL cert entry name
+        in: query
+        name: cert_file
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      - description: The line number where the entry is located, in case several entries share the same certificate.
+        in: query
+        name: line_number
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete an entry from a crt-list
+      tags:
+      - SSLRuntime
+    get:
+      description: Returns an array of entries present inside the given crt-list file. Their index can be used to delete them.
+      operationId: getAllCrtListEntries
+      parameters:
+      - description: SSL crt-list filename
+        in: query
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ssl_crt_list_entries'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Get all the entries inside a crt-list
+      tags:
+      - SSLRuntime
+    post:
+      description: Appends an entry to the given crt-list using the runtime socket.
+      operationId: addCrtListEntry
+      parameters:
+      - description: SSL crt-list filename
+        in: query
+        name: name
+        required: true
+        schema:
+          type: string
+          pattern: ^[^\r\n<>*;$#&{}"]+$
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add an entry into a crt-list
+      tags:
+      - SSLRuntime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ssl_crt_list_entry'
+        required: true
+components:
+  schemas:
+    ssl_crl:
+      description: A file containing one or more SSL/TLS CRLs
+      properties:
+        description:
+          type: string
+        file:
+          type: string
+        storage_name:
+          type: string
+      title: SSL CRL File
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    ssl_crl_entry:
+      description: A certificate revocation list entry.
+      properties:
+        issuer:
+          type: string
+        last_update:
+          format: date
+          type: string
+        next_update:
+          format: date
+          type: string
+        revoked_certificates:
+          items:
+            properties:
+              revocation_date:
+                format: date
+                type: string
+              serial_number:
+                type: string
+            type: object
+            x-go-name: RevokedCertificates
+          type: array
+          x-omitempty: true
+        signature_algorithm:
+          type: string
+        status:
+          type: string
+        storage_name:
+          type: string
+        version:
+          type: string
+      title: One CRL Entry
+      type: object
+    ssl_crls:
+      title: SSL CRL Files Array
+      description: Array of ssl crl files
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crl'
+    ssl_crt_lists:
+      title: SSL Crt List Array
+      description: Array of SSL Crt List
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crt_list'
+    ssl_certificates:
+      title: SSL Certificate Files Array
+      description: Array of ssl certificate files
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_certificate'
+    ssl_ca_files:
+      title: SSL CA Files Array
+      description: Array of SSL CA files
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_ca_file'
+    ssl_crt_list_entries:
+      title: SSL Crt List Entry Array
+      description: Array of SSL Crt List Entry
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crt_list_entry'
+    ssl_ca_file:
+      description: A file containing one or more SSL/TLS certificates and keys
+      properties:
+        count:
+          type: string
+        file:
+          type: string
+        storage_name:
+          type: string
+      title: SSL File
+      type: object
+    ssl_crl_entries:
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crl_entry'
+    ssl_certificate:
+      description: A file containing one or more SSL/TLS certificates and keys
+      properties:
+        algorithm:
+          readOnly: true
+          type: string
+        authority_key_id:
+          readOnly: true
+          type: string
+        chain_issuer:
+          readOnly: true
+          type: string
+          x-omitempty: true
+        chain_subject:
+          readOnly: true
+          type: string
+          x-omitempty: true
+        description:
+          readOnly: true
+          type: string
+        domains:
+          readOnly: true
+          type: string
+          x-omitempty: true
+        file:
+          readOnly: true
+          type: string
+        ip_addresses:
+          readOnly: true
+          type: string
+          x-omitempty: true
+        issuers:
+          readOnly: true
+          type: string
+          x-omitempty: true
+        not_after:
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+          x-go-custom-tag: gorm:"type:timestamp with time zone"
+        not_before:
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+          x-go-custom-tag: gorm:"type:timestamp with time zone"
+        serial:
+          type: string
+        sha1_finger_print:
+          readOnly: true
+          type: string
+        sha256_finger_print:
+          readOnly: true
+          type: string
+        size:
+          description: File size in bytes.
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        status:
+          description: Only set when using the runtime API.
+          readOnly: true
+          type: string
+          x-omitempty: true
+        storage_name:
+          readOnly: true
+          type: string
+        subject:
+          readOnly: true
+          type: string
+        subject_alternative_names:
+          readOnly: true
+          type: string
+        subject_key_id:
+          readOnly: true
+          type: string
+      title: SSL File
+      type: object
+    ssl_crt_list:
+      description: SSL Crt List file
+      properties:
+        file:
+          type: string
+      title: SSL Crt List
+      type: object
+    ssl_crt_list_entry:
+      description: SSL Crt List Entry
+      properties:
+        file:
+          type: string
+        line_number:
+          minimum: 0
+          type: integer
+        sni_filter:
+          items:
+            type: string
+          type: array
+          x-go-name: SNIFilter
+          x-omitempty: true
+        ssl_bind_config:
+          type: string
+          x-go-name: SSLBindConfig
+      title: SSL Crt List Entry
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

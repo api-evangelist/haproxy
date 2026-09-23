@@ -1,0 +1,1199 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Spoe API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Spoe
+paths:
+  /services/haproxy/spoe/spoe_files:
+    get:
+      description: Returns all available SPOE files.
+      operationId: getAllSpoeFiles
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_files'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return all available SPOE files
+      tags:
+      - Spoe
+    post:
+      description: Creates SPOE file with its entries.
+      operationId: createSpoe
+      responses:
+        '201':
+          description: SPOE file created with its entries
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Creates SPOE file with its entries
+      tags:
+      - Spoe
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file_upload:
+                  type: string
+                  description: The spoe file to upload
+                  format: binary
+  /services/haproxy/spoe/spoe_files/{name}:
+    delete:
+      description: Deletes SPOE file.
+      operationId: deleteSpoeFile
+      parameters:
+      - description: SPOE file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: SPOE file deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete SPOE file
+      tags:
+      - Spoe
+    get:
+      description: Returns one SPOE file.
+      operationId: getOneSpoeFile
+      parameters:
+      - description: SPOE file name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: string
+                type: object
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one SPOE file
+      tags:
+      - Spoe
+  /services/haproxy/spoe/spoe_files/{parent_name}/scopes:
+    get:
+      description: Returns an array of all configured spoe scopes.
+      operationId: getAllSpoeScope
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_scopes'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of spoe scopes
+      tags:
+      - Spoe
+    post:
+      description: Adds a new spoe scope.
+      operationId: createSpoeScope
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '201':
+          description: Spoe scope created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_scope'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new spoe scope
+      tags:
+      - Spoe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spoe_scope'
+        required: true
+  /services/haproxy/spoe/spoe_files/{parent_name}/scopes/{name}:
+    delete:
+      description: Deletes a SPOE scope from the configuration file.
+      operationId: deleteSpoeScope
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '204':
+          description: Spoe scope deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a SPOE scope
+      tags:
+      - Spoe
+    get:
+      description: Returns one SPOE scope in one SPOE file.
+      operationId: getSpoeScope
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_scope'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one SPOE scope
+      tags:
+      - Spoe
+  /services/haproxy/spoe/spoe_files/{parent_name}/scopes/{scope_name}/agents:
+    get:
+      description: Returns an array of all configured spoe agents in one scope.
+      operationId: getAllSpoeAgent
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_agents'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of spoe agents in one scope
+      tags:
+      - Spoe
+    post:
+      description: Adds a new spoe agent to the spoe scope.
+      operationId: createSpoeAgent
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '201':
+          description: Spoe agent created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_agent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new spoe agent to scope
+      tags:
+      - Spoe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spoe_agent'
+        required: true
+  /services/haproxy/spoe/spoe_files/{parent_name}/scopes/{scope_name}/agents/{name}:
+    delete:
+      description: Deletes a SPOE agent from the configuration in one SPOE scope.
+      operationId: deleteSpoeAgent
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe agent name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '204':
+          description: Spoe agent deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a SPOE agent
+      tags:
+      - Spoe
+    get:
+      description: Returns one spoe agent configuration in one SPOE scope.
+      operationId: getSpoeAgent
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe agent name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_agent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a spoe agent
+      tags:
+      - Spoe
+    put:
+      description: Replaces a SPOE agent configuration in one SPOE scope.
+      operationId: replaceSpoeAgent
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe agent name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '200':
+          description: Spoe agent replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_agent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a SPOE agent
+      tags:
+      - Spoe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spoe_agent'
+        required: true
+  /services/haproxy/spoe/spoe_files/{parent_name}/scopes/{scope_name}/messages:
+    get:
+      description: Returns an array of all configured spoe messages in one scope.
+      operationId: getAllSpoeMessage
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_messages'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of spoe messages in one scope
+      tags:
+      - Spoe
+    post:
+      description: Adds a new spoe message to the spoe scope.
+      operationId: createSpoeMessage
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '201':
+          description: Spoe message created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new spoe message to scope
+      tags:
+      - Spoe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spoe_message'
+        required: true
+  /services/haproxy/spoe/spoe_files/{parent_name}/scopes/{scope_name}/messages/{name}:
+    delete:
+      description: Deletes a spoe message from the SPOE scope.
+      operationId: deleteSpoeMessage
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe message name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '204':
+          description: Spoe message deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a spoe message
+      tags:
+      - Spoe
+    get:
+      description: Returns one spoe message configuration in SPOE scope.
+      operationId: getSpoeMessage
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe message name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_message'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a spoe message
+      tags:
+      - Spoe
+    put:
+      description: Replaces a spoe message configuration in one SPOE scope.
+      operationId: replaceSpoeMessage
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe message name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '200':
+          description: Spoe message replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a spoe message
+      tags:
+      - Spoe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spoe_message'
+        required: true
+  /services/haproxy/spoe/spoe_files/{parent_name}/scopes/{scope_name}/groups:
+    get:
+      description: Returns an array of all configured SPOE groups in one SPOE scope.
+      operationId: getAllSpoeGroup
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_groups'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return an array of SPOE groups
+      tags:
+      - Spoe
+    post:
+      description: Adds a new SPOE groups to the SPOE scope.
+      operationId: createSpoeGroup
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '201':
+          description: Spoe groups created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_group'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Add a new SPOE groups
+      tags:
+      - Spoe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spoe_group'
+        required: true
+  /services/haproxy/spoe/spoe_files/{parent_name}/scopes/{scope_name}/groups/{name}:
+    delete:
+      description: Deletes a SPOE groups from the one SPOE scope.
+      operationId: deleteSpoeGroup
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe group name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '204':
+          description: Spoe group deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a SPOE groups
+      tags:
+      - Spoe
+    get:
+      description: Returns one SPOE groups configuration in one SPOE scope.
+      operationId: getSpoeGroup
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe group name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            Configuration-Version:
+              description: Spoe configuration file version
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_group'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a SPOE groups
+      tags:
+      - Spoe
+    put:
+      description: Replaces a SPOE groups configuration in one SPOE scope.
+      operationId: replaceSpoeGroup
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Spoe scope name
+        in: path
+        name: scope_name
+        required: true
+        schema:
+          type: string
+      - description: Spoe group name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/version'
+      responses:
+        '200':
+          description: Spoe groups replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_group'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Replace a SPOE groups
+      tags:
+      - Spoe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spoe_group'
+        required: true
+  /services/haproxy/spoe/{parent_name}/version:
+    get:
+      description: Returns SPOE configuration version.
+      operationId: getSpoeConfigurationVersion
+      parameters:
+      - $ref: '#/components/parameters/transaction_id'
+      - $ref: '#/components/parameters/parent_name'
+      responses:
+        '200':
+          description: SPOE configuration version
+          content:
+            application/json:
+              schema:
+                type: integer
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return a SPOE configuration version
+      tags:
+      - Spoe
+components:
+  parameters:
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+  schemas:
+    spoe_agent:
+      description: SPOE agent configuration
+      properties:
+        async:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        continue-on-error:
+          enum:
+          - enabled
+          type: string
+        dontlog-normal:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        engine-name:
+          type: string
+        force-set-var:
+          enum:
+          - enabled
+          type: string
+        groups:
+          type: string
+        hello_timeout:
+          type: integer
+          x-default-unit: ms
+          x-duration: true
+        idle_timeout:
+          type: integer
+          x-default-unit: ms
+          x-duration: true
+        log:
+          $ref: '#/components/schemas/log_targets'
+        max-frame-size:
+          type: integer
+        max-waiting-frames:
+          type: integer
+        maxconnrate:
+          type: integer
+        maxerrrate:
+          type: integer
+        messages:
+          type: string
+        name:
+          type: string
+        option_set-on-error:
+          pattern: ^[A-Za-z0-9-_.]+$
+          type: string
+        option_set-process-time:
+          pattern: ^[A-Za-z0-9-_.]+$
+          type: string
+        option_set-total-time:
+          pattern: ^[A-Za-z0-9-_.]+$
+          type: string
+        option_var-prefix:
+          pattern: ^[A-Za-z0-9-_.]+$
+          type: string
+        pipelining:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        processing_timeout:
+          type: integer
+          x-default-unit: ms
+          x-duration: true
+        register-var-names:
+          type: string
+        send-frag-payload:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        use-backend:
+          type: string
+      required:
+      - name
+      title: SPOE agent
+      type: object
+    acls:
+      title: ACL Lines Array
+      description: HAProxy ACL lines array (corresponds to acl directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/acl'
+    spoe_messages:
+      title: SPOE Messages
+      description: SPOE Messages of one scope in SPOE file
+      type: array
+      items:
+        $ref: '#/components/schemas/spoe_message'
+    spoe_groups:
+      title: SPOE Groups
+      description: SPOE Groups of one scope in SPOE file
+      type: array
+      items:
+        $ref: '#/components/schemas/spoe_group'
+    spoe_group:
+      description: SPOE group section configuration
+      properties:
+        messages:
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      title: SPOE group
+      type: object
+    acl:
+      additionalProperties: false
+      description: 'The use of Access Control Lists (ACL) provides a flexible solution to perform
+
+        content switching and generally to take decisions based on content extracted
+
+        from the request, the response or any environmental status.
+
+        '
+      properties:
+        acl_name:
+          pattern: ^[^\s]+$
+          type: string
+        criterion:
+          pattern: ^[^\s]+$
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        value:
+          type: string
+      required:
+      - acl_name
+      - criterion
+      title: ACL Lines
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    spoe_scopes:
+      title: SPOE Scopes
+      description: All SPOE Scopes
+      type: array
+      items:
+        $ref: '#/components/schemas/spoe_scope'
+    spoe_agents:
+      title: SPOE Agents
+      description: SPOE Agents of one scope in SPOE file
+      type: array
+      items:
+        $ref: '#/components/schemas/spoe_agent'
+    spoe_message:
+      description: SPOE message section configuration
+      properties:
+        acl:
+          $ref: '#/components/schemas/acls'
+        args:
+          type: string
+        event:
+          properties:
+            cond:
+              enum:
+              - if
+              - unless
+              type: string
+              x-display-name: Condition
+            cond_test:
+              type: string
+              x-dependency:
+                cond:
+                  required: true
+              x-display-name: Condition Test
+            name:
+              enum:
+              - on-backend-http-request
+              - on-backend-tcp-request
+              - on-client-session
+              - on-frontend-http-request
+              - on-frontend-tcp-request
+              - on-http-response
+              - on-server-session
+              - on-tcp-response
+              type: string
+          required:
+          - name
+          type: object
+        name:
+          type: string
+      required:
+      - name
+      title: SPOE message
+      type: object
+    log_target:
+      additionalProperties: false
+      description: Per-instance logging of events and traffic.
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        facility:
+          enum:
+          - kern
+          - user
+          - mail
+          - daemon
+          - auth
+          - syslog
+          - lpr
+          - news
+          - uucp
+          - cron
+          - auth2
+          - ftp
+          - ntp
+          - audit
+          - alert
+          - cron2
+          - local0
+          - local1
+          - local2
+          - local3
+          - local4
+          - local5
+          - local6
+          - local7
+          type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        format:
+          enum:
+          - local
+          - rfc3164
+          - rfc5424
+          - priority
+          - short
+          - timed
+          - iso
+          - raw
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        global:
+          type: boolean
+        length:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        level:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        metadata:
+          additionalProperties:
+            type: object
+        minlevel:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            level:
+              required: false
+            nolog:
+              value: false
+        nolog:
+          type: boolean
+        profile:
+          type: string
+        sample_range:
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        sample_size:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+            sample_range:
+              required: true
+      title: Log Target
+      type: object
+    log_targets:
+      title: Log Target Array
+      description: HAProxy log target array (corresponds to log directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/log_target'
+    spoe_files:
+      description: SPOE files
+      items:
+        type: string
+      title: SPOE files
+      type: array
+      x-omitempty: true
+    spoe_scope:
+      description: SPOE scope name
+      title: SPOE scope
+      type: string
+  responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

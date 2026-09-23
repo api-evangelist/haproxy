@@ -1,0 +1,272 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Spoe Transactions API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: SpoeTransactions
+paths:
+  /services/haproxy/spoe/spoe_files/{parent_name}/transactions:
+    get:
+      description: Returns a list of SPOE configuration transactions. Transactions can be filtered by their status.
+      operationId: getAllSpoeTransaction
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Filter by transaction status
+        in: query
+        name: status
+        required: false
+        schema:
+          type: string
+          enum:
+          - failed
+          - in_progress
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_transactions'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return list of SPOE configuration transactions
+      tags:
+      - SpoeTransactions
+    post:
+      description: Starts a new transaction and returns it's id
+      operationId: startSpoeTransaction
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Configuration version on which to work on
+        in: query
+        name: version
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Transaction started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_transaction'
+        '429':
+          description: Too many open transactions
+          content:
+            application/json:
+              schema:
+                example:
+                  code: 429
+                  message: cannot start a new transaction, reached the maximum amount of 20 active transactions available
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                type: object
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Start a new transaction
+      tags:
+      - SpoeTransactions
+  /services/haproxy/spoe/spoe_files/{parent_name}/transactions/{id}:
+    delete:
+      description: Deletes a transaction.
+      operationId: deleteSpoeTransaction
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Transaction id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Transaction deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Delete a transaction
+      tags:
+      - SpoeTransactions
+    get:
+      description: Returns one SPOE configuration transactions.
+      operationId: getSpoeTransaction
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Transaction id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return one SPOE configuration transactions
+      tags:
+      - SpoeTransactions
+    put:
+      description: Commit transaction, execute all operations in transaction and return msg
+      operationId: commitSpoeTransaction
+      parameters:
+      - $ref: '#/components/parameters/parent_name'
+      - description: Transaction id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/force_reload'
+      responses:
+        '200':
+          description: Transaction successfully committed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_transaction'
+        '202':
+          description: Configuration change accepted and reload requested
+          headers:
+            Reload-ID:
+              description: ID of the requested reload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/spoe_transaction'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Commit transaction
+      tags:
+      - SpoeTransactions
+components:
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    spoe_transaction:
+      description: SPOE configuration transaction
+      example:
+        _version: 2
+        id: 273e3385-2d0c-4fb1-aa27-93cbb31ff203
+        status: in_progress
+      properties:
+        _version:
+          type: integer
+        id:
+          pattern: ^[^\s]+$
+          type: string
+        status:
+          enum:
+          - failed
+          - in_progress
+          - success
+          type: string
+      title: SPOE configuration transaction
+      type: object
+    spoe_transactions:
+      title: SPOE Transactions array
+      description: SPOE Configuration transactions array
+      type: array
+      items:
+        $ref: '#/components/schemas/spoe_transaction'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation

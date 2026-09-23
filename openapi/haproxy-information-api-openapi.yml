@@ -1,0 +1,413 @@
+openapi: 3.2.0
+info:
+  title: HAProxy Data Plane Information API
+  description: 'API for editing and managing haproxy instances. Provides process information, configuration management,
+
+    haproxy stats and logs.'
+  version: '3.4'
+  contact:
+    name: HAProxy Support
+    url: https://my.haproxy.com/portal/cust/login
+    email: support@haproxy.com
+servers:
+- url: /v3
+security:
+- basic_auth: []
+tags:
+- name: Information
+paths:
+  /info:
+    get:
+      operationId: getInfo
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/info'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return API, hardware and OS information
+      tags:
+      - Information
+  /services/haproxy/runtime/info:
+    get:
+      operationId: getHaproxyProcessInfo
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/process_info'
+        default:
+          $ref: '#/components/responses/DefaultError'
+      summary: Return HAProxy process information
+      tags:
+      - Information
+components:
+  schemas:
+    info:
+      description: General API, OS and hardware information
+      example:
+        api:
+          build_date: '2019-08-21T17:31:56.000Z'
+          version: v1.2.1 45a3288.dev
+        system:
+          cpu_info:
+            model: Intel(R) Core(TM) i7-7500U CPU @ 2.70GHz
+            num_cpus: 4
+          hostname: test
+          mem_info:
+            dataplaneapi_memory: 44755536
+            free_memory: 5790642176
+            total_memory: 16681517056
+          os_string: 'Linux 4.15.0-58-generic #64-Ubuntu SMP Tue Aug 6 11:12:41 UTC 2019'
+          time: 1566401525
+          uptime: 87340
+      properties:
+        api:
+          properties:
+            build_date:
+              description: HAProxy Dataplane API build date
+              format: date-time
+              type: string
+            version:
+              description: HAProxy Dataplane API version string
+              type: string
+          type: object
+        system:
+          properties:
+            cpu_info:
+              properties:
+                model:
+                  type: string
+                num_cpus:
+                  description: Number of logical CPUs
+                  type: integer
+              type: object
+            hostname:
+              description: Hostname where the HAProxy is running
+              type: string
+            mem_info:
+              properties:
+                dataplaneapi_memory:
+                  type: integer
+                free_memory:
+                  type: integer
+                total_memory:
+                  type: integer
+              type: object
+            os_string:
+              description: OS string
+              type: string
+            time:
+              description: Current time in milliseconds since Epoch.
+              type: integer
+            uptime:
+              description: System uptime
+              type:
+              - integer
+              - 'null'
+          type: object
+      title: Information
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    process_info:
+      description: General HAProxy process information
+      properties:
+        error:
+          type: string
+        info:
+          $ref: '#/components/schemas/process_info_item'
+        runtimeAPI:
+          type: string
+      title: HAProxy Information
+      type: object
+      x-omitempty: true
+    process_info_item:
+      properties:
+        active_peers:
+          type:
+          - integer
+          - 'null'
+        busy_polling:
+          type:
+          - integer
+          - 'null'
+        bytes_out_rate:
+          type:
+          - integer
+          - 'null'
+        compress_bps_in:
+          type:
+          - integer
+          - 'null'
+        compress_bps_out:
+          type:
+          - integer
+          - 'null'
+        compress_bps_rate_lim:
+          type:
+          - integer
+          - 'null'
+        conn_rate:
+          type:
+          - integer
+          - 'null'
+        conn_rate_limit:
+          type:
+          - integer
+          - 'null'
+        connected_peers:
+          type:
+          - integer
+          - 'null'
+        cum_conns:
+          type:
+          - integer
+          - 'null'
+        cum_req:
+          type:
+          - integer
+          - 'null'
+        cum_ssl_conns:
+          type:
+          - integer
+          - 'null'
+        curr_conns:
+          type:
+          - integer
+          - 'null'
+        curr_ssl_conns:
+          type:
+          - integer
+          - 'null'
+        dropped_logs:
+          type:
+          - integer
+          - 'null'
+        failed_resolutions:
+          type:
+          - integer
+          - 'null'
+        hard_max_conn:
+          type:
+          - integer
+          - 'null'
+        idle_pct:
+          type:
+          - integer
+          - 'null'
+        jobs:
+          type:
+          - integer
+          - 'null'
+        listeners:
+          type:
+          - integer
+          - 'null'
+        max_conn:
+          type:
+          - integer
+          - 'null'
+        max_conn_rate:
+          type:
+          - integer
+          - 'null'
+        max_pipes:
+          type:
+          - integer
+          - 'null'
+        max_sess_rate:
+          type:
+          - integer
+          - 'null'
+        max_sock:
+          type:
+          - integer
+          - 'null'
+        max_ssl_conns:
+          type:
+          - integer
+          - 'null'
+        max_ssl_rate:
+          type:
+          - integer
+          - 'null'
+        max_zlib_mem_usage:
+          type:
+          - integer
+          - 'null'
+        mem_max_mb:
+          type:
+          - integer
+          - 'null'
+        nbthread:
+          description: Number of threads
+          type:
+          - integer
+          - 'null'
+          x-display-name: Number of Threads
+        node:
+          type: string
+        pid:
+          description: Process id of the replying worker process
+          type:
+          - integer
+          - 'null'
+          x-display-name: PID
+        pipes_free:
+          type:
+          - integer
+          - 'null'
+        pipes_used:
+          type:
+          - integer
+          - 'null'
+        pool_alloc_mb:
+          type:
+          - integer
+          - 'null'
+        pool_failed:
+          type:
+          - integer
+          - 'null'
+        pool_used_mb:
+          type:
+          - integer
+          - 'null'
+        process_num:
+          description: Process number
+          type:
+          - integer
+          - 'null'
+          x-display-name: Process Number
+        processes:
+          description: Number of spawned processes
+          type:
+          - integer
+          - 'null'
+          x-display-name: Number of processes
+        release_date:
+          description: HAProxy version release date
+          format: date
+          type: string
+        run_queue:
+          type:
+          - integer
+          - 'null'
+        sess_rate:
+          type:
+          - integer
+          - 'null'
+        sess_rate_limit:
+          type:
+          - integer
+          - 'null'
+        ssl_backend_key_rate:
+          type:
+          - integer
+          - 'null'
+        ssl_backend_max_key_rate:
+          type:
+          - integer
+          - 'null'
+        ssl_cache_lookups:
+          type:
+          - integer
+          - 'null'
+        ssl_cache_misses:
+          type:
+          - integer
+          - 'null'
+        ssl_frontend_key_rate:
+          type:
+          - integer
+          - 'null'
+        ssl_frontend_max_key_rate:
+          type:
+          - integer
+          - 'null'
+        ssl_frontend_session_reuse:
+          type:
+          - integer
+          - 'null'
+        ssl_rate:
+          type:
+          - integer
+          - 'null'
+        ssl_rate_limit:
+          type:
+          - integer
+          - 'null'
+        stopping:
+          type:
+          - integer
+          - 'null'
+        tasks:
+          type:
+          - integer
+          - 'null'
+        total_bytes_out:
+          type:
+          - integer
+          - 'null'
+        ulimit_n:
+          type:
+          - integer
+          - 'null'
+        unstoppable:
+          type:
+          - integer
+          - 'null'
+        uptime:
+          description: HAProxy uptime in s
+          type:
+          - integer
+          - 'null'
+        version:
+          description: HAProxy version string
+          type: string
+        zlib_mem_usage:
+          type:
+          - integer
+          - 'null'
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+externalDocs:
+  url: https://docs.haproxy.org/
+  description: HAProxy Documentation
