@@ -192,49 +192,7 @@ paths:
               $ref: '#/components/schemas/crt_store'
         required: true
 components:
-  parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
   schemas:
-    crt_store:
-      allOf:
-      - $ref: '#/components/schemas/crt_store_base'
-      - properties:
-          crt_loads:
-            additionalProperties:
-              $ref: '#/components/schemas/crt_load'
-        type: object
-      description: Storage mechanism to load and store certificates used in the configuration
-      title: Certificate Store
-      x-go-name: CrtStore
     crt_load:
       description: Loads a certificate from a store with options
       properties:
@@ -279,29 +237,6 @@ components:
       - certificate
       title: Certificate load action
       type: object
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    crt_stores:
-      description: List of Certificate Stores
-      type: array
-      items:
-        $ref: '#/components/schemas/crt_store'
     crt_store_base:
       additionalProperties: false
       description: Storage mechanism to load and store certificates used in the configuration
@@ -322,7 +257,83 @@ components:
       - name
       title: Certificate Store
       type: object
+    crt_stores:
+      description: List of Certificate Stores
+      type: array
+      items:
+        $ref: '#/components/schemas/crt_store'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    crt_store:
+      allOf:
+      - $ref: '#/components/schemas/crt_store_base'
+      - properties:
+          crt_loads:
+            additionalProperties:
+              $ref: '#/components/schemas/crt_load'
+        type: object
+      description: Storage mechanism to load and store certificates used in the configuration
+      title: Certificate Store
+      x-go-name: CrtStore
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
   responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -336,17 +347,6 @@ components:
             $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

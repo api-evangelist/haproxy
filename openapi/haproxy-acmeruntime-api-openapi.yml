@@ -57,24 +57,6 @@ paths:
       - AcmeRuntime
 components:
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     acme_certificate_status:
       description: Status of a single ACME certificate from runtime.
       properties:
@@ -109,6 +91,24 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/acme_certificate_status'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   responses:
     DefaultError:
       description: General Error

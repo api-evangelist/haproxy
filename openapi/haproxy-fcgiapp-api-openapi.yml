@@ -191,88 +191,33 @@ paths:
               $ref: '#/components/schemas/fcgi_app'
         required: true
 components:
-  parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
+    acl:
+      additionalProperties: false
+      description: 'The use of Access Control Lists (ACL) provides a flexible solution to perform
+
+        content switching and generally to take decisions based on content extracted
+
+        from the request, the response or any environmental status.
+
+        '
       properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
+        acl_name:
+          pattern: ^[^\s]+$
+          type: string
+        criterion:
+          pattern: ^[^\s]+$
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        value:
+          type: string
       required:
-      - code
-      - message
-      title: Error
+      - acl_name
+      - criterion
+      title: ACL Lines
       type: object
-    fcgi_pass_header:
-      description: 'Specifies the name of a request header to pass to the FastCGI application.
-
-        Optionally, you can follow it with an ACL-based condition, in which case the FastCGI application evaluates it only if the condition is true.
-
-        Most request headers are already available to the FastCGI application with the prefix "HTTP".
-
-        Thus, you only need this directive to pass headers that are purposefully omitted.
-
-        Currently, the headers "Authorization", "Proxy-Authorization", and hop-by-hop headers are omitted.
-
-        Note that the headers "Content-type" and "Content-length" never pass to the FastCGI application because they are already converted into parameters.'
-      properties:
-        cond:
-          enum:
-          - if
-          - unless
-          type: string
-          x-display-name: Condition
-        cond_test:
-          type: string
-          x-dependency:
-            cond:
-              required: true
-          x-display-name: Condition Test
-        name:
-          type: string
-      type: object
-    fcgi_apps:
-      type: array
-      items:
-        $ref: '#/components/schemas/fcgi_app'
     fcgi_app_base:
       description: HAProxy FastCGI application configuration
       properties:
@@ -341,6 +286,10 @@ components:
       - docroot
       title: FCGI application base
       type: object
+    fcgi_apps:
+      type: array
+      items:
+        $ref: '#/components/schemas/fcgi_app'
     fcgi_app:
       allOf:
       - $ref: '#/components/schemas/fcgi_app_base'
@@ -352,18 +301,18 @@ components:
       description: App with all its children resources
       type: object
       x-go-name: FCGIApp
-    acls:
-      title: ACL Lines Array
-      description: HAProxy ACL lines array (corresponds to acl directives)
-      type: array
-      items:
-        $ref: '#/components/schemas/acl'
-    fcgi_set_param:
-      description: 'Sets a FastCGI parameter to pass to this application.
+    fcgi_pass_header:
+      description: 'Specifies the name of a request header to pass to the FastCGI application.
 
-        Its value, defined by <format> can take a formatted string, the same as the log directive.
+        Optionally, you can follow it with an ACL-based condition, in which case the FastCGI application evaluates it only if the condition is true.
 
-        Optionally, you can follow it with an ACL-based condition, in which case the FastCGI application evaluates it only if the condition is true.'
+        Most request headers are already available to the FastCGI application with the prefix "HTTP".
+
+        Thus, you only need this directive to pass headers that are purposefully omitted.
+
+        Currently, the headers "Authorization", "Proxy-Authorization", and hop-by-hop headers are omitted.
+
+        Note that the headers "Content-type" and "Content-length" never pass to the FastCGI application because they are already converted into parameters.'
       properties:
         cond:
           enum:
@@ -377,37 +326,15 @@ components:
             cond:
               required: true
           x-display-name: Condition Test
-        format:
-          type: string
         name:
           type: string
       type: object
-    acl:
-      additionalProperties: false
-      description: 'The use of Access Control Lists (ACL) provides a flexible solution to perform
-
-        content switching and generally to take decisions based on content extracted
-
-        from the request, the response or any environmental status.
-
-        '
-      properties:
-        acl_name:
-          pattern: ^[^\s]+$
-          type: string
-        criterion:
-          pattern: ^[^\s]+$
-          type: string
-        metadata:
-          additionalProperties:
-            type: object
-        value:
-          type: string
-      required:
-      - acl_name
-      - criterion
-      title: ACL Lines
-      type: object
+    acls:
+      title: ACL Lines Array
+      description: HAProxy ACL lines array (corresponds to acl directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/acl'
     fcgi_log_stderr:
       description: 'Enables logging of STDERR messages that the FastCGI application reports.
 
@@ -453,9 +380,82 @@ components:
           title: Sample
           type: object
       type: object
+    fcgi_set_param:
+      description: 'Sets a FastCGI parameter to pass to this application.
+
+        Its value, defined by <format> can take a formatted string, the same as the log directive.
+
+        Optionally, you can follow it with an ACL-based condition, in which case the FastCGI application evaluates it only if the condition is true.'
+      properties:
+        cond:
+          enum:
+          - if
+          - unless
+          type: string
+          x-display-name: Condition
+        cond_test:
+          type: string
+          x-dependency:
+            cond:
+              required: true
+          x-display-name: Condition Test
+        format:
+          type: string
+        name:
+          type: string
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
   responses:
-    DefaultError:
-      description: General Error
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -465,8 +465,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version

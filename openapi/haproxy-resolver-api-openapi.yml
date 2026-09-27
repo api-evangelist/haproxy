@@ -191,67 +191,7 @@ paths:
               $ref: '#/components/schemas/resolver'
         required: true
 components:
-  parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    resolver:
-      allOf:
-      - $ref: '#/components/schemas/resolver_base'
-      - properties:
-          nameservers:
-            additionalProperties:
-              $ref: '#/components/schemas/nameserver'
-        type: object
-      description: Resolver with all its children resources
-      type: object
-      x-go-name: Resolver
     resolvers:
       title: Resolvers
       description: HAProxy resolvers array
@@ -359,7 +299,78 @@ components:
       - name
       title: Resolver Base
       type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    resolver:
+      allOf:
+      - $ref: '#/components/schemas/resolver_base'
+      - properties:
+          nameservers:
+            additionalProperties:
+              $ref: '#/components/schemas/nameserver'
+        type: object
+      description: Resolver with all its children resources
+      type: object
+      x-go-name: Resolver
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
   responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -373,17 +384,6 @@ components:
             $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

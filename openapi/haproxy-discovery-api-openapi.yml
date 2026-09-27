@@ -146,13 +146,19 @@ paths:
       tags:
       - Discovery
 components:
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
-    endpoints:
-      title: Endpoints Array
-      description: Collection of endpoints
-      type: array
-      items:
-        $ref: '#/components/schemas/endpoint'
     error:
       additionalProperties:
         type: string
@@ -185,18 +191,12 @@ components:
           type: string
       title: Endpoint
       type: object
-  responses:
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+    endpoints:
+      title: Endpoints Array
+      description: Collection of endpoints
+      type: array
+      items:
+        $ref: '#/components/schemas/endpoint'
   securitySchemes:
     basic_auth:
       type: http

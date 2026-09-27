@@ -293,24 +293,6 @@ paths:
         required: true
 components:
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     map_entries:
       title: Maps Entries
       description: Entries of one runtime map
@@ -347,15 +329,42 @@ components:
           type: string
       title: Map File
       type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
     maps:
       title: Map Files Array
       description: Array of runtime map files
       type: array
       items:
         $ref: '#/components/schemas/map'
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
   responses:
-    DefaultError:
-      description: General Error
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -365,8 +374,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -398,15 +407,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-  parameters:
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
   securitySchemes:
     basic_auth:
       type: http

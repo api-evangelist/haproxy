@@ -69,24 +69,6 @@ paths:
       - Reloads
 components:
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     reload:
       description: HAProxy reload
       example:
@@ -114,6 +96,24 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/reload'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   responses:
     DefaultError:
       description: General Error

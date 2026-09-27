@@ -238,20 +238,6 @@ paths:
         required: true
 components:
   parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     parent_name:
       name: parent_name
       in: path
@@ -260,6 +246,20 @@ components:
       schema:
         type: string
         pattern: ^[^\r\n<>*;$#&{}"]+$
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
     force_reload:
       name: force_reload
       in: query
@@ -269,24 +269,12 @@ components:
         type: boolean
         default: false
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
+    stick_rules:
+      title: Stick Rules Array
+      description: HAProxy backend stick rules array (corresponds to stick store-request, stick match, stick on, stick store-response)
+      type: array
+      items:
+        $ref: '#/components/schemas/stick_rule'
     stick_rule:
       additionalProperties: false
       description: Define a pattern used to create an entry in a stickiness table or matching condition or associate a user to a server.
@@ -331,13 +319,36 @@ components:
       - pattern
       title: Stick Rule
       type: object
-    stick_rules:
-      title: Stick Rules Array
-      description: HAProxy backend stick rules array (corresponds to stick store-request, stick match, stick on, stick store-response)
-      type: array
-      items:
-        $ref: '#/components/schemas/stick_rule'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -351,17 +362,6 @@ components:
             $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

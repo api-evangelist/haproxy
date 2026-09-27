@@ -256,6 +256,18 @@ paths:
         required: true
 components:
   schemas:
+    consuls:
+      title: Consuls
+      description: Consuls array
+      type: array
+      items:
+        $ref: '#/components/schemas/consul'
+    awsRegions:
+      title: AWS
+      description: AWS regions array
+      type: array
+      items:
+        $ref: '#/components/schemas/awsRegion'
     consul:
       additionalProperties: false
       description: Consul server configuration
@@ -350,24 +362,6 @@ components:
       - retry_timeout
       title: Consul server
       type: object
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     awsRegion:
       description: AWS region configuration
       example:
@@ -448,12 +442,24 @@ components:
       - ipv4_address
       title: AWS region
       type: object
-    awsRegions:
-      title: AWS
-      description: AWS regions array
-      type: array
-      items:
-        $ref: '#/components/schemas/awsRegion'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
     awsFilters:
       properties:
         key:
@@ -466,13 +472,18 @@ components:
       - key
       - value
       type: object
-    consuls:
-      title: Consuls
-      description: Consuls array
-      type: array
-      items:
-        $ref: '#/components/schemas/consul'
   responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -486,17 +497,6 @@ components:
             $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

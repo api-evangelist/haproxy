@@ -113,36 +113,6 @@ components:
           type: object
       title: Information
       type: object
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    process_info:
-      description: General HAProxy process information
-      properties:
-        error:
-          type: string
-        info:
-          $ref: '#/components/schemas/process_info_item'
-        runtimeAPI:
-          type: string
-      title: HAProxy Information
-      type: object
-      x-omitempty: true
     process_info_item:
       properties:
         active_peers:
@@ -391,6 +361,36 @@ components:
           type:
           - integer
           - 'null'
+      type: object
+    process_info:
+      description: General HAProxy process information
+      properties:
+        error:
+          type: string
+        info:
+          $ref: '#/components/schemas/process_info_item'
+        runtimeAPI:
+          type: string
+      title: HAProxy Information
+      type: object
+      x-omitempty: true
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
       type: object
   responses:
     DefaultError:

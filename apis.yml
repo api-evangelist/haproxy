@@ -40,7 +40,7 @@ tags:
   - Proxy
   - Kubernetes
   - Ingress
-  - Open-Source
+  - Open Source
   - Infrastructure
   - Application Delivery
 tags_raw:
@@ -54,6 +54,7 @@ tags_raw:
   - Open Source
   - Infrastructure
   - Application Delivery
+  - Open-Source
 url: >-
   https://raw.githubusercontent.com/api-evangelist/haproxy/refs/heads/main/apis.yml
 created: '2026-03-16'

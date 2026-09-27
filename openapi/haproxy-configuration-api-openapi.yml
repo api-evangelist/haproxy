@@ -175,13 +175,6 @@ paths:
       - Configuration
 components:
   parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
     version:
       name: version
       in: query
@@ -189,6 +182,13 @@ components:
       required: false
       schema:
         type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
     force_reload:
       name: force_reload
       in: query
@@ -197,25 +197,6 @@ components:
       schema:
         type: boolean
         default: false
-  schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
   responses:
     DefaultError:
       description: General Error
@@ -239,6 +220,25 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   securitySchemes:
     basic_auth:
       type: http

@@ -564,35 +564,6 @@ paths:
         required: true
 components:
   schemas:
-    ssl_crl:
-      description: A file containing one or more SSL/TLS CRLs
-      properties:
-        description:
-          type: string
-        file:
-          type: string
-        storage_name:
-          type: string
-      title: SSL CRL File
-      type: object
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     ssl_crl_entry:
       description: A certificate revocation list entry.
       properties:
@@ -626,51 +597,22 @@ components:
           type: string
       title: One CRL Entry
       type: object
-    ssl_crls:
-      title: SSL CRL Files Array
-      description: Array of ssl crl files
+    ssl_crl_entries:
       type: array
       items:
-        $ref: '#/components/schemas/ssl_crl'
-    ssl_crt_lists:
-      title: SSL Crt List Array
-      description: Array of SSL Crt List
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_crt_list'
-    ssl_certificates:
-      title: SSL Certificate Files Array
-      description: Array of ssl certificate files
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_certificate'
+        $ref: '#/components/schemas/ssl_crl_entry'
     ssl_ca_files:
       title: SSL CA Files Array
       description: Array of SSL CA files
       type: array
       items:
         $ref: '#/components/schemas/ssl_ca_file'
-    ssl_crt_list_entries:
-      title: SSL Crt List Entry Array
-      description: Array of SSL Crt List Entry
+    ssl_crls:
+      title: SSL CRL Files Array
+      description: Array of ssl crl files
       type: array
       items:
-        $ref: '#/components/schemas/ssl_crt_list_entry'
-    ssl_ca_file:
-      description: A file containing one or more SSL/TLS certificates and keys
-      properties:
-        count:
-          type: string
-        file:
-          type: string
-        storage_name:
-          type: string
-      title: SSL File
-      type: object
-    ssl_crl_entries:
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_crl_entry'
+        $ref: '#/components/schemas/ssl_crl'
     ssl_certificate:
       description: A file containing one or more SSL/TLS certificates and keys
       properties:
@@ -753,12 +695,16 @@ components:
           type: string
       title: SSL File
       type: object
-    ssl_crt_list:
-      description: SSL Crt List file
+    ssl_crl:
+      description: A file containing one or more SSL/TLS CRLs
       properties:
+        description:
+          type: string
         file:
           type: string
-      title: SSL Crt List
+        storage_name:
+          type: string
+      title: SSL CRL File
       type: object
     ssl_crt_list_entry:
       description: SSL Crt List Entry
@@ -779,9 +725,63 @@ components:
           x-go-name: SSLBindConfig
       title: SSL Crt List Entry
       type: object
+    ssl_crt_list_entries:
+      title: SSL Crt List Entry Array
+      description: Array of SSL Crt List Entry
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crt_list_entry'
+    ssl_crt_lists:
+      title: SSL Crt List Array
+      description: Array of SSL Crt List
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crt_list'
+    ssl_crt_list:
+      description: SSL Crt List file
+      properties:
+        file:
+          type: string
+      title: SSL Crt List
+      type: object
+    ssl_ca_file:
+      description: A file containing one or more SSL/TLS certificates and keys
+      properties:
+        count:
+          type: string
+        file:
+          type: string
+        storage_name:
+          type: string
+      title: SSL File
+      type: object
+    ssl_certificates:
+      title: SSL Certificate Files Array
+      description: Array of ssl certificate files
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_certificate'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   responses:
-    DefaultError:
-      description: General Error
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -802,8 +802,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version

@@ -191,188 +191,13 @@ paths:
               $ref: '#/components/schemas/log_forward'
         required: true
 components:
-  parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
   schemas:
-    log_target:
-      additionalProperties: false
-      description: Per-instance logging of events and traffic.
-      properties:
-        address:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            global:
-              required: true
-              value: false
-            nolog:
-              required: true
-              value: false
-        facility:
-          enum:
-          - kern
-          - user
-          - mail
-          - daemon
-          - auth
-          - syslog
-          - lpr
-          - news
-          - uucp
-          - cron
-          - auth2
-          - ftp
-          - ntp
-          - audit
-          - alert
-          - cron2
-          - local0
-          - local1
-          - local2
-          - local3
-          - local4
-          - local5
-          - local6
-          - local7
-          type: string
-          x-dependency:
-            global:
-              required: true
-              value: false
-            nolog:
-              required: true
-              value: false
-        format:
-          enum:
-          - local
-          - rfc3164
-          - rfc5424
-          - priority
-          - short
-          - timed
-          - iso
-          - raw
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        global:
-          type: boolean
-        length:
-          type: integer
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        level:
-          enum:
-          - emerg
-          - alert
-          - crit
-          - err
-          - warning
-          - notice
-          - info
-          - debug
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        metadata:
-          additionalProperties:
-            type: object
-        minlevel:
-          enum:
-          - emerg
-          - alert
-          - crit
-          - err
-          - warning
-          - notice
-          - info
-          - debug
-          type: string
-          x-dependency:
-            global:
-              value: false
-            level:
-              required: false
-            nolog:
-              value: false
-        nolog:
-          type: boolean
-        profile:
-          type: string
-        sample_range:
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        sample_size:
-          type: integer
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-            sample_range:
-              required: true
-      title: Log Target
-      type: object
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
+    log_targets:
+      title: Log Target Array
+      description: HAProxy log target array (corresponds to log directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/log_target'
     bind:
       allOf:
       - $ref: '#/components/schemas/bind_params'
@@ -407,6 +232,117 @@ components:
         type: object
       description: HAProxy frontend bind configuration
       title: Bind
+    log_forward_base:
+      additionalProperties: false
+      description: HAProxy log forward configuration
+      properties:
+        assume-rfc6587-ntf:
+          type: boolean
+          x-display-name: Assume RFC-6587 Non-Transparent Framing
+        backlog:
+          type:
+          - integer
+          - 'null'
+        dont-parse-log:
+          type: boolean
+          x-display-name: Don't Parse Log
+        maxconn:
+          type:
+          - integer
+          - 'null'
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+        timeout_client:
+          maximum: 2147483647
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+      required:
+      - name
+      title: Log Forward
+      type: object
+    dgram_bind:
+      description: HAProxy log forward dgram bind configuration
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+        interface:
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[^\s]+$
+          type: string
+        namespace:
+          type: string
+        port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        port-range-end:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        transparent:
+          type: boolean
+      required:
+      - name
+      title: Dgram Bind
+      type: object
+    log_forwards:
+      title: Log Forwards
+      description: HAProxy log forwards array
+      type: array
+      items:
+        $ref: '#/components/schemas/log_forward'
+    log_forward:
+      allOf:
+      - $ref: '#/components/schemas/log_forward_base'
+      - properties:
+          binds:
+            additionalProperties:
+              $ref: '#/components/schemas/bind'
+          dgram_binds:
+            additionalProperties:
+              $ref: '#/components/schemas/dgram_bind'
+          log_target_list:
+            $ref: '#/components/schemas/log_targets'
+            x-go-name: LogTargetList
+        type: object
+      description: LogForward with all its children resources
+      type: object
+      x-go-name: LogForward
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
     bind_params:
       additionalProperties: false
       properties:
@@ -826,106 +762,181 @@ components:
             ssl:
               value: enabled
       type: object
-    log_forwards:
-      title: Log Forwards
-      description: HAProxy log forwards array
-      type: array
-      items:
-        $ref: '#/components/schemas/log_forward'
-    dgram_bind:
-      description: HAProxy log forward dgram bind configuration
+    log_target:
+      additionalProperties: false
+      description: Per-instance logging of events and traffic.
       properties:
         address:
           pattern: ^[^\s]+$
           type: string
-        interface:
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        facility:
+          enum:
+          - kern
+          - user
+          - mail
+          - daemon
+          - auth
+          - syslog
+          - lpr
+          - news
+          - uucp
+          - cron
+          - auth2
+          - ftp
+          - ntp
+          - audit
+          - alert
+          - cron2
+          - local0
+          - local1
+          - local2
+          - local3
+          - local4
+          - local5
+          - local6
+          - local7
           type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        format:
+          enum:
+          - local
+          - rfc3164
+          - rfc5424
+          - priority
+          - short
+          - timed
+          - iso
+          - raw
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        global:
+          type: boolean
+        length:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        level:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
         metadata:
           additionalProperties:
             type: object
-        name:
-          pattern: ^[^\s]+$
+        minlevel:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
           type: string
-        namespace:
+          x-dependency:
+            global:
+              value: false
+            level:
+              required: false
+            nolog:
+              value: false
+        nolog:
+          type: boolean
+        profile:
           type: string
-        port:
-          maximum: 65535
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-        port-range-end:
-          maximum: 65535
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-        transparent:
-          type: boolean
-      required:
-      - name
-      title: Dgram Bind
-      type: object
-    log_targets:
-      title: Log Target Array
-      description: HAProxy log target array (corresponds to log directives)
-      type: array
-      items:
-        $ref: '#/components/schemas/log_target'
-    log_forward:
-      allOf:
-      - $ref: '#/components/schemas/log_forward_base'
-      - properties:
-          binds:
-            additionalProperties:
-              $ref: '#/components/schemas/bind'
-          dgram_binds:
-            additionalProperties:
-              $ref: '#/components/schemas/dgram_bind'
-          log_target_list:
-            $ref: '#/components/schemas/log_targets'
-            x-go-name: LogTargetList
-        type: object
-      description: LogForward with all its children resources
-      type: object
-      x-go-name: LogForward
-    log_forward_base:
-      additionalProperties: false
-      description: HAProxy log forward configuration
-      properties:
-        assume-rfc6587-ntf:
-          type: boolean
-          x-display-name: Assume RFC-6587 Non-Transparent Framing
-        backlog:
-          type:
-          - integer
-          - 'null'
-        dont-parse-log:
-          type: boolean
-          x-display-name: Don't Parse Log
-        maxconn:
-          type:
-          - integer
-          - 'null'
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_.:]+$
+        sample_range:
           type: string
-        timeout_client:
-          maximum: 2147483647
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-      required:
-      - name
-      title: Log Forward
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        sample_size:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+            sample_range:
+              required: true
+      title: Log Target
       type: object
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
   responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -939,17 +950,6 @@ components:
             $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

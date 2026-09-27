@@ -197,20 +197,6 @@ paths:
         required: true
 components:
   parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     full_section:
       name: full_section
       in: query
@@ -219,6 +205,20 @@ components:
       schema:
         type: boolean
         default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
     force_reload:
       name: force_reload
       in: query
@@ -228,24 +228,6 @@ components:
         type: boolean
         default: false
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     mailers_section:
       allOf:
       - $ref: '#/components/schemas/mailers_section_base'
@@ -257,34 +239,6 @@ components:
       description: MailersSection with all its children resources
       type: object
       x-go-name: MailersSection
-    mailer_entry:
-      description: Mailer entry of a Mailers section
-      properties:
-        address:
-          pattern: ^\S+$
-          type: string
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_${}"]+$
-          type: string
-        port:
-          maximum: 65535
-          minimum: 1
-          type: integer
-      required:
-      - name
-      - address
-      - port
-      title: Mailer Entry
-      type: object
-    mailers_sections:
-      title: Mailers Sections
-      description: HAProxy mailers_section array
-      type: array
-      items:
-        $ref: '#/components/schemas/mailers_section'
     mailers_section_base:
       additionalProperties: false
       description: A list of SMTP servers used by HAProxy to send emails.
@@ -307,7 +261,64 @@ components:
       - name
       title: Mailers Section Base
       type: object
+    mailer_entry:
+      description: Mailer entry of a Mailers section
+      properties:
+        address:
+          pattern: ^\S+$
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_${}"]+$
+          type: string
+        port:
+          maximum: 65535
+          minimum: 1
+          type: integer
+      required:
+      - name
+      - address
+      - port
+      title: Mailer Entry
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    mailers_sections:
+      title: Mailers Sections
+      description: HAProxy mailers_section array
+      type: array
+      items:
+        $ref: '#/components/schemas/mailers_section'
   responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -321,17 +332,6 @@ components:
             $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

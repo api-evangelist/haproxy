@@ -71,7 +71,9 @@
     "haproxy-user-api-openapi.yml",
     "haproxy-userlist-api-openapi.yml"
   ],
-  "archived": [],
+  "archived": [
+    "deleted 3 superseded output(s) from the previous generation"
+  ],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -87,7 +89,8 @@
     "haproxy-data-plane-api-openapi.yml: declared missing tag: SSLFrontUse",
     "haproxy-data-plane-api-openapi.yml: declared missing tag: SSLRuntime",
     "haproxy-data-plane-api-openapi.yml: declared missing tag: User",
-    "apis.yml register: already-registered"
+    "superseded outputs removed: haproxy-health-check-api-openapi.yml, haproxy-service-discovery-api-openapi.yml, haproxy-user-list-api-openapi.yml",
+    "apis.yml register: written (+3 apis, 68 total)"
   ],
   "skipped": [
     "haproxy-acl-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -112,7 +115,7 @@
     "haproxy-global-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-group-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-health-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "haproxy-healthcheck-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "haproxy-health-check-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-httpafterresponserule-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-httpcheck-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-httperrorrule-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -136,7 +139,7 @@
     "haproxy-server-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-serverswitchingrule-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-servertemplate-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "haproxy-servicediscovery-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "haproxy-service-discovery-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-sites-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-specification-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-specificationopenapiv3-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -155,6 +158,6 @@
     "haproxy-traces-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-transactions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "haproxy-user-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "haproxy-userlist-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+    "haproxy-user-list-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]
 }

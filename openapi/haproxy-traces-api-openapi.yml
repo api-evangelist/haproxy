@@ -220,20 +220,6 @@ paths:
         required: true
 components:
   parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     full_section:
       name: full_section
       in: query
@@ -242,6 +228,20 @@ components:
       schema:
         type: boolean
         default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
     force_reload:
       name: force_reload
       in: query
@@ -251,6 +251,36 @@ components:
         type: boolean
         default: false
   schemas:
+    trace_entry:
+      description: Configure a trace event
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        trace:
+          description: Trace parameters
+          minLength: 1
+          type: string
+      required:
+      - trace
+      title: Trace event
+      type: object
+    traces:
+      additionalProperties: false
+      description: Trace events configuration
+      properties:
+        entries:
+          $ref: '#/components/schemas/trace_entries'
+        metadata:
+          additionalProperties:
+            type: object
+      type: object
+      x-go-name: Traces
+    trace_entries:
+      description: list of entries in a traces section
+      type: array
+      items:
+        $ref: '#/components/schemas/trace_entry'
     error:
       additionalProperties:
         type: string
@@ -269,37 +299,18 @@ components:
       - message
       title: Error
       type: object
-    traces:
-      additionalProperties: false
-      description: Trace events configuration
-      properties:
-        entries:
-          $ref: '#/components/schemas/trace_entries'
-        metadata:
-          additionalProperties:
-            type: object
-      type: object
-      x-go-name: Traces
-    trace_entries:
-      description: list of entries in a traces section
-      type: array
-      items:
-        $ref: '#/components/schemas/trace_entry'
-    trace_entry:
-      description: Configure a trace event
-      properties:
-        metadata:
-          additionalProperties:
-            type: object
-        trace:
-          description: Trace parameters
-          minLength: 1
-          type: string
-      required:
-      - trace
-      title: Trace event
-      type: object
   responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -313,17 +324,6 @@ components:
             $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

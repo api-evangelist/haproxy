@@ -66,43 +66,6 @@ paths:
       - Stats
 components:
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    native_stat:
-      description: Current stats for one object.
-      properties:
-        backend_name:
-          type: string
-          x-dependency:
-            type: server
-        name:
-          type: string
-        stats:
-          $ref: '#/components/schemas/native_stat_stats'
-        type:
-          enum:
-          - backend
-          - server
-          - frontend
-          type: string
-      title: Stats
-      type: object
     native_stat_stats:
       example:
         bin: 4326578
@@ -669,6 +632,43 @@ components:
       title: Stats Array
       type: object
       x-omitempty: true
+    native_stat:
+      description: Current stats for one object.
+      properties:
+        backend_name:
+          type: string
+          x-dependency:
+            type: server
+        name:
+          type: string
+        stats:
+          $ref: '#/components/schemas/native_stat_stats'
+        type:
+          enum:
+          - backend
+          - server
+          - frontend
+          type: string
+      title: Stats
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   responses:
     DefaultError:
       description: General Error

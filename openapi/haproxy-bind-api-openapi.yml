@@ -543,56 +543,7 @@ paths:
               $ref: '#/components/schemas/bind'
         required: true
 components:
-  parameters:
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     bind:
       allOf:
       - $ref: '#/components/schemas/bind_params'
@@ -633,6 +584,24 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/bind'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
     bind_params:
       additionalProperties: false
       properties:
@@ -1052,7 +1021,49 @@ components:
             ssl:
               value: enabled
       type: object
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
   responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -1066,17 +1077,6 @@ components:
             $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

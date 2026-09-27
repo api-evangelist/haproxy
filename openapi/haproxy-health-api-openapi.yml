@@ -32,6 +32,18 @@ paths:
       tags:
       - Health
 components:
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
     error:
       additionalProperties:
@@ -60,18 +72,6 @@ components:
           - unknown
           type: string
       type: object
-  responses:
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   securitySchemes:
     basic_auth:
       type: http

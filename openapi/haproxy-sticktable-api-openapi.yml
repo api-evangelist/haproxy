@@ -127,114 +127,28 @@ paths:
               type: object
         description: Stick table entry
 components:
-  schemas:
-    stick_tables:
-      title: Stick Tables Array
-      description: Array of runtime stick tables
-      type: array
-      items:
-        $ref: '#/components/schemas/stick_table'
-    error:
-      additionalProperties:
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
         type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    stick_table:
-      description: Stick Table Information
-      properties:
-        fields:
-          items:
-            properties:
-              field:
-                enum:
-                - bytes_in_cnt
-                - bytes_in_rate
-                - bytes_out_cnt
-                - bytes_out_rate
-                - conn_cnt
-                - conn_cur
-                - conn_rate
-                - glitch_cnt
-                - glitch_rate
-                - gpc
-                - gpc_rate
-                - gpc0
-                - gpc0_rate
-                - gpc1
-                - gpc1_rate
-                - gpt0
-                - gpt
-                - http_req_cnt
-                - http_req_rate
-                - http_err_cnt
-                - http_err_rate
-                - http_fail_cnt
-                - http_fail_rate
-                - server_id
-                - sess_cnt
-                - sess_rate
-                type: string
-              idx:
-                type: integer
-                x-dependency:
-                  field:
-                    value:
-                    - gpc
-                    - gpc_rate
-                    - gpt
-              period:
-                type: integer
-                x-dependency:
-                  type:
-                    value: rate
-              type:
-                enum:
-                - rate
-                - counter
-                type: string
-            type: object
-            x-go-name: StickTableField
-          type: array
-          x-omitempty: true
-        name:
-          type: string
-        size:
-          type:
-          - integer
-          - 'null'
-        type:
-          enum:
-          - ip
-          - ipv6
-          - integer
-          - string
-          - binary
-          type: string
-        used:
-          type:
-          - integer
-          - 'null'
-      title: Stick Table
-      type: object
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+  schemas:
     stick_table_entries:
       title: Stick Tables Entries
       description: Entries of one runtime stick table
       type: array
       items:
         $ref: '#/components/schemas/stick_table_entry'
+    stick_tables:
+      title: Stick Tables Array
+      description: Array of runtime stick tables
+      type: array
+      items:
+        $ref: '#/components/schemas/stick_table'
     stick_table_entry:
       description: One entry in stick table
       properties:
@@ -369,6 +283,101 @@ components:
           type: boolean
       title: Stick Table Entry
       type: object
+    stick_table:
+      description: Stick Table Information
+      properties:
+        fields:
+          items:
+            properties:
+              field:
+                enum:
+                - bytes_in_cnt
+                - bytes_in_rate
+                - bytes_out_cnt
+                - bytes_out_rate
+                - conn_cnt
+                - conn_cur
+                - conn_rate
+                - glitch_cnt
+                - glitch_rate
+                - gpc
+                - gpc_rate
+                - gpc0
+                - gpc0_rate
+                - gpc1
+                - gpc1_rate
+                - gpt0
+                - gpt
+                - http_req_cnt
+                - http_req_rate
+                - http_err_cnt
+                - http_err_rate
+                - http_fail_cnt
+                - http_fail_rate
+                - server_id
+                - sess_cnt
+                - sess_rate
+                type: string
+              idx:
+                type: integer
+                x-dependency:
+                  field:
+                    value:
+                    - gpc
+                    - gpc_rate
+                    - gpt
+              period:
+                type: integer
+                x-dependency:
+                  type:
+                    value: rate
+              type:
+                enum:
+                - rate
+                - counter
+                type: string
+            type: object
+            x-go-name: StickTableField
+          type: array
+          x-omitempty: true
+        name:
+          type: string
+        size:
+          type:
+          - integer
+          - 'null'
+        type:
+          enum:
+          - ip
+          - ipv6
+          - integer
+          - string
+          - binary
+          type: string
+        used:
+          type:
+          - integer
+          - 'null'
+      title: Stick Table
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   responses:
     DefaultError:
       description: General Error
@@ -392,15 +401,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-  parameters:
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
   securitySchemes:
     basic_auth:
       type: http

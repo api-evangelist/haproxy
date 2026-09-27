@@ -710,25 +710,24 @@ paths:
                   description: General use file content
                   format: binary
 components:
+  parameters:
+    skip_reload:
+      name: skip_reload
+      in: query
+      description: If set, no reload will be initiated after update
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
   schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     ssl_crt_list_file:
       description: A file referencing one or more certificates with their configuration.
       properties:
@@ -745,20 +744,8 @@ components:
           type: string
       title: SSL CRT List File
       type: object
-    ssl_certificates:
-      title: SSL Certificate Files Array
-      description: Array of ssl certificate files
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_certificate'
-    general_files:
-      title: General Files Array
-      description: Array of general use files
-      type: array
-      items:
-        $ref: '#/components/schemas/general_file'
-    map:
-      description: Map File
+    general_file:
+      description: General use file
       properties:
         description:
           type: string
@@ -773,14 +760,20 @@ components:
           - 'null'
         storage_name:
           type: string
-      title: Map File
+      title: General use file
       type: object
-    ssl_crt_list_entries:
-      title: SSL Crt List Entry Array
-      description: Array of SSL Crt List Entry
+    ssl_crt_list_files:
+      title: List of SSL certificate list files
+      description: List of SSL certificate list files (crt-list)
       type: array
       items:
-        $ref: '#/components/schemas/ssl_crt_list_entry'
+        $ref: '#/components/schemas/ssl_crt_list_file'
+    general_files:
+      title: General Files Array
+      description: Array of general use files
+      type: array
+      items:
+        $ref: '#/components/schemas/general_file'
     ssl_certificate:
       description: A file containing one or more SSL/TLS certificates and keys
       properties:
@@ -863,36 +856,6 @@ components:
           type: string
       title: SSL File
       type: object
-    general_file:
-      description: General use file
-      properties:
-        description:
-          type: string
-        file:
-          type: string
-        id:
-          type: string
-        size:
-          description: File size in bytes.
-          type:
-          - integer
-          - 'null'
-        storage_name:
-          type: string
-      title: General use file
-      type: object
-    maps:
-      title: Map Files Array
-      description: Array of runtime map files
-      type: array
-      items:
-        $ref: '#/components/schemas/map'
-    ssl_crt_list_files:
-      title: List of SSL certificate list files
-      description: List of SSL certificate list files (crt-list)
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_crt_list_file'
     ssl_crt_list_entry:
       description: SSL Crt List Entry
       properties:
@@ -912,18 +875,61 @@ components:
           x-go-name: SSLBindConfig
       title: SSL Crt List Entry
       type: object
+    ssl_crt_list_entries:
+      title: SSL Crt List Entry Array
+      description: Array of SSL Crt List Entry
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crt_list_entry'
+    map:
+      description: Map File
+      properties:
+        description:
+          type: string
+        file:
+          type: string
+        id:
+          type: string
+        size:
+          description: File size in bytes.
+          type:
+          - integer
+          - 'null'
+        storage_name:
+          type: string
+      title: Map File
+      type: object
+    ssl_certificates:
+      title: SSL Certificate Files Array
+      description: Array of ssl certificate files
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_certificate'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    maps:
+      title: Map Files Array
+      description: Array of runtime map files
+      type: array
+      items:
+        $ref: '#/components/schemas/map'
   responses:
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
     BadRequest:
       description: Bad request
       headers:
@@ -946,6 +952,17 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     AlreadyExists:
       description: The specified resource already exists
       headers:
@@ -957,23 +974,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-  parameters:
-    skip_reload:
-      name: skip_reload
-      in: query
-      description: If set, no reload will be initiated after update
-      required: false
-      schema:
-        type: boolean
-        default: false
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
   securitySchemes:
     basic_auth:
       type: http
