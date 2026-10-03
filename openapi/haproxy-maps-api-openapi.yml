@@ -293,12 +293,6 @@ paths:
         required: true
 components:
   schemas:
-    map_entries:
-      title: Maps Entries
-      description: Entries of one runtime map
-      type: array
-      items:
-        $ref: '#/components/schemas/map_entry'
     map_entry:
       description: One Map Entry
       properties:
@@ -329,6 +323,18 @@ components:
           type: string
       title: Map File
       type: object
+    map_entries:
+      title: Maps Entries
+      description: Entries of one runtime map
+      type: array
+      items:
+        $ref: '#/components/schemas/map_entry'
+    maps:
+      title: Map Files Array
+      description: Array of runtime map files
+      type: array
+      items:
+        $ref: '#/components/schemas/map'
     error:
       additionalProperties:
         type: string
@@ -347,12 +353,6 @@ components:
       - message
       title: Error
       type: object
-    maps:
-      title: Map Files Array
-      description: Array of runtime map files
-      type: array
-      items:
-        $ref: '#/components/schemas/map'
   parameters:
     parent_name:
       name: parent_name
@@ -363,8 +363,8 @@ components:
         type: string
         pattern: ^[^\r\n<>*;$#&{}"]+$
   responses:
-    BadRequest:
-      description: Bad request
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -385,8 +385,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

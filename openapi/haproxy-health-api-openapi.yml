@@ -45,6 +45,15 @@ components:
           schema:
             $ref: '#/components/schemas/error'
   schemas:
+    health:
+      properties:
+        haproxy:
+          enum:
+          - up
+          - down
+          - unknown
+          type: string
+      type: object
     error:
       additionalProperties:
         type: string
@@ -62,15 +71,6 @@ components:
       - code
       - message
       title: Error
-      type: object
-    health:
-      properties:
-        haproxy:
-          enum:
-          - up
-          - down
-          - unknown
-          type: string
       type: object
   securitySchemes:
     basic_auth:

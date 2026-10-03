@@ -191,7 +191,123 @@ paths:
               $ref: '#/components/schemas/ring'
         required: true
 components:
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
+    server:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/server_params'
+      - properties:
+          address:
+            pattern: ^[^\s]+$
+            type: string
+          id:
+            type:
+            - integer
+            - 'null'
+          metadata:
+            additionalProperties:
+              type: object
+          name:
+            pattern: ^[^\s]+$
+            type: string
+          port:
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+        required:
+        - name
+        - address
+        type: object
+      description: HAProxy backend server configuration
+      example:
+        address: 10.1.1.1
+        name: www
+        port: 8080
+      title: Server
+    rings:
+      title: Rings
+      description: HAProxy rings array
+      type: array
+      items:
+        $ref: '#/components/schemas/ring'
     ring_base:
       additionalProperties: false
       description: HAProxy ring configuration
@@ -246,6 +362,35 @@ components:
       required:
       - name
       title: Ring Base
+      type: object
+    ring:
+      allOf:
+      - $ref: '#/components/schemas/ring_base'
+      - properties:
+          servers:
+            additionalProperties:
+              $ref: '#/components/schemas/server'
+        type: object
+      description: Ring with all its children resources
+      type: object
+      x-go-name: Ring
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
       type: object
     server_params:
       properties:
@@ -836,151 +981,6 @@ components:
           type: string
           x-display-name: Relaying websocket stream protocol
       type: object
-    server:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/server_params'
-      - properties:
-          address:
-            pattern: ^[^\s]+$
-            type: string
-          id:
-            type:
-            - integer
-            - 'null'
-          metadata:
-            additionalProperties:
-              type: object
-          name:
-            pattern: ^[^\s]+$
-            type: string
-          port:
-            maximum: 65535
-            minimum: 1
-            type:
-            - integer
-            - 'null'
-        required:
-        - name
-        - address
-        type: object
-      description: HAProxy backend server configuration
-      example:
-        address: 10.1.1.1
-        name: www
-        port: 8080
-      title: Server
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    ring:
-      allOf:
-      - $ref: '#/components/schemas/ring_base'
-      - properties:
-          servers:
-            additionalProperties:
-              $ref: '#/components/schemas/server'
-        type: object
-      description: Ring with all its children resources
-      type: object
-      x-go-name: Ring
-    rings:
-      title: Rings
-      description: HAProxy rings array
-      type: array
-      items:
-        $ref: '#/components/schemas/ring'
-  parameters:
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-  responses:
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   securitySchemes:
     basic_auth:
       type: http

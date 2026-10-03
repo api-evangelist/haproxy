@@ -212,13 +212,6 @@ components:
       required: false
       schema:
         type: integer
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
     force_reload:
       name: force_reload
       in: query
@@ -227,18 +220,14 @@ components:
       schema:
         type: boolean
         default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
   schemas:
-    mailers_section:
-      allOf:
-      - $ref: '#/components/schemas/mailers_section_base'
-      - properties:
-          mailer_entries:
-            additionalProperties:
-              $ref: '#/components/schemas/mailer_entry'
-        type: object
-      description: MailersSection with all its children resources
-      type: object
-      x-go-name: MailersSection
     mailers_section_base:
       additionalProperties: false
       description: A list of SMTP servers used by HAProxy to send emails.
@@ -283,6 +272,23 @@ components:
       - port
       title: Mailer Entry
       type: object
+    mailers_section:
+      allOf:
+      - $ref: '#/components/schemas/mailers_section_base'
+      - properties:
+          mailer_entries:
+            additionalProperties:
+              $ref: '#/components/schemas/mailer_entry'
+        type: object
+      description: MailersSection with all its children resources
+      type: object
+      x-go-name: MailersSection
+    mailers_sections:
+      title: Mailers Sections
+      description: HAProxy mailers_section array
+      type: array
+      items:
+        $ref: '#/components/schemas/mailers_section'
     error:
       additionalProperties:
         type: string
@@ -301,15 +307,9 @@ components:
       - message
       title: Error
       type: object
-    mailers_sections:
-      title: Mailers Sections
-      description: HAProxy mailers_section array
-      type: array
-      items:
-        $ref: '#/components/schemas/mailers_section'
   responses:
-    BadRequest:
-      description: Bad request
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -330,8 +330,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

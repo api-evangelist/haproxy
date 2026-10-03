@@ -192,6 +192,82 @@ paths:
               $ref: '#/components/schemas/force_be_switch'
         required: true
 components:
+  parameters:
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
     force_be_switch:
       description: 'Allow content switching to select a backend instance even if it is
@@ -221,12 +297,6 @@ components:
       title: Force Backend Switch Rule
       type: object
       x-go-name: ForceBeSwitch
-    force_be_switches:
-      type: array
-      items:
-        $ref: '#/components/schemas/force_be_switch'
-      x-omitempty: true
-      x-go-name: ForceBeSwitches
     error:
       additionalProperties:
         type: string
@@ -245,82 +315,12 @@ components:
       - message
       title: Error
       type: object
-  parameters:
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-  responses:
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+    force_be_switches:
+      type: array
+      items:
+        $ref: '#/components/schemas/force_be_switch'
+      x-omitempty: true
+      x-go-name: ForceBeSwitches
   securitySchemes:
     basic_auth:
       type: http

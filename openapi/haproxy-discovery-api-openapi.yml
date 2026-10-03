@@ -159,6 +159,12 @@ components:
           schema:
             $ref: '#/components/schemas/error'
   schemas:
+    endpoints:
+      title: Endpoints Array
+      description: Collection of endpoints
+      type: array
+      items:
+        $ref: '#/components/schemas/endpoint'
     error:
       additionalProperties:
         type: string
@@ -191,12 +197,6 @@ components:
           type: string
       title: Endpoint
       type: object
-    endpoints:
-      title: Endpoints Array
-      description: Collection of endpoints
-      type: array
-      items:
-        $ref: '#/components/schemas/endpoint'
   securitySchemes:
     basic_auth:
       type: http

@@ -192,58 +192,7 @@ paths:
       tags:
       - Transactions
 components:
-  responses:
-    NotAcceptable:
-      description: The specified resource cannot be handled
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   schemas:
-    transactions:
-      title: Transactions array
-      description: Configuration transactions array
-      type: array
-      items:
-        $ref: '#/components/schemas/transaction'
     transaction:
       description: HAProxy configuration transaction
       example:
@@ -265,6 +214,12 @@ components:
           type: string
       title: Configuration transaction
       type: object
+    transactions:
+      title: Transactions array
+      description: Configuration transactions array
+      type: array
+      items:
+        $ref: '#/components/schemas/transaction'
     error:
       additionalProperties:
         type: string
@@ -283,6 +238,51 @@ components:
       - message
       title: Error
       type: object
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotAcceptable:
+      description: The specified resource cannot be handled
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   parameters:
     force_reload:
       name: force_reload

@@ -212,49 +212,32 @@ paths:
               $ref: '#/components/schemas/group'
         required: true
 components:
-  schemas:
-    group:
-      description: HAProxy userlist group
-      properties:
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_.:${}"]+$
-          type: string
-        users:
-          type: string
-      required:
-      - name
-      title: Group
-      type: object
-    groups:
-      title: Groups
-      description: HAProxy userlist groups array
-      type: array
-      items:
-        $ref: '#/components/schemas/group'
-    error:
-      additionalProperties:
+  parameters:
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
         type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
   responses:
-    BadRequest:
-      description: Bad request
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -275,8 +258,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -297,29 +280,46 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-  parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
+  schemas:
+    groups:
+      title: Groups
+      description: HAProxy userlist groups array
+      type: array
+      items:
+        $ref: '#/components/schemas/group'
+    group:
+      description: HAProxy userlist group
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:${}"]+$
+          type: string
+        users:
+          type: string
+      required:
+      - name
+      title: Group
+      type: object
+    error:
+      additionalProperties:
         type: string
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   securitySchemes:
     basic_auth:
       type: http

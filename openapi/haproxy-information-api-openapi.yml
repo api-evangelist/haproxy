@@ -48,71 +48,18 @@ paths:
       - Information
 components:
   schemas:
-    info:
-      description: General API, OS and hardware information
-      example:
-        api:
-          build_date: '2019-08-21T17:31:56.000Z'
-          version: v1.2.1 45a3288.dev
-        system:
-          cpu_info:
-            model: Intel(R) Core(TM) i7-7500U CPU @ 2.70GHz
-            num_cpus: 4
-          hostname: test
-          mem_info:
-            dataplaneapi_memory: 44755536
-            free_memory: 5790642176
-            total_memory: 16681517056
-          os_string: 'Linux 4.15.0-58-generic #64-Ubuntu SMP Tue Aug 6 11:12:41 UTC 2019'
-          time: 1566401525
-          uptime: 87340
+    process_info:
+      description: General HAProxy process information
       properties:
-        api:
-          properties:
-            build_date:
-              description: HAProxy Dataplane API build date
-              format: date-time
-              type: string
-            version:
-              description: HAProxy Dataplane API version string
-              type: string
-          type: object
-        system:
-          properties:
-            cpu_info:
-              properties:
-                model:
-                  type: string
-                num_cpus:
-                  description: Number of logical CPUs
-                  type: integer
-              type: object
-            hostname:
-              description: Hostname where the HAProxy is running
-              type: string
-            mem_info:
-              properties:
-                dataplaneapi_memory:
-                  type: integer
-                free_memory:
-                  type: integer
-                total_memory:
-                  type: integer
-              type: object
-            os_string:
-              description: OS string
-              type: string
-            time:
-              description: Current time in milliseconds since Epoch.
-              type: integer
-            uptime:
-              description: System uptime
-              type:
-              - integer
-              - 'null'
-          type: object
-      title: Information
+        error:
+          type: string
+        info:
+          $ref: '#/components/schemas/process_info_item'
+        runtimeAPI:
+          type: string
+      title: HAProxy Information
       type: object
+      x-omitempty: true
     process_info_item:
       properties:
         active_peers:
@@ -362,18 +309,71 @@ components:
           - integer
           - 'null'
       type: object
-    process_info:
-      description: General HAProxy process information
+    info:
+      description: General API, OS and hardware information
+      example:
+        api:
+          build_date: '2019-08-21T17:31:56.000Z'
+          version: v1.2.1 45a3288.dev
+        system:
+          cpu_info:
+            model: Intel(R) Core(TM) i7-7500U CPU @ 2.70GHz
+            num_cpus: 4
+          hostname: test
+          mem_info:
+            dataplaneapi_memory: 44755536
+            free_memory: 5790642176
+            total_memory: 16681517056
+          os_string: 'Linux 4.15.0-58-generic #64-Ubuntu SMP Tue Aug 6 11:12:41 UTC 2019'
+          time: 1566401525
+          uptime: 87340
       properties:
-        error:
-          type: string
-        info:
-          $ref: '#/components/schemas/process_info_item'
-        runtimeAPI:
-          type: string
-      title: HAProxy Information
+        api:
+          properties:
+            build_date:
+              description: HAProxy Dataplane API build date
+              format: date-time
+              type: string
+            version:
+              description: HAProxy Dataplane API version string
+              type: string
+          type: object
+        system:
+          properties:
+            cpu_info:
+              properties:
+                model:
+                  type: string
+                num_cpus:
+                  description: Number of logical CPUs
+                  type: integer
+              type: object
+            hostname:
+              description: Hostname where the HAProxy is running
+              type: string
+            mem_info:
+              properties:
+                dataplaneapi_memory:
+                  type: integer
+                free_memory:
+                  type: integer
+                total_memory:
+                  type: integer
+              type: object
+            os_string:
+              description: OS string
+              type: string
+            time:
+              description: Current time in milliseconds since Epoch.
+              type: integer
+            uptime:
+              description: System uptime
+              type:
+              - integer
+              - 'null'
+          type: object
+      title: Information
       type: object
-      x-omitempty: true
     error:
       additionalProperties:
         type: string

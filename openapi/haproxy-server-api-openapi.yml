@@ -676,6 +676,590 @@ paths:
         required: true
 components:
   schemas:
+    runtime_server:
+      description: Runtime transient server properties
+      example:
+        address: 127.0.0.5
+        admin_state: ready
+        operational_state: up
+        port: 80
+        server_id: 1
+        server_name: web_server
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+        admin_state:
+          enum:
+          - ready
+          - maint
+          - drain
+          type: string
+        agent_addr:
+          readOnly: true
+          type: string
+        agent_port:
+          maximum: 65535
+          minimum: 0
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        agent_state:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        backend_forced_id:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        backend_id:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        backend_name:
+          readOnly: true
+          type: string
+        check_addr:
+          readOnly: true
+          type: string
+        check_health:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        check_port:
+          maximum: 65535
+          minimum: 0
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        check_result:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        check_state:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        check_status:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        forced_id:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        fqdn:
+          readOnly: true
+          type: string
+        id:
+          readOnly: true
+          type: string
+        iweight:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        last_time_change:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        name:
+          readOnly: true
+          type: string
+        operational_state:
+          enum:
+          - up
+          - down
+          - stopping
+          type: string
+        port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        srvrecord:
+          readOnly: true
+          type: string
+        use_ssl:
+          readOnly: true
+          type: boolean
+        uweight:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        weight:
+          type:
+          - integer
+          - 'null'
+      title: Runtime Server
+      type: object
+    server:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/server_params'
+      - properties:
+          address:
+            pattern: ^[^\s]+$
+            type: string
+          id:
+            type:
+            - integer
+            - 'null'
+          metadata:
+            additionalProperties:
+              type: object
+          name:
+            pattern: ^[^\s]+$
+            type: string
+          port:
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+        required:
+        - name
+        - address
+        type: object
+      description: HAProxy backend server configuration
+      example:
+        address: 10.1.1.1
+        name: www
+        port: 8080
+      title: Server
+    runtime_servers:
+      title: HAProxy Runtime Servers Array
+      description: HAProxy runtime servers array
+      type: array
+      items:
+        $ref: '#/components/schemas/runtime_server'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    runtime_add_server:
+      description: Settable properties when adding a new server using HAProxy's runtime.
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          readOnly: true
+          type: string
+        agent-addr:
+          pattern: ^[^\s]+$
+          type: string
+        agent-check:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            agent-port:
+              required: true
+        agent-inter:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        agent-port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        agent-send:
+          type: string
+        allow_0rtt:
+          type: boolean
+        alpn:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: ALPN Protocols
+        backup:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check-send-proxy:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check-sni:
+          pattern: ^[^\s]+$
+          type: string
+        check-ssl:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        check_alpn:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: Protocols
+        check_proto:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: Name
+        check_via_socks4:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        ciphers:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        ciphersuites:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        crl_file:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        downinter:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        error_limit:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Healthcheck error limit
+        fall:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Nr. of consecutive failed checks
+        fastinter:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        force_sslv3:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        force_tlsv10:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        force_tlsv11:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        force_tlsv12:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        force_tlsv13:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        health_check_address:
+          pattern: ^[^\s]+$
+          type: string
+        health_check_port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        id:
+          readOnly: true
+          type: string
+        inter:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        maintenance:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        maxconn:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Max Concurrent Connections
+        maxqueue:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Max Number of Connections
+        minconn:
+          type:
+          - integer
+          - 'null'
+        name:
+          readOnly: true
+          type: string
+        no_sslv3:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        no_tlsv10:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        no_tlsv11:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        no_tlsv12:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        no_tlsv13:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        npn:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        observe:
+          enum:
+          - layer4
+          - layer7
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        on-error:
+          enum:
+          - fastinter
+          - fail-check
+          - sudden-death
+          - mark-down
+          type: string
+        on-marked-down:
+          enum:
+          - shutdown-sessions
+          type: string
+        on-marked-up:
+          enum:
+          - shutdown-backup-sessions
+          type: string
+        pool_low_conn:
+          type:
+          - integer
+          - 'null'
+        pool_max_conn:
+          type:
+          - integer
+          - 'null'
+        pool_purge_delay:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        port:
+          maximum: 65535
+          minimum: 1
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        proto:
+          pattern: ^[^\s]+$
+          type: string
+        proxy-v2-options:
+          items:
+            enum:
+            - authority
+            - cert-cn
+            - cert-key
+            - cert-sig
+            - crc32c
+            - ssl
+            - ssl-cipher
+            - unique-id
+            type: string
+          type: array
+          x-omitempty: true
+        rise:
+          type:
+          - integer
+          - 'null'
+        send-proxy:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        send-proxy-v2:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        send_proxy_v2_ssl:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        send_proxy_v2_ssl_cn:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        slowstart:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        sni:
+          pattern: ^[^\s]+$
+          type: string
+        source:
+          type: string
+        ssl:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        ssl_cafile:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+          x-display-name: SSL CA File
+        ssl_certificate:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        ssl_max_ver:
+          enum:
+          - SSLv3
+          - TLSv1.0
+          - TLSv1.1
+          - TLSv1.2
+          - TLSv1.3
+          type: string
+        ssl_min_ver:
+          enum:
+          - SSLv3
+          - TLSv1.0
+          - TLSv1.1
+          - TLSv1.2
+          - TLSv1.3
+          type: string
+        ssl_reuse:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        tfo:
+          enum:
+          - enabled
+          - disabled
+          type: string
+        tls_tickets:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        track:
+          type: string
+        verify:
+          enum:
+          - none
+          - required
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+        verifyhost:
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+            verify:
+              value: required
+        weight:
+          type:
+          - integer
+          - 'null'
+        ws:
+          enum:
+          - auto
+          - h1
+          - h2
+          type: string
+          x-display-name: Relaying websocket stream protocol
+      title: Runtime Add Server
+      type: object
+    servers:
+      title: Servers
+      description: HAProxy backend servers array
+      type: array
+      items:
+        $ref: '#/components/schemas/server'
     server_params:
       properties:
         agent-addr:
@@ -1265,591 +1849,14 @@ components:
           type: string
           x-display-name: Relaying websocket stream protocol
       type: object
-    runtime_servers:
-      title: HAProxy Runtime Servers Array
-      description: HAProxy runtime servers array
-      type: array
-      items:
-        $ref: '#/components/schemas/runtime_server'
-    server:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/server_params'
-      - properties:
-          address:
-            pattern: ^[^\s]+$
-            type: string
-          id:
-            type:
-            - integer
-            - 'null'
-          metadata:
-            additionalProperties:
-              type: object
-          name:
-            pattern: ^[^\s]+$
-            type: string
-          port:
-            maximum: 65535
-            minimum: 1
-            type:
-            - integer
-            - 'null'
-        required:
-        - name
-        - address
-        type: object
-      description: HAProxy backend server configuration
-      example:
-        address: 10.1.1.1
-        name: www
-        port: 8080
-      title: Server
-    runtime_server:
-      description: Runtime transient server properties
-      example:
-        address: 127.0.0.5
-        admin_state: ready
-        operational_state: up
-        port: 80
-        server_id: 1
-        server_name: web_server
-      properties:
-        address:
-          pattern: ^[^\s]+$
-          type: string
-        admin_state:
-          enum:
-          - ready
-          - maint
-          - drain
-          type: string
-        agent_addr:
-          readOnly: true
-          type: string
-        agent_port:
-          maximum: 65535
-          minimum: 0
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        agent_state:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        backend_forced_id:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        backend_id:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        backend_name:
-          readOnly: true
-          type: string
-        check_addr:
-          readOnly: true
-          type: string
-        check_health:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        check_port:
-          maximum: 65535
-          minimum: 0
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        check_result:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        check_state:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        check_status:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        forced_id:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        fqdn:
-          readOnly: true
-          type: string
-        id:
-          readOnly: true
-          type: string
-        iweight:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        last_time_change:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        name:
-          readOnly: true
-          type: string
-        operational_state:
-          enum:
-          - up
-          - down
-          - stopping
-          type: string
-        port:
-          maximum: 65535
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-        srvrecord:
-          readOnly: true
-          type: string
-        use_ssl:
-          readOnly: true
-          type: boolean
-        uweight:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        weight:
-          type:
-          - integer
-          - 'null'
-      title: Runtime Server
-      type: object
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    runtime_add_server:
-      description: Settable properties when adding a new server using HAProxy's runtime.
-      properties:
-        address:
-          pattern: ^[^\s]+$
-          readOnly: true
-          type: string
-        agent-addr:
-          pattern: ^[^\s]+$
-          type: string
-        agent-check:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            agent-port:
-              required: true
-        agent-inter:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        agent-port:
-          maximum: 65535
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-        agent-send:
-          type: string
-        allow_0rtt:
-          type: boolean
-        alpn:
-          pattern: ^[^\s]+$
-          type: string
-          x-display-name: ALPN Protocols
-        backup:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        check:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        check-send-proxy:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        check-sni:
-          pattern: ^[^\s]+$
-          type: string
-        check-ssl:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        check_alpn:
-          pattern: ^[^\s]+$
-          type: string
-          x-display-name: Protocols
-        check_proto:
-          pattern: ^[^\s]+$
-          type: string
-          x-display-name: Name
-        check_via_socks4:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        ciphers:
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-        ciphersuites:
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-        crl_file:
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-        downinter:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        error_limit:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Healthcheck error limit
-        fall:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Nr. of consecutive failed checks
-        fastinter:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        force_sslv3:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        force_tlsv10:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        force_tlsv11:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        force_tlsv12:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        force_tlsv13:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        health_check_address:
-          pattern: ^[^\s]+$
-          type: string
-        health_check_port:
-          maximum: 65535
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-        id:
-          readOnly: true
-          type: string
-        inter:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        maintenance:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        maxconn:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Max Concurrent Connections
-        maxqueue:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Max Number of Connections
-        minconn:
-          type:
-          - integer
-          - 'null'
-        name:
-          readOnly: true
-          type: string
-        no_sslv3:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        no_tlsv10:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        no_tlsv11:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        no_tlsv12:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        no_tlsv13:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        npn:
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-        observe:
-          enum:
-          - layer4
-          - layer7
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-        on-error:
-          enum:
-          - fastinter
-          - fail-check
-          - sudden-death
-          - mark-down
-          type: string
-        on-marked-down:
-          enum:
-          - shutdown-sessions
-          type: string
-        on-marked-up:
-          enum:
-          - shutdown-backup-sessions
-          type: string
-        pool_low_conn:
-          type:
-          - integer
-          - 'null'
-        pool_max_conn:
-          type:
-          - integer
-          - 'null'
-        pool_purge_delay:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        port:
-          maximum: 65535
-          minimum: 1
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        proto:
-          pattern: ^[^\s]+$
-          type: string
-        proxy-v2-options:
-          items:
-            enum:
-            - authority
-            - cert-cn
-            - cert-key
-            - cert-sig
-            - crc32c
-            - ssl
-            - ssl-cipher
-            - unique-id
-            type: string
-          type: array
-          x-omitempty: true
-        rise:
-          type:
-          - integer
-          - 'null'
-        send-proxy:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        send-proxy-v2:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        send_proxy_v2_ssl:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        send_proxy_v2_ssl_cn:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        slowstart:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        sni:
-          pattern: ^[^\s]+$
-          type: string
-        source:
-          type: string
-        ssl:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        ssl_cafile:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-          x-display-name: SSL CA File
-        ssl_certificate:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-        ssl_max_ver:
-          enum:
-          - SSLv3
-          - TLSv1.0
-          - TLSv1.1
-          - TLSv1.2
-          - TLSv1.3
-          type: string
-        ssl_min_ver:
-          enum:
-          - SSLv3
-          - TLSv1.0
-          - TLSv1.1
-          - TLSv1.2
-          - TLSv1.3
-          type: string
-        ssl_reuse:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        tfo:
-          enum:
-          - enabled
-          - disabled
-          type: string
-        tls_tickets:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-        track:
-          type: string
-        verify:
-          enum:
-          - none
-          - required
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-        verifyhost:
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-            verify:
-              value: required
-        weight:
-          type:
-          - integer
-          - 'null'
-        ws:
-          enum:
-          - auto
-          - h1
-          - h2
-          type: string
-          x-display-name: Relaying websocket stream protocol
-      title: Runtime Add Server
-      type: object
-    servers:
-      title: Servers
-      description: HAProxy backend servers array
-      type: array
-      items:
-        $ref: '#/components/schemas/server'
   parameters:
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
     parent_name:
       name: parent_name
       in: path
@@ -1858,13 +1865,6 @@ components:
       schema:
         type: string
         pattern: ^[^\r\n<>*;$#&{}"]+$
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     force_reload:
       name: force_reload
       in: query
@@ -1881,6 +1881,17 @@ components:
       schema:
         type: string
   responses:
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     BadRequest:
       description: Bad request
       headers:
@@ -1894,17 +1905,6 @@ components:
             $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version

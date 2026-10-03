@@ -192,16 +192,29 @@ paths:
       operationId: getServicesHaproxyRuntimeAclsByParentNameEntriesById
       x-operation-id-source: derived
 components:
-  parameters:
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
   schemas:
+    acl_files_entries:
+      title: ACL Files Entries
+      description: Array of entries of one runtime acl file
+      type: array
+      items:
+        $ref: '#/components/schemas/acl_file_entry'
+    acl_files:
+      title: ACL Files Array
+      description: Array of runtime acl files
+      type: array
+      items:
+        $ref: '#/components/schemas/acl_file'
+    acl_file_entry:
+      description: One ACL File Entry
+      properties:
+        id:
+          readOnly: true
+          type: string
+        value:
+          type: string
+      title: One ACL File Entry
+      type: object
     acl_file:
       description: ACL File
       properties:
@@ -213,22 +226,6 @@ components:
           type: string
       title: ACL File
       type: object
-    acl_file_entry:
-      description: One ACL File Entry
-      properties:
-        id:
-          readOnly: true
-          type: string
-        value:
-          type: string
-      title: One ACL File Entry
-      type: object
-    acl_files_entries:
-      title: ACL Files Entries
-      description: Array of entries of one runtime acl file
-      type: array
-      items:
-        $ref: '#/components/schemas/acl_file_entry'
     error:
       additionalProperties:
         type: string
@@ -247,15 +244,9 @@ components:
       - message
       title: Error
       type: object
-    acl_files:
-      title: ACL Files Array
-      description: Array of runtime acl files
-      type: array
-      items:
-        $ref: '#/components/schemas/acl_file'
   responses:
-    BadRequest:
-      description: Bad request
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -276,8 +267,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -298,6 +289,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
   securitySchemes:
     basic_auth:
       type: http

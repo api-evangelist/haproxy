@@ -145,181 +145,6 @@ paths:
       - Peer
 components:
   schemas:
-    peer_entry:
-      description: Peer Entry from peers table
-      properties:
-        address:
-          pattern: ^[^\s]+$
-          type: string
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_.:${}"]+$
-          type: string
-        port:
-          maximum: 65535
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-        shard:
-          type: integer
-      required:
-      - name
-      - address
-      - port
-      title: Peer Entry
-      type: object
-    peer_section:
-      allOf:
-      - $ref: '#/components/schemas/peer_section_base'
-      - properties:
-          binds:
-            additionalProperties:
-              $ref: '#/components/schemas/bind'
-          log_target_list:
-            $ref: '#/components/schemas/log_targets'
-            x-go-name: LogTargetList
-          peer_entries:
-            additionalProperties:
-              $ref: '#/components/schemas/peer_entry'
-          servers:
-            additionalProperties:
-              $ref: '#/components/schemas/server'
-          tables:
-            additionalProperties:
-              $ref: '#/components/schemas/table'
-        type: object
-      description: Peer Section with all its children resources
-      type: object
-      x-go-name: PeerSection
-    bind:
-      allOf:
-      - $ref: '#/components/schemas/bind_params'
-      - additionalProperties: false
-        properties:
-          address:
-            example: 127.0.0.1
-            pattern: ^[^\s]+$
-            type: string
-          metadata:
-            additionalProperties:
-              type: object
-          name:
-            pattern: ^[^\s]+$
-            type: string
-          port:
-            example: 80
-            maximum: 65535
-            minimum: 1
-            type:
-            - integer
-            - 'null'
-          port-range-end:
-            example: 81
-            maximum: 65535
-            minimum: 1
-            type:
-            - integer
-            - 'null'
-        required:
-        - name
-        type: object
-      description: HAProxy frontend bind configuration
-      title: Bind
-    log_targets:
-      title: Log Target Array
-      description: HAProxy log target array (corresponds to log directives)
-      type: array
-      items:
-        $ref: '#/components/schemas/log_target'
-    table:
-      properties:
-        expire:
-          pattern: ^\d+(ms|s|m|h|d)?$
-          type:
-          - string
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          type: string
-        no_purge:
-          type: boolean
-          x-display-name: No Purge
-        recv_only:
-          type: boolean
-          x-display-name: Receive Only
-        size:
-          pattern: ^\d+(k|K|m|M|g|G)?$
-          type: string
-          x-size: true
-        store:
-          type: string
-        type:
-          enum:
-          - ip
-          - integer
-          - string
-          - binary
-          type: string
-        type_len:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Type
-        write_to:
-          type:
-          - string
-          - 'null'
-      required:
-      - name
-      type: object
-    default_bind:
-      allOf:
-      - $ref: '#/components/schemas/bind_params'
-      - properties:
-          metadata:
-            additionalProperties:
-              type: object
-          name:
-            pattern: ^[^\s]+$
-            type: string
-        type: object
-      description: HAProxy default bind configuration
-      title: Default Bind
-    default_server:
-      allOf:
-      - $ref: '#/components/schemas/server_params'
-      title: Default Server
-    peer_sections:
-      title: Peer_Section
-      description: HAProxy peer_section array
-      type: array
-      items:
-        $ref: '#/components/schemas/peer_section'
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     bind_params:
       additionalProperties: false
       properties:
@@ -738,6 +563,207 @@ components:
           x-dependency:
             ssl:
               value: enabled
+      type: object
+    log_target:
+      additionalProperties: false
+      description: Per-instance logging of events and traffic.
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        facility:
+          enum:
+          - kern
+          - user
+          - mail
+          - daemon
+          - auth
+          - syslog
+          - lpr
+          - news
+          - uucp
+          - cron
+          - auth2
+          - ftp
+          - ntp
+          - audit
+          - alert
+          - cron2
+          - local0
+          - local1
+          - local2
+          - local3
+          - local4
+          - local5
+          - local6
+          - local7
+          type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        format:
+          enum:
+          - local
+          - rfc3164
+          - rfc5424
+          - priority
+          - short
+          - timed
+          - iso
+          - raw
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        global:
+          type: boolean
+        length:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        level:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        metadata:
+          additionalProperties:
+            type: object
+        minlevel:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            level:
+              required: false
+            nolog:
+              value: false
+        nolog:
+          type: boolean
+        profile:
+          type: string
+        sample_range:
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        sample_size:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+            sample_range:
+              required: true
+      title: Log Target
+      type: object
+    log_targets:
+      title: Log Target Array
+      description: HAProxy log target array (corresponds to log directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/log_target'
+    table:
+      properties:
+        expire:
+          pattern: ^\d+(ms|s|m|h|d)?$
+          type:
+          - string
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          type: string
+        no_purge:
+          type: boolean
+          x-display-name: No Purge
+        recv_only:
+          type: boolean
+          x-display-name: Receive Only
+        size:
+          pattern: ^\d+(k|K|m|M|g|G)?$
+          type: string
+          x-size: true
+        store:
+          type: string
+        type:
+          enum:
+          - ip
+          - integer
+          - string
+          - binary
+          type: string
+        type_len:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Type
+        write_to:
+          type:
+          - string
+          - 'null'
+      required:
+      - name
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
       type: object
     server_params:
       properties:
@@ -1328,36 +1354,65 @@ components:
           type: string
           x-display-name: Relaying websocket stream protocol
       type: object
-    peer_section_base:
-      additionalProperties: false
-      description: HAProxy peer_section configuration
+    bind:
+      allOf:
+      - $ref: '#/components/schemas/bind_params'
+      - additionalProperties: false
+        properties:
+          address:
+            example: 127.0.0.1
+            pattern: ^[^\s]+$
+            type: string
+          metadata:
+            additionalProperties:
+              type: object
+          name:
+            pattern: ^[^\s]+$
+            type: string
+          port:
+            example: 80
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+          port-range-end:
+            example: 81
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+        required:
+        - name
+        type: object
+      description: HAProxy frontend bind configuration
+      title: Bind
+    peer_entry:
+      description: Peer Entry from peers table
       properties:
-        default_bind:
-          $ref: '#/components/schemas/default_bind'
-        default_server:
-          $ref: '#/components/schemas/default_server'
-        disabled:
-          type: boolean
-        enabled:
-          type: boolean
+        address:
+          pattern: ^[^\s]+$
+          type: string
         metadata:
           additionalProperties:
             type: object
         name:
-          pattern: ^[A-Za-z0-9-_.:]+$
+          pattern: ^[A-Za-z0-9-_.:${}"]+$
           type: string
-        shards:
-          description: 'In some configurations, one would like to distribute the stick-table contents
-
-            to some peers in place of sending all the stick-table contents to each peer
-
-            declared in the "peers" section. In such cases, "shards" specifies the
-
-            number of peer involved in this stick-table contents distribution.'
+        port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        shard:
           type: integer
       required:
       - name
-      title: Peer Section Base
+      - address
+      - port
+      title: Peer Entry
       type: object
     server:
       additionalProperties: false
@@ -1393,141 +1448,128 @@ components:
         name: www
         port: 8080
       title: Server
-    log_target:
+    peer_section_base:
       additionalProperties: false
-      description: Per-instance logging of events and traffic.
+      description: HAProxy peer_section configuration
       properties:
-        address:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            global:
-              required: true
-              value: false
-            nolog:
-              required: true
-              value: false
-        facility:
-          enum:
-          - kern
-          - user
-          - mail
-          - daemon
-          - auth
-          - syslog
-          - lpr
-          - news
-          - uucp
-          - cron
-          - auth2
-          - ftp
-          - ntp
-          - audit
-          - alert
-          - cron2
-          - local0
-          - local1
-          - local2
-          - local3
-          - local4
-          - local5
-          - local6
-          - local7
-          type: string
-          x-dependency:
-            global:
-              required: true
-              value: false
-            nolog:
-              required: true
-              value: false
-        format:
-          enum:
-          - local
-          - rfc3164
-          - rfc5424
-          - priority
-          - short
-          - timed
-          - iso
-          - raw
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        global:
+        default_bind:
+          $ref: '#/components/schemas/default_bind'
+        default_server:
+          $ref: '#/components/schemas/default_server'
+        disabled:
           type: boolean
-        length:
-          type: integer
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        level:
-          enum:
-          - emerg
-          - alert
-          - crit
-          - err
-          - warning
-          - notice
-          - info
-          - debug
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
+        enabled:
+          type: boolean
         metadata:
           additionalProperties:
             type: object
-        minlevel:
-          enum:
-          - emerg
-          - alert
-          - crit
-          - err
-          - warning
-          - notice
-          - info
-          - debug
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
           type: string
-          x-dependency:
-            global:
-              value: false
-            level:
-              required: false
-            nolog:
-              value: false
-        nolog:
-          type: boolean
-        profile:
-          type: string
-        sample_range:
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        sample_size:
+        shards:
+          description: 'In some configurations, one would like to distribute the stick-table contents
+
+            to some peers in place of sending all the stick-table contents to each peer
+
+            declared in the "peers" section. In such cases, "shards" specifies the
+
+            number of peer involved in this stick-table contents distribution.'
           type: integer
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-            sample_range:
-              required: true
-      title: Log Target
+      required:
+      - name
+      title: Peer Section Base
       type: object
+    default_server:
+      allOf:
+      - $ref: '#/components/schemas/server_params'
+      title: Default Server
+    peer_section:
+      allOf:
+      - $ref: '#/components/schemas/peer_section_base'
+      - properties:
+          binds:
+            additionalProperties:
+              $ref: '#/components/schemas/bind'
+          log_target_list:
+            $ref: '#/components/schemas/log_targets'
+            x-go-name: LogTargetList
+          peer_entries:
+            additionalProperties:
+              $ref: '#/components/schemas/peer_entry'
+          servers:
+            additionalProperties:
+              $ref: '#/components/schemas/server'
+          tables:
+            additionalProperties:
+              $ref: '#/components/schemas/table'
+        type: object
+      description: Peer Section with all its children resources
+      type: object
+      x-go-name: PeerSection
+    default_bind:
+      allOf:
+      - $ref: '#/components/schemas/bind_params'
+      - properties:
+          metadata:
+            additionalProperties:
+              type: object
+          name:
+            pattern: ^[^\s]+$
+            type: string
+        type: object
+      description: HAProxy default bind configuration
+      title: Default Bind
+    peer_sections:
+      title: Peer_Section
+      description: HAProxy peer_section array
+      type: array
+      items:
+        $ref: '#/components/schemas/peer_section'
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
   responses:
     NotFound:
       description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -1559,48 +1601,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-  parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
   securitySchemes:
     basic_auth:
       type: http

@@ -222,51 +222,6 @@ paths:
               $ref: '#/components/schemas/mailer_entry'
         required: true
 components:
-  responses:
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   parameters:
     version:
       name: version
@@ -275,13 +230,6 @@ components:
       required: false
       schema:
         type: integer
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
     force_reload:
       name: force_reload
       in: query
@@ -290,13 +238,14 @@ components:
       schema:
         type: boolean
         default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
   schemas:
-    mailer_entries:
-      title: Mailer Entries
-      description: HAProxy mailer entries
-      type: array
-      items:
-        $ref: '#/components/schemas/mailer_entry'
     mailer_entry:
       description: Mailer entry of a Mailers section
       properties:
@@ -319,6 +268,12 @@ components:
       - port
       title: Mailer Entry
       type: object
+    mailer_entries:
+      title: Mailer Entries
+      description: HAProxy mailer entries
+      type: array
+      items:
+        $ref: '#/components/schemas/mailer_entry'
     error:
       additionalProperties:
         type: string
@@ -337,6 +292,51 @@ components:
       - message
       title: Error
       type: object
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   securitySchemes:
     basic_auth:
       type: http

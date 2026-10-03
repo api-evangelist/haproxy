@@ -145,6 +145,19 @@ paths:
       - User List
 components:
   schemas:
+    userlist_base:
+      description: HAProxy configuration of access control
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+      required:
+      - name
+      title: Userlist Base
+      type: object
     userlist:
       allOf:
       - $ref: '#/components/schemas/userlist_base'
@@ -159,40 +172,6 @@ components:
       description: Userlist with all its children resources
       type: object
       x-go-name: Userlist
-    group:
-      description: HAProxy userlist group
-      properties:
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_.:${}"]+$
-          type: string
-        users:
-          type: string
-      required:
-      - name
-      title: Group
-      type: object
-    userlist_base:
-      description: HAProxy configuration of access control
-      properties:
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_.:]+$
-          type: string
-      required:
-      - name
-      title: Userlist Base
-      type: object
-    userlists:
-      title: Userlists
-      description: HAProxy userlists array
-      type: array
-      items:
-        $ref: '#/components/schemas/userlist'
     user:
       description: HAProxy userlist user
       properties:
@@ -214,6 +193,27 @@ components:
       - password
       title: User
       type: object
+    group:
+      description: HAProxy userlist group
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:${}"]+$
+          type: string
+        users:
+          type: string
+      required:
+      - name
+      title: Group
+      type: object
+    userlists:
+      title: Userlists
+      description: HAProxy userlists array
+      type: array
+      items:
+        $ref: '#/components/schemas/userlist'
     error:
       additionalProperties:
         type: string
@@ -248,13 +248,6 @@ components:
       required: false
       schema:
         type: integer
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
     force_reload:
       name: force_reload
       in: query
@@ -263,9 +256,16 @@ components:
       schema:
         type: boolean
         default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
   responses:
-    BadRequest:
-      description: Bad request
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -286,8 +286,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version
