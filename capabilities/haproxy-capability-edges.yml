@@ -1,0 +1,93 @@
+slug: haproxy
+provider: HAProxy
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 8
+edges:
+- tag: Nameserver
+  spec_file: haproxy-nameserver-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.75
+  evidence: POST /services/haproxy/configuration/nameservers — "Add a nameserver"
+  reason: DNS nameserver entries used by the proxy's resolvers — network infrastructure configuration,
+    squarely IT Infrastructure Management.
+- tag: Resolver
+  spec_file: haproxy-resolver-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.75
+  evidence: POST /services/haproxy/configuration/resolvers — "Add a resolver"; schemas resolver, nameserver
+  reason: DNS resolver sections for the proxy — network infrastructure configuration, clearly IT Infrastructure
+    Management.
+- tag: QUICInitialRule
+  spec_file: haproxy-quicinitialrule-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.72
+  evidence: POST /services/haproxy/configuration/frontends/{parent_name}/quic_initial_rules/{index} —
+    "Add a new QUIC Initial Rule"
+  reason: QUIC protocol handling rules on proxy frontends/defaults. Network-protocol configuration of
+    the load balancer; 'Rule' is not a business rule.
+- tag: Backend
+  spec_file: haproxy-backend-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: 'POST /services/haproxy/configuration/backends createBackend ''Add a backend''; schemas: balance,
+    server_template, httpchk_params'
+  reason: Defines load-balancer backend server pools, balancing algorithms and health checks on the reverse
+    proxy. Unambiguously network/compute infrastructure configuration, which is IT Infrastructure Management;
+    the 'Backend' tag carries no business meaning here.
+- tag: Maps
+  spec_file: haproxy-maps-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: GET /services/haproxy/runtime/maps — "Return runtime map files"; POST .../entries — "Adds
+    an entry into the map file"
+  reason: Runtime map files are lookup tables used by proxy routing rules. Managing them is runtime configuration
+    of load-balancer infrastructure, not any business data capability.
+- tag: Peer
+  spec_file: haproxy-peer-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: POST /services/haproxy/configuration/peer_section — "Add a peer"; schemas peer_section, bind_params,
+    table
+  reason: Peer sections synchronise stick tables between HAProxy instances. This is clustering/infrastructure
+    configuration; 'Peer' here is a proxy node, not a business counterparty.
+- tag: PeerEntry
+  spec_file: haproxy-peerentry-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: POST /services/haproxy/configuration/peer_entries — "Add a new peer_entry"
+  reason: Individual peer node entries within the proxy's peer section — infrastructure topology configuration.
+- tag: Server
+  spec_file: haproxy-server-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: POST /services/haproxy/configuration/backends/{parent_name}/servers  createServerBackend  Add
+    a new server
+  reason: Declares and maintains backend/peer/ring server definitions in a reverse proxy's configuration
+    — network infrastructure configuration, not any business capability. 'Server' here is a load-balancer
+    backend target, a technical object.

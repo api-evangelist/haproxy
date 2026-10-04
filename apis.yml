@@ -1720,6 +1720,9 @@ apis:
   - type: ChangeLog
     url: https://github.com/haproxytech/dataplaneapi/releases
 common:
+  - type: CapabilityMap
+    url: capabilities/haproxy-capability-edges.yml
+    name: HAProxy Business Capability Map
   - type: Overlay
     url: overlays/haproxy-data-plane-api-overlay.yaml
   - type: Authentication
