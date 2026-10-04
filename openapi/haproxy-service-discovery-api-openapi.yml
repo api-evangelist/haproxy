@@ -255,64 +255,13 @@ paths:
               $ref: '#/components/schemas/consul'
         required: true
 components:
-  responses:
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   schemas:
-    awsFilters:
-      properties:
-        key:
-          description: Key to use as filter, using the format specified at https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html#options
-          type: string
-        value:
-          description: Value of the filter to use
-          type: string
-      required:
-      - key
-      - value
-      type: object
+    consuls:
+      title: Consuls
+      description: Consuls array
+      type: array
+      items:
+        $ref: '#/components/schemas/consul'
     consul:
       additionalProperties: false
       description: Consul server configuration
@@ -511,12 +460,63 @@ components:
       - message
       title: Error
       type: object
-    consuls:
-      title: Consuls
-      description: Consuls array
-      type: array
-      items:
-        $ref: '#/components/schemas/consul'
+    awsFilters:
+      properties:
+        key:
+          description: Key to use as filter, using the format specified at https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html#options
+          type: string
+        value:
+          description: Value of the filter to use
+          type: string
+      required:
+      - key
+      - value
+      type: object
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   securitySchemes:
     basic_auth:
       type: http

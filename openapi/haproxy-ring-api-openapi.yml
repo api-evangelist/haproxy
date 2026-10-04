@@ -192,21 +192,6 @@ paths:
         required: true
 components:
   parameters:
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     force_reload:
       name: force_reload
       in: query
@@ -222,7 +207,44 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
   responses:
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     NotFound:
       description: The specified resource was not found
       headers:
@@ -245,153 +267,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   schemas:
-    server:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/server_params'
-      - properties:
-          address:
-            pattern: ^[^\s]+$
-            type: string
-          id:
-            type:
-            - integer
-            - 'null'
-          metadata:
-            additionalProperties:
-              type: object
-          name:
-            pattern: ^[^\s]+$
-            type: string
-          port:
-            maximum: 65535
-            minimum: 1
-            type:
-            - integer
-            - 'null'
-        required:
-        - name
-        - address
-        type: object
-      description: HAProxy backend server configuration
-      example:
-        address: 10.1.1.1
-        name: www
-        port: 8080
-      title: Server
     rings:
       title: Rings
       description: HAProxy rings array
       type: array
       items:
         $ref: '#/components/schemas/ring'
-    ring_base:
-      additionalProperties: false
-      description: HAProxy ring configuration
-      properties:
-        description:
-          description: The description is an optional description string of the ring
-          type: string
-        format:
-          description: Format used to store events into the ring buffer
-          enum:
-          - iso
-          - local
-          - raw
-          - rfc3164
-          - rfc5424
-          - short
-          - priority
-          - timed
-          type: string
-        maxlen:
-          description: The maximum length of an event message stored into the ring
-          type:
-          - integer
-          - 'null'
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_.:]+$
-          type: string
-        size:
-          description: Optional size in bytes for the ring-buffer
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-size: true
-        timeout_connect:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        timeout_server:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-      required:
-      - name
-      title: Ring Base
-      type: object
-    ring:
-      allOf:
-      - $ref: '#/components/schemas/ring_base'
-      - properties:
-          servers:
-            additionalProperties:
-              $ref: '#/components/schemas/server'
-        type: object
-      description: Ring with all its children resources
-      type: object
-      x-go-name: Ring
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     server_params:
       properties:
         agent-addr:
@@ -981,6 +863,124 @@ components:
           type: string
           x-display-name: Relaying websocket stream protocol
       type: object
+    ring_base:
+      additionalProperties: false
+      description: HAProxy ring configuration
+      properties:
+        description:
+          description: The description is an optional description string of the ring
+          type: string
+        format:
+          description: Format used to store events into the ring buffer
+          enum:
+          - iso
+          - local
+          - raw
+          - rfc3164
+          - rfc5424
+          - short
+          - priority
+          - timed
+          type: string
+        maxlen:
+          description: The maximum length of an event message stored into the ring
+          type:
+          - integer
+          - 'null'
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+        size:
+          description: Optional size in bytes for the ring-buffer
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-size: true
+        timeout_connect:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        timeout_server:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+      required:
+      - name
+      title: Ring Base
+      type: object
+    ring:
+      allOf:
+      - $ref: '#/components/schemas/ring_base'
+      - properties:
+          servers:
+            additionalProperties:
+              $ref: '#/components/schemas/server'
+        type: object
+      description: Ring with all its children resources
+      type: object
+      x-go-name: Ring
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    server:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/server_params'
+      - properties:
+          address:
+            pattern: ^[^\s]+$
+            type: string
+          id:
+            type:
+            - integer
+            - 'null'
+          metadata:
+            additionalProperties:
+              type: object
+          name:
+            pattern: ^[^\s]+$
+            type: string
+          port:
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+        required:
+        - name
+        - address
+        type: object
+      description: HAProxy backend server configuration
+      example:
+        address: 10.1.1.1
+        name: www
+        port: 8080
+      title: Server
   securitySchemes:
     basic_auth:
       type: http

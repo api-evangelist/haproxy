@@ -458,21 +458,6 @@ paths:
         required: true
 components:
   parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
     force_reload:
       name: force_reload
       in: query
@@ -481,6 +466,14 @@ components:
       schema:
         type: boolean
         default: false
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
     transaction_id:
       name: transaction_id
       in: query
@@ -488,9 +481,16 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   responses:
-    NotFound:
-      description: The specified resource was not found
+    AlreadyExists:
+      description: The specified resource already exists
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -511,6 +511,17 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     BadRequest:
       description: Bad request
       headers:
@@ -522,18 +533,31 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   schemas:
+    tcp_response_rules:
+      title: TCP Response Rules Array
+      description: HAProxy TCP response rules array (corresponds to tcp-response directive)
+      type: array
+      items:
+        $ref: '#/components/schemas/tcp_response_rule'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
     tcp_response_rule:
       additionalProperties: false
       description: HAProxy TCP Response Rule configuration (corresponds to tcp-response)
@@ -829,30 +853,6 @@ components:
       required:
       - type
       title: TCP Response Rule
-      type: object
-    tcp_response_rules:
-      title: TCP Response Rules Array
-      description: HAProxy TCP response rules array (corresponds to tcp-response directive)
-      type: array
-      items:
-        $ref: '#/components/schemas/tcp_response_rule'
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
       type: object
   securitySchemes:
     basic_auth:

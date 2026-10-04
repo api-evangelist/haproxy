@@ -675,195 +675,83 @@ paths:
               $ref: '#/components/schemas/runtime_server'
         required: true
 components:
-  schemas:
-    runtime_server:
-      description: Runtime transient server properties
-      example:
-        address: 127.0.0.5
-        admin_state: ready
-        operational_state: up
-        port: 80
-        server_id: 1
-        server_name: web_server
-      properties:
-        address:
-          pattern: ^[^\s]+$
-          type: string
-        admin_state:
-          enum:
-          - ready
-          - maint
-          - drain
-          type: string
-        agent_addr:
-          readOnly: true
-          type: string
-        agent_port:
-          maximum: 65535
-          minimum: 0
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        agent_state:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        backend_forced_id:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        backend_id:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        backend_name:
-          readOnly: true
-          type: string
-        check_addr:
-          readOnly: true
-          type: string
-        check_health:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        check_port:
-          maximum: 65535
-          minimum: 0
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        check_result:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        check_state:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        check_status:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        forced_id:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        fqdn:
-          readOnly: true
-          type: string
-        id:
-          readOnly: true
-          type: string
-        iweight:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        last_time_change:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        name:
-          readOnly: true
-          type: string
-        operational_state:
-          enum:
-          - up
-          - down
-          - stopping
-          type: string
-        port:
-          maximum: 65535
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-        srvrecord:
-          readOnly: true
-          type: string
-        use_ssl:
-          readOnly: true
-          type: boolean
-        uweight:
-          readOnly: true
-          type:
-          - integer
-          - 'null'
-        weight:
-          type:
-          - integer
-          - 'null'
-      title: Runtime Server
-      type: object
-    server:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/server_params'
-      - properties:
-          address:
-            pattern: ^[^\s]+$
-            type: string
-          id:
-            type:
-            - integer
-            - 'null'
-          metadata:
-            additionalProperties:
-              type: object
-          name:
-            pattern: ^[^\s]+$
-            type: string
-          port:
-            maximum: 65535
-            minimum: 1
-            type:
-            - integer
-            - 'null'
-        required:
-        - name
-        - address
-        type: object
-      description: HAProxy backend server configuration
-      example:
-        address: 10.1.1.1
-        name: www
-        port: 8080
-      title: Server
-    runtime_servers:
-      title: HAProxy Runtime Servers Array
-      description: HAProxy runtime servers array
-      type: array
-      items:
-        $ref: '#/components/schemas/runtime_server'
-    error:
-      additionalProperties:
+  parameters:
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
         type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+  responses:
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  schemas:
     runtime_add_server:
       description: Settable properties when adding a new server using HAProxy's runtime.
       properties:
@@ -1254,12 +1142,148 @@ components:
           x-display-name: Relaying websocket stream protocol
       title: Runtime Add Server
       type: object
+    runtime_server:
+      description: Runtime transient server properties
+      example:
+        address: 127.0.0.5
+        admin_state: ready
+        operational_state: up
+        port: 80
+        server_id: 1
+        server_name: web_server
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+        admin_state:
+          enum:
+          - ready
+          - maint
+          - drain
+          type: string
+        agent_addr:
+          readOnly: true
+          type: string
+        agent_port:
+          maximum: 65535
+          minimum: 0
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        agent_state:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        backend_forced_id:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        backend_id:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        backend_name:
+          readOnly: true
+          type: string
+        check_addr:
+          readOnly: true
+          type: string
+        check_health:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        check_port:
+          maximum: 65535
+          minimum: 0
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        check_result:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        check_state:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        check_status:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        forced_id:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        fqdn:
+          readOnly: true
+          type: string
+        id:
+          readOnly: true
+          type: string
+        iweight:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        last_time_change:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        name:
+          readOnly: true
+          type: string
+        operational_state:
+          enum:
+          - up
+          - down
+          - stopping
+          type: string
+        port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+        srvrecord:
+          readOnly: true
+          type: string
+        use_ssl:
+          readOnly: true
+          type: boolean
+        uweight:
+          readOnly: true
+          type:
+          - integer
+          - 'null'
+        weight:
+          type:
+          - integer
+          - 'null'
+      title: Runtime Server
+      type: object
     servers:
       title: Servers
       description: HAProxy backend servers array
       type: array
       items:
         $ref: '#/components/schemas/server'
+    runtime_servers:
+      title: HAProxy Runtime Servers Array
+      description: HAProxy runtime servers array
+      type: array
+      items:
+        $ref: '#/components/schemas/runtime_server'
     server_params:
       properties:
         agent-addr:
@@ -1849,82 +1873,58 @@ components:
           type: string
           x-display-name: Relaying websocket stream protocol
       type: object
-  parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
+    error:
+      additionalProperties:
         type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-  responses:
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    server:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/server_params'
+      - properties:
+          address:
+            pattern: ^[^\s]+$
             type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
+          id:
+            type:
+            - integer
+            - 'null'
+          metadata:
+            additionalProperties:
+              type: object
+          name:
+            pattern: ^[^\s]+$
             type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+          port:
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+        required:
+        - name
+        - address
+        type: object
+      description: HAProxy backend server configuration
+      example:
+        address: 10.1.1.1
+        name: www
+        port: 8080
+      title: Server
   securitySchemes:
     basic_auth:
       type: http

@@ -192,21 +192,6 @@ paths:
         required: true
 components:
   parameters:
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     force_reload:
       name: force_reload
       in: query
@@ -222,52 +207,99 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+  responses:
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
-    fcgi_log_stderr:
-      description: 'Enables logging of STDERR messages that the FastCGI application reports.
+    fcgi_pass_header:
+      description: 'Specifies the name of a request header to pass to the FastCGI application.
 
-        It is an optional setting. By default, HAProxy Enterprise ignores STDERR messages.'
+        Optionally, you can follow it with an ACL-based condition, in which case the FastCGI application evaluates it only if the condition is true.
+
+        Most request headers are already available to the FastCGI application with the prefix "HTTP".
+
+        Thus, you only need this directive to pass headers that are purposefully omitted.
+
+        Currently, the headers "Authorization", "Proxy-Authorization", and hop-by-hop headers are omitted.
+
+        Note that the headers "Content-type" and "Content-length" never pass to the FastCGI application because they are already converted into parameters.'
       properties:
-        address:
+        cond:
+          enum:
+          - if
+          - unless
           type: string
-        facility:
-          title: Facility
-          type: string
-        format:
-          title: Format
-          type: string
-        global:
-          title: Global
-          type: boolean
-        len:
-          title: Length
-          type: integer
-        level:
-          title: Level
+          x-display-name: Condition
+        cond_test:
           type: string
           x-dependency:
-            facility:
+            cond:
               required: true
-        minlevel:
-          title: Minimum level
+          x-display-name: Condition Test
+        name:
           type: string
-          x-dependency:
-            facility:
-              required: true
-        sample:
-          properties:
-            ranges:
-              title: Range
-              type: string
-            size:
-              title: Size
-              type: integer
-          required:
-          - ranges
-          - size
-          title: Sample
-          type: object
       type: object
+    fcgi_apps:
+      type: array
+      items:
+        $ref: '#/components/schemas/fcgi_app'
     fcgi_set_param:
       description: 'Sets a FastCGI parameter to pass to this application.
 
@@ -292,21 +324,6 @@ components:
         name:
           type: string
       type: object
-    fcgi_app:
-      allOf:
-      - $ref: '#/components/schemas/fcgi_app_base'
-      - properties:
-          acl_list:
-            $ref: '#/components/schemas/acls'
-            x-go-name: AclList
-        type: object
-      description: App with all its children resources
-      type: object
-      x-go-name: FCGIApp
-    fcgi_apps:
-      type: array
-      items:
-        $ref: '#/components/schemas/fcgi_app'
     fcgi_app_base:
       description: HAProxy FastCGI application configuration
       properties:
@@ -407,6 +424,17 @@ components:
       - criterion
       title: ACL Lines
       type: object
+    fcgi_app:
+      allOf:
+      - $ref: '#/components/schemas/fcgi_app_base'
+      - properties:
+          acl_list:
+            $ref: '#/components/schemas/acls'
+            x-go-name: AclList
+        type: object
+      description: App with all its children resources
+      type: object
+      x-go-name: FCGIApp
     error:
       additionalProperties:
         type: string
@@ -425,79 +453,51 @@ components:
       - message
       title: Error
       type: object
-    fcgi_pass_header:
-      description: 'Specifies the name of a request header to pass to the FastCGI application.
+    fcgi_log_stderr:
+      description: 'Enables logging of STDERR messages that the FastCGI application reports.
 
-        Optionally, you can follow it with an ACL-based condition, in which case the FastCGI application evaluates it only if the condition is true.
-
-        Most request headers are already available to the FastCGI application with the prefix "HTTP".
-
-        Thus, you only need this directive to pass headers that are purposefully omitted.
-
-        Currently, the headers "Authorization", "Proxy-Authorization", and hop-by-hop headers are omitted.
-
-        Note that the headers "Content-type" and "Content-length" never pass to the FastCGI application because they are already converted into parameters.'
+        It is an optional setting. By default, HAProxy Enterprise ignores STDERR messages.'
       properties:
-        cond:
-          enum:
-          - if
-          - unless
+        address:
           type: string
-          x-display-name: Condition
-        cond_test:
+        facility:
+          title: Facility
+          type: string
+        format:
+          title: Format
+          type: string
+        global:
+          title: Global
+          type: boolean
+        len:
+          title: Length
+          type: integer
+        level:
+          title: Level
           type: string
           x-dependency:
-            cond:
+            facility:
               required: true
-          x-display-name: Condition Test
-        name:
+        minlevel:
+          title: Minimum level
           type: string
+          x-dependency:
+            facility:
+              required: true
+        sample:
+          properties:
+            ranges:
+              title: Range
+              type: string
+            size:
+              title: Size
+              type: integer
+          required:
+          - ranges
+          - size
+          title: Sample
+          type: object
       type: object
-  responses:
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   securitySchemes:
     basic_auth:
       type: http

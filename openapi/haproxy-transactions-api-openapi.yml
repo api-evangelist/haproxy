@@ -192,55 +192,18 @@ paths:
       tags:
       - Transactions
 components:
-  schemas:
-    transaction:
-      description: HAProxy configuration transaction
-      example:
-        _version: 2
-        id: 273e3385-2d0c-4fb1-aa27-93cbb31ff203
-        status: in_progress
-      properties:
-        _version:
-          type: integer
-        id:
-          pattern: ^[^\s]+$
-          type: string
-        status:
-          enum:
-          - failed
-          - outdated
-          - in_progress
-          - success
-          type: string
-      title: Configuration transaction
-      type: object
-    transactions:
-      title: Transactions array
-      description: Configuration transactions array
-      type: array
-      items:
-        $ref: '#/components/schemas/transaction'
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
+  parameters:
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
   responses:
-    NotFound:
-      description: The specified resource was not found
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -250,8 +213,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -283,15 +246,52 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-  parameters:
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
+  schemas:
+    transactions:
+      title: Transactions array
+      description: Configuration transactions array
+      type: array
+      items:
+        $ref: '#/components/schemas/transaction'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    transaction:
+      description: HAProxy configuration transaction
+      example:
+        _version: 2
+        id: 273e3385-2d0c-4fb1-aa27-93cbb31ff203
+        status: in_progress
+      properties:
+        _version:
+          type: integer
+        id:
+          pattern: ^[^\s]+$
+          type: string
+        status:
+          enum:
+          - failed
+          - outdated
+          - in_progress
+          - success
+          type: string
+      title: Configuration transaction
+      type: object
   securitySchemes:
     basic_auth:
       type: http

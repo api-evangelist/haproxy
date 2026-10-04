@@ -175,13 +175,6 @@ paths:
       - Configuration
 components:
   parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     force_reload:
       name: force_reload
       in: query
@@ -197,9 +190,16 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   responses:
-    NotFound:
-      description: The specified resource was not found
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -209,8 +209,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version

@@ -293,6 +293,18 @@ paths:
         required: true
 components:
   schemas:
+    map_entries:
+      title: Maps Entries
+      description: Entries of one runtime map
+      type: array
+      items:
+        $ref: '#/components/schemas/map_entry'
+    maps:
+      title: Map Files Array
+      description: Array of runtime map files
+      type: array
+      items:
+        $ref: '#/components/schemas/map'
     map_entry:
       description: One Map Entry
       properties:
@@ -304,6 +316,24 @@ components:
         value:
           type: string
       title: One Map Entry
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
       type: object
     map:
       description: Map File
@@ -323,48 +353,9 @@ components:
           type: string
       title: Map File
       type: object
-    map_entries:
-      title: Maps Entries
-      description: Entries of one runtime map
-      type: array
-      items:
-        $ref: '#/components/schemas/map_entry'
-    maps:
-      title: Map Files Array
-      description: Array of runtime map files
-      type: array
-      items:
-        $ref: '#/components/schemas/map'
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-  parameters:
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
   responses:
-    NotFound:
-      description: The specified resource was not found
+    AlreadyExists:
+      description: The specified resource already exists
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -385,6 +376,17 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     BadRequest:
       description: Bad request
       headers:
@@ -396,17 +398,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
   securitySchemes:
     basic_auth:
       type: http

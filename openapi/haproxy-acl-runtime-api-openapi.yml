@@ -193,39 +193,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    acl_files_entries:
-      title: ACL Files Entries
-      description: Array of entries of one runtime acl file
-      type: array
-      items:
-        $ref: '#/components/schemas/acl_file_entry'
-    acl_files:
-      title: ACL Files Array
-      description: Array of runtime acl files
-      type: array
-      items:
-        $ref: '#/components/schemas/acl_file'
-    acl_file_entry:
-      description: One ACL File Entry
-      properties:
-        id:
-          readOnly: true
-          type: string
-        value:
-          type: string
-      title: One ACL File Entry
-      type: object
-    acl_file:
-      description: ACL File
-      properties:
-        description:
-          type: string
-        id:
-          type: string
-        storage_name:
-          type: string
-      title: ACL File
-      type: object
     error:
       additionalProperties:
         type: string
@@ -244,9 +211,42 @@ components:
       - message
       title: Error
       type: object
+    acl_files_entries:
+      title: ACL Files Entries
+      description: Array of entries of one runtime acl file
+      type: array
+      items:
+        $ref: '#/components/schemas/acl_file_entry'
+    acl_file_entry:
+      description: One ACL File Entry
+      properties:
+        id:
+          readOnly: true
+          type: string
+        value:
+          type: string
+      title: One ACL File Entry
+      type: object
+    acl_files:
+      title: ACL Files Array
+      description: Array of runtime acl files
+      type: array
+      items:
+        $ref: '#/components/schemas/acl_file'
+    acl_file:
+      description: ACL File
+      properties:
+        description:
+          type: string
+        id:
+          type: string
+        storage_name:
+          type: string
+      title: ACL File
+      type: object
   responses:
-    NotFound:
-      description: The specified resource was not found
+    AlreadyExists:
+      description: The specified resource already exists
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -267,8 +267,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -278,8 +278,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

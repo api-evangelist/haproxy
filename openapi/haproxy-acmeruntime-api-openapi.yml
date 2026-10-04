@@ -57,8 +57,8 @@ paths:
       - AcmeRuntime
 components:
   responses:
-    NotFound:
-      description: The specified resource was not found
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -68,8 +68,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -108,12 +108,6 @@ components:
           type: string
       title: ACME certificate status
       type: object
-    acme_status:
-      title: ACME status
-      description: Status of all the ACME certificates from runtime.
-      type: array
-      items:
-        $ref: '#/components/schemas/acme_certificate_status'
     error:
       additionalProperties:
         type: string
@@ -132,6 +126,12 @@ components:
       - message
       title: Error
       type: object
+    acme_status:
+      title: ACME status
+      description: Status of all the ACME certificates from runtime.
+      type: array
+      items:
+        $ref: '#/components/schemas/acme_certificate_status'
   securitySchemes:
     basic_auth:
       type: http

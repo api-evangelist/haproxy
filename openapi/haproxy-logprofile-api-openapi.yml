@@ -188,13 +188,6 @@ paths:
         required: true
 components:
   parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     force_reload:
       name: force_reload
       in: query
@@ -210,31 +203,59 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+  responses:
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
-    log_profile:
-      description: Defines a logging profile for one or more steps.
-      properties:
-        log_tag:
-          description: Override syslog log tag set by other "log-tag" directives.
-          type: string
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          description: Name of the logging profile.
-          minLength: 1
-          type: string
-        steps:
-          $ref: '#/components/schemas/log_profile_steps'
-      required:
-      - name
-      title: Log Profile
-      type: object
-    log_profiles:
-      description: List of Logging Profiles
-      type: array
-      items:
-        $ref: '#/components/schemas/log_profile'
     log_profile_step:
       description: Defines what to log for a given step.
       properties:
@@ -281,6 +302,11 @@ components:
         $ref: '#/components/schemas/log_profile_step'
       description: List of steps where to override the logging.
       x-omitempty: true
+    log_profiles:
+      description: List of Logging Profiles
+      type: array
+      items:
+        $ref: '#/components/schemas/log_profile'
     error:
       additionalProperties:
         type: string
@@ -299,51 +325,25 @@ components:
       - message
       title: Error
       type: object
-  responses:
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+    log_profile:
+      description: Defines a logging profile for one or more steps.
+      properties:
+        log_tag:
+          description: Override syslog log tag set by other "log-tag" directives.
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          description: Name of the logging profile.
+          minLength: 1
+          type: string
+        steps:
+          $ref: '#/components/schemas/log_profile_steps'
+      required:
+      - name
+      title: Log Profile
+      type: object
   securitySchemes:
     basic_auth:
       type: http

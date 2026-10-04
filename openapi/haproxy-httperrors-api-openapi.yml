@@ -188,13 +188,6 @@ paths:
         required: true
 components:
   parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     force_reload:
       name: force_reload
       in: query
@@ -210,52 +203,64 @@ components:
       required: false
       schema:
         type: string
-  responses:
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   schemas:
+    errorfile:
+      properties:
+        code:
+          enum:
+          - 200
+          - 400
+          - 401
+          - 403
+          - 404
+          - 405
+          - 407
+          - 408
+          - 410
+          - 413
+          - 425
+          - 429
+          - 500
+          - 501
+          - 502
+          - 503
+          - 504
+          type: integer
+        file:
+          type: string
+      type: object
+      x-display-name: Error File
+    http_errors_sections:
+      title: http-errors sections
+      description: An array of HAProxy http-error sections
+      type: array
+      items:
+        $ref: '#/components/schemas/http_errors_section'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
     http_errors_section:
       additionalProperties: false
       description: A globally declared group of HTTP errors
@@ -283,56 +288,51 @@ components:
       - error_files
       title: http-errors section
       type: object
-    errorfile:
-      properties:
-        code:
-          enum:
-          - 200
-          - 400
-          - 401
-          - 403
-          - 404
-          - 405
-          - 407
-          - 408
-          - 410
-          - 413
-          - 425
-          - 429
-          - 500
-          - 501
-          - 502
-          - 503
-          - 504
-          type: integer
-        file:
-          type: string
-      type: object
-      x-display-name: Error File
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    http_errors_sections:
-      title: http-errors sections
-      description: An array of HAProxy http-error sections
-      type: array
-      items:
-        $ref: '#/components/schemas/http_errors_section'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   securitySchemes:
     basic_auth:
       type: http

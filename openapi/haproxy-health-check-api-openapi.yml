@@ -191,7 +191,389 @@ paths:
               $ref: '#/components/schemas/healthcheck'
         required: true
 components:
+  parameters:
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+  responses:
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
+    healthcheck_base:
+      description: HealthCheck with all it's children resources
+      properties:
+        httpchk_params:
+          $ref: '#/components/schemas/httpchk_params'
+          x-dependency:
+            type:
+              value: httpchk
+        mysql_check_params:
+          $ref: '#/components/schemas/mysql_check_params'
+          x-dependency:
+            type:
+              value: mysql-check
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+        pgsql_check_params:
+          $ref: '#/components/schemas/pgsql_check_params'
+          x-dependency:
+            type:
+              value: pgsql-check
+        smtpchk_params:
+          $ref: '#/components/schemas/smtpchk_params'
+          x-dependency:
+            type:
+              value: smtpchk
+        type:
+          enum:
+          - httpchk
+          - ldap-check
+          - mysql-check
+          - pgsql-check
+          - redis-check
+          - smtpchk
+          - spop-check
+          - ssl-hello-chk
+          - tcp-check
+          type: string
+      required:
+      - name
+      type: object
+      x-go-name: HealthCheckBase
+    healthcheck:
+      allOf:
+      - $ref: '#/components/schemas/healthcheck_base'
+      - properties:
+          http_check_list:
+            $ref: '#/components/schemas/http_checks'
+            x-go-name: HTTPCheckRuleList
+          tcp_check_list:
+            $ref: '#/components/schemas/tcp_checks'
+            x-go-name: TCPCheckRuleList
+        type: object
+      description: HealthCheck with all it's children resources
+      type: object
+      x-go-name: HealthCheck
+    tcp_check:
+      properties:
+        action:
+          enum:
+          - comment
+          - connect
+          - expect
+          - send
+          - send-lf
+          - send-binary
+          - send-binary-lf
+          - set-var
+          - set-var-fmt
+          - unset-var
+          type: string
+        addr:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              value: connect
+        alpn:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              value: connect
+          x-display-name: ALPN Protocols
+        check_comment:
+          type: string
+          x-dependency:
+            action:
+              value:
+              - connect
+              - expect
+              - send
+              - send-lf
+              - send-binary
+              - send-binary-lf
+        data:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send
+        default:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+        error_status:
+          enum:
+          - L7OKC
+          - L7RSP
+          - L7STS
+          - L6RSP
+          - L4CON
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        exclamation_mark:
+          type: boolean
+          x-dependency:
+            action:
+              value: expect
+          x-display-name: Expect Exclamation Mark
+        fmt:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send-lf
+        hex_fmt:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send-binary-lf
+        hex_string:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: send-binary
+        linger:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+        match:
+          enum:
+          - string
+          - rstring
+          - string-lf
+          - binary
+          - rbinary
+          - binary-lf
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: expect
+          x-display-name: Expect Match
+        metadata:
+          additionalProperties:
+            type: object
+        min_recv:
+          type: integer
+          x-dependency:
+            action:
+              value: expect
+        ok_status:
+          enum:
+          - L7OK
+          - L7OKC
+          - L6OK
+          - L4OK
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        on_error:
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        on_success:
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        pattern:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value: expect
+        port:
+          maximum: 65535
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            action:
+              value: connect
+        port_string:
+          type: string
+          x-dependency:
+            action:
+              value: connect
+        proto:
+          type: string
+          x-dependency:
+            action:
+              value: connect
+        send_proxy:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+        sni:
+          type: string
+          x-dependency:
+            action:
+              value: connect
+        ssl:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+        status-code:
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        tout_status:
+          enum:
+          - L7TOUT
+          - L6TOUT
+          - L4TOUT
+          type: string
+          x-dependency:
+            action:
+              value: expect
+        var_expr:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var
+          x-display-name: Var Expression
+        var_fmt:
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var-fmt
+          x-display-name: Var Log format
+        var_name:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var
+              - set-var-fmt
+              - unset-var
+        var_scope:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            action:
+              required: true
+              value:
+              - set-var
+              - set-var-fmt
+              - unset-var
+        via_socks4:
+          type: boolean
+          x-dependency:
+            action:
+              value: connect
+      required:
+      - action
+      title: TCP Check
+      type: object
+    pgsql_check_params:
+      properties:
+        username:
+          type: string
+      type: object
+    smtpchk_params:
+      properties:
+        domain:
+          type: string
+        hello:
+          type: string
+      type: object
+    healthchecks:
+      title: HealthChecks
+      description: HAProxy healthchecks array
+      type: array
+      items:
+        $ref: '#/components/schemas/healthcheck'
     httpchk_params:
       properties:
         host:
@@ -215,61 +597,6 @@ components:
           type: string
       type: object
       x-display-name: HTTP Check
-    pgsql_check_params:
-      properties:
-        username:
-          type: string
-      type: object
-    http_checks:
-      title: HTTP Checks Array
-      type: array
-      items:
-        $ref: '#/components/schemas/http_check'
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    return_header:
-      properties:
-        fmt:
-          type: string
-        name:
-          type: string
-      required:
-      - name
-      - fmt
-      type: object
-      x-go-name: ReturnHeader
-    mysql_check_params:
-      properties:
-        client_version:
-          enum:
-          - pre-41
-          - post-41
-          type: string
-        username:
-          type: string
-      type: object
-    healthchecks:
-      title: HealthChecks
-      description: HAProxy healthchecks array
-      type: array
-      items:
-        $ref: '#/components/schemas/healthcheck'
     http_check:
       properties:
         addr:
@@ -526,382 +853,55 @@ components:
       - type
       title: HTTP Check
       type: object
+    http_checks:
+      title: HTTP Checks Array
+      type: array
+      items:
+        $ref: '#/components/schemas/http_check'
+    return_header:
+      properties:
+        fmt:
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      - fmt
+      type: object
+      x-go-name: ReturnHeader
     tcp_checks:
       title: TCP Checks Array
       type: array
       items:
         $ref: '#/components/schemas/tcp_check'
-    smtpchk_params:
+    mysql_check_params:
       properties:
-        domain:
+        client_version:
+          enum:
+          - pre-41
+          - post-41
           type: string
-        hello:
+        username:
           type: string
       type: object
-    healthcheck:
-      allOf:
-      - $ref: '#/components/schemas/healthcheck_base'
-      - properties:
-          http_check_list:
-            $ref: '#/components/schemas/http_checks'
-            x-go-name: HTTPCheckRuleList
-          tcp_check_list:
-            $ref: '#/components/schemas/tcp_checks'
-            x-go-name: TCPCheckRuleList
-        type: object
-      description: HealthCheck with all it's children resources
-      type: object
-      x-go-name: HealthCheck
-    healthcheck_base:
-      description: HealthCheck with all it's children resources
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
       properties:
-        httpchk_params:
-          $ref: '#/components/schemas/httpchk_params'
-          x-dependency:
-            type:
-              value: httpchk
-        mysql_check_params:
-          $ref: '#/components/schemas/mysql_check_params'
-          x-dependency:
-            type:
-              value: mysql-check
-        name:
-          pattern: ^[A-Za-z0-9-_.:]+$
-          type: string
-        pgsql_check_params:
-          $ref: '#/components/schemas/pgsql_check_params'
-          x-dependency:
-            type:
-              value: pgsql-check
-        smtpchk_params:
-          $ref: '#/components/schemas/smtpchk_params'
-          x-dependency:
-            type:
-              value: smtpchk
-        type:
-          enum:
-          - httpchk
-          - ldap-check
-          - mysql-check
-          - pgsql-check
-          - redis-check
-          - smtpchk
-          - spop-check
-          - ssl-hello-chk
-          - tcp-check
-          type: string
-      required:
-      - name
-      type: object
-      x-go-name: HealthCheckBase
-    tcp_check:
-      properties:
-        action:
-          enum:
-          - comment
-          - connect
-          - expect
-          - send
-          - send-lf
-          - send-binary
-          - send-binary-lf
-          - set-var
-          - set-var-fmt
-          - unset-var
-          type: string
-        addr:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            action:
-              value: connect
-        alpn:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            action:
-              value: connect
-          x-display-name: ALPN Protocols
-        check_comment:
-          type: string
-          x-dependency:
-            action:
-              value:
-              - connect
-              - expect
-              - send
-              - send-lf
-              - send-binary
-              - send-binary-lf
-        data:
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value: send
-        default:
-          type: boolean
-          x-dependency:
-            action:
-              value: connect
-        error_status:
-          enum:
-          - L7OKC
-          - L7RSP
-          - L7STS
-          - L6RSP
-          - L4CON
-          type: string
-          x-dependency:
-            action:
-              value: expect
-        exclamation_mark:
-          type: boolean
-          x-dependency:
-            action:
-              value: expect
-          x-display-name: Expect Exclamation Mark
-        fmt:
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value: send-lf
-        hex_fmt:
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value: send-binary-lf
-        hex_string:
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value: send-binary
-        linger:
-          type: boolean
-          x-dependency:
-            action:
-              value: connect
-        match:
-          enum:
-          - string
-          - rstring
-          - string-lf
-          - binary
-          - rbinary
-          - binary-lf
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value: expect
-          x-display-name: Expect Match
-        metadata:
-          additionalProperties:
-            type: object
-        min_recv:
-          type: integer
-          x-dependency:
-            action:
-              value: expect
-        ok_status:
-          enum:
-          - L7OK
-          - L7OKC
-          - L6OK
-          - L4OK
-          type: string
-          x-dependency:
-            action:
-              value: expect
-        on_error:
-          type: string
-          x-dependency:
-            action:
-              value: expect
-        on_success:
-          type: string
-          x-dependency:
-            action:
-              value: expect
-        pattern:
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value: expect
-        port:
-          maximum: 65535
-          minimum: 1
+        code:
           type:
           - integer
           - 'null'
-          x-dependency:
-            action:
-              value: connect
-        port_string:
-          type: string
-          x-dependency:
-            action:
-              value: connect
-        proto:
-          type: string
-          x-dependency:
-            action:
-              value: connect
-        send_proxy:
-          type: boolean
-          x-dependency:
-            action:
-              value: connect
-        sni:
-          type: string
-          x-dependency:
-            action:
-              value: connect
-        ssl:
-          type: boolean
-          x-dependency:
-            action:
-              value: connect
-        status-code:
-          type: string
-          x-dependency:
-            action:
-              value: expect
-        tout_status:
-          enum:
-          - L7TOUT
-          - L6TOUT
-          - L4TOUT
-          type: string
-          x-dependency:
-            action:
-              value: expect
-        var_expr:
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value:
-              - set-var
-          x-display-name: Var Expression
-        var_fmt:
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value:
-              - set-var-fmt
-          x-display-name: Var Log format
-        var_name:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value:
-              - set-var
-              - set-var-fmt
-              - unset-var
-        var_scope:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            action:
-              required: true
-              value:
-              - set-var
-              - set-var-fmt
-              - unset-var
-        via_socks4:
-          type: boolean
-          x-dependency:
-            action:
-              value: connect
+        message:
+          type:
+          - string
+          - 'null'
       required:
-      - action
-      title: TCP Check
+      - code
+      - message
+      title: Error
       type: object
-  parameters:
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-  responses:
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   securitySchemes:
     basic_auth:
       type: http

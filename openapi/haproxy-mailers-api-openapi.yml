@@ -197,21 +197,6 @@ paths:
         required: true
 components:
   parameters:
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     force_reload:
       name: force_reload
       in: query
@@ -227,29 +212,78 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+  responses:
+    AlreadyExists:
+      description: The specified resource already exists
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    BadRequest:
+      description: Bad request
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
-    mailers_section_base:
-      additionalProperties: false
-      description: A list of SMTP servers used by HAProxy to send emails.
-      properties:
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_]+$
-          type: string
-        timeout:
-          description: Timeout to send an email in milliseconds
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-      required:
-      - name
-      title: Mailers Section Base
+    mailers_section:
+      allOf:
+      - $ref: '#/components/schemas/mailers_section_base'
+      - properties:
+          mailer_entries:
+            additionalProperties:
+              $ref: '#/components/schemas/mailer_entry'
+        type: object
+      description: MailersSection with all its children resources
       type: object
+      x-go-name: MailersSection
     mailer_entry:
       description: Mailer entry of a Mailers section
       properties:
@@ -272,23 +306,6 @@ components:
       - port
       title: Mailer Entry
       type: object
-    mailers_section:
-      allOf:
-      - $ref: '#/components/schemas/mailers_section_base'
-      - properties:
-          mailer_entries:
-            additionalProperties:
-              $ref: '#/components/schemas/mailer_entry'
-        type: object
-      description: MailersSection with all its children resources
-      type: object
-      x-go-name: MailersSection
-    mailers_sections:
-      title: Mailers Sections
-      description: HAProxy mailers_section array
-      type: array
-      items:
-        $ref: '#/components/schemas/mailers_section'
     error:
       additionalProperties:
         type: string
@@ -307,51 +324,34 @@ components:
       - message
       title: Error
       type: object
-  responses:
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+    mailers_section_base:
+      additionalProperties: false
+      description: A list of SMTP servers used by HAProxy to send emails.
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_]+$
+          type: string
+        timeout:
+          description: Timeout to send an email in milliseconds
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+      required:
+      - name
+      title: Mailers Section Base
+      type: object
+    mailers_sections:
+      title: Mailers Sections
+      description: HAProxy mailers_section array
+      type: array
+      items:
+        $ref: '#/components/schemas/mailers_section'
   securitySchemes:
     basic_auth:
       type: http

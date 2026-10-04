@@ -238,21 +238,6 @@ paths:
         required: true
 components:
   parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
     force_reload:
       name: force_reload
       in: query
@@ -261,6 +246,14 @@ components:
       schema:
         type: boolean
         default: false
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
     transaction_id:
       name: transaction_id
       in: query
@@ -268,9 +261,16 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   responses:
-    NotFound:
-      description: The specified resource was not found
+    AlreadyExists:
+      description: The specified resource already exists
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -291,6 +291,17 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     BadRequest:
       description: Bad request
       headers:
@@ -302,24 +313,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   schemas:
-    server_switching_rules:
-      title: Server Switching Rules Array
-      description: HAProxy backend server switching rules array (corresponds to use-server directives)
-      type: array
-      items:
-        $ref: '#/components/schemas/server_switching_rule'
     server_switching_rule:
       additionalProperties: false
       description: HAProxy server switching rule configuration (corresponds to use-server directive)
@@ -357,6 +351,12 @@ components:
       - target_server
       title: Server Switching Rule
       type: object
+    server_switching_rules:
+      title: Server Switching Rules Array
+      description: HAProxy backend server switching rules array (corresponds to use-server directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/server_switching_rule'
     error:
       additionalProperties:
         type: string

@@ -238,28 +238,6 @@ paths:
         required: true
 components:
   schemas:
-    capture:
-      properties:
-        length:
-          type: integer
-        metadata:
-          additionalProperties:
-            type: object
-        type:
-          enum:
-          - request
-          - response
-          type: string
-      required:
-      - type
-      - length
-      title: Declare Capture
-      type: object
-    captures:
-      title: Declare capture array
-      type: array
-      items:
-        $ref: '#/components/schemas/capture'
     error:
       additionalProperties:
         type: string
@@ -278,22 +256,29 @@ components:
       - message
       title: Error
       type: object
+    captures:
+      title: Declare capture array
+      type: array
+      items:
+        $ref: '#/components/schemas/capture'
+    capture:
+      properties:
+        length:
+          type: integer
+        metadata:
+          additionalProperties:
+            type: object
+        type:
+          enum:
+          - request
+          - response
+          type: string
+      required:
+      - type
+      - length
+      title: Declare Capture
+      type: object
   parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
     force_reload:
       name: force_reload
       in: query
@@ -302,6 +287,14 @@ components:
       schema:
         type: boolean
         default: false
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
     transaction_id:
       name: transaction_id
       in: query
@@ -309,9 +302,16 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   responses:
-    NotFound:
-      description: The specified resource was not found
+    AlreadyExists:
+      description: The specified resource already exists
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -332,8 +332,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -343,8 +343,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version

@@ -81,1601 +81,38 @@ paths:
               $ref: '#/components/schemas/global'
         required: true
 components:
-  schemas:
-    tune_quic_options:
-      properties:
-        frontend_conn_tx_buffers_limit:
-          type:
-          - integer
-          - 'null'
-          x-display-name: QUIC Frontend Connection TX Buffer Limit
-        frontend_max_idle_timeout:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-display-name: QUIC Frontend Max Idle Timeout
-          x-duration: true
-        frontend_max_streams_bidi:
-          type:
-          - integer
-          - 'null'
-          x-display-name: QUIC Max Number of Bidirectional Streams
-        frontend_max_tx_memory:
-          type:
-          - integer
-          - 'null'
-          x-display-name: QUIC Frontend Max Tx Memory
-          x-size: true
-        frontend_stream_max_total:
-          description: Maximum number of requests handled by a single QUIC frontend connection before graceful shutdown
-          type:
-          - integer
-          - 'null'
-          x-display-name: QUIC Frontend Stream Max Total
-        max_frame_loss:
-          type:
-          - integer
-          - 'null'
-          x-display-name: QUIC Max Limit for Frame Loss
-        reorder_ratio:
-          description: Ratio applied to the packet reordering threshold
-          maximum: 100
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-        retry_threshold:
-          type:
-          - integer
-          - 'null'
-          x-display-name: QUIC Retry Threshold
-        socket_owner:
-          enum:
-          - listener
-          - connection
-          type: string
-          x-display-name: QUIC Socket Owner
-        zero_copy_fwd_send:
-          description: Enables or disables the zero-copy sends for the QUIC multiplexer
-          enum:
-          - enabled
-          - disabled
-          type: string
-      type: object
-    tune_options:
-      properties:
-        applet_zero_copy_forwarding:
-          description: Enables of disabled the zero-copy forwarding of data for the applets
-          enum:
-          - enabled
-          - disabled
-          type: string
-        cli_max_payload_size:
-          description: Maximum size in bytes allowed for the payload passed to a command on the CLI
-          type:
-          - integer
-          - 'null'
-          x-display-name: CLI Maximum Payload Size
-          x-size: true
-        comp_maxlevel:
-          type: integer
-          x-display-name: Maximum Compression Level
-        defaults_purge:
-          type: boolean
-          x-display-name: Force deletion of defaults section after parsing to save memory
-        disable_fast_forward:
-          type: boolean
-          x-display-name: Disable fast-forwarding
-        disable_zero_copy_forwarding:
-          type: boolean
-          x-display-name: Disable zero-copy forwarding
-        epoll_mask_events:
-          items:
-            enum:
-            - err
-            - hup
-            - rdhup
-            type: string
-          type: array
-          x-omitempty: true
-        events_max_events_at_once:
-          maximum: 10000
-          minimum: 1
-          type: integer
-        fail_alloc:
-          type: boolean
-          x-display-name: Failed Allocation Chance
-        fd_edge_triggered:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: Edge-triggered polling mode
-        glitches_kill_cpu_usage:
-          maximum: 100
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-display-name: CPU Usage Kill glitched Connections
-        h1_be_glitches_threshold:
-          minimum: 0
-          type: integer
-          x-display-name: Number of connection glitches before killing the connection with the backend
-        h1_fe_glitches_threshold:
-          minimum: 0
-          type: integer
-          x-display-name: Number of connection glitches before killing the connection with the frontend
-        h1_zero_copy_fwd_recv:
-          description: enable or disable the zero-copy receives of data for the HTTP/1 multiplexer
-          enum:
-          - enabled
-          - disabled
-          type: string
-        h1_zero_copy_fwd_send:
-          description: enable or disable the zero-copy sends of data for the HTTP/1 multiplexer
-          enum:
-          - enabled
-          - disabled
-          type: string
-        h2_be_glitches_threshold:
-          description: Automatically kill a backend connection past a number of glitches
-          type:
-          - integer
-          - 'null'
-        h2_be_initial_window_size:
-          description: Initial window size for outgoing connections
-          type: integer
-        h2_be_max_concurrent_streams:
-          description: Maximum number of concurrent streams per outgoing connection
-          type: integer
-        h2_be_max_frames_at_once:
-          description: Maximum number of HTTP/2 incoming frames processed at once on a backend connection
-          type: integer
-        h2_be_rxbuf:
-          description: HTTP/2 receive buffer size for outgoing connections
-          type:
-          - integer
-          - 'null'
-          x-size: true
-        h2_fe_glitches_threshold:
-          description: Automatically kill a frontend connection past a number of glitches
-          type:
-          - integer
-          - 'null'
-        h2_fe_initial_window_size:
-          description: Initial window size for incoming connections
-          type: integer
-        h2_fe_max_concurrent_streams:
-          description: Maximum number of concurrent streams per incoming connection
-          type: integer
-        h2_fe_max_frames_at_once:
-          description: Maximum number of HTTP/2 incoming frames processed at once on a frontend connection
-          type: integer
-        h2_fe_max_rst_at_once:
-          description: Maximum number of HTTP/2 incoming RST_STREAM frames processed at once on a frontend connection
-          type: integer
-        h2_fe_max_total_streams:
-          description: Maximum number of total streams processed per incoming HTTP/2 connection
-          type:
-          - integer
-          - 'null'
-        h2_fe_rxbuf:
-          description: HTTP/2 receive buffer size for incoming connections
-          type:
-          - integer
-          - 'null'
-          x-size: true
-        h2_header_table_size:
-          maximum: 65535
-          type: integer
-          x-display-name: HTTP/2 Dynamic Header Table Size
-        h2_initial_window_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: HTTP/2 Initial Window Size
-        h2_log_errors:
-          description: Level of HTTP/2 demultiplexer errors that will generate a log
-          enum:
-          - none
-          - connection
-          - stream
-          type: string
-        h2_max_concurrent_streams:
-          type: integer
-          x-display-name: HTTP/2 Maximum Number of Concurrent Streams
-        h2_max_frame_size:
-          type: integer
-          x-display-name: HTTP/2 Maximum Frame Size
-        h2_zero_copy_fwd_send:
-          description: enable or disable the zero-copy sends of data for the HTTP/2 multiplexer
-          enum:
-          - enabled
-          - disabled
-          type: string
-        http_cookielen:
-          type: integer
-          x-display-name: Maximum Cookie Length
-        http_logurilen:
-          type: integer
-          x-display-name: Maximum URI Length
-        http_maxhdr:
-          maximum: 32767
-          minimum: 1
-          type: integer
-          x-display-name: Maximum Number of Headers
-        idle_pool_shared:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: Share Idle Connections
-        idletimer:
-          maximum: 65535
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-display-name: Idle Stream Duration
-          x-duration: true
-        listener_default_shards:
-          enum:
-          - by-process
-          - by-thread
-          - by-group
-          type: string
-          x-display-name: Listener Default Shards
-        listener_multi_queue:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: Listener Multi Queue Accept
-        max_checks_per_thread:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Maximum checks per thread
-        max_rules_at_once:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-display-name: Maximum rules at once
-        maxaccept:
-          type: integer
-          x-display-name: Maximum Accept Events
-        maxpollevents:
-          type: integer
-          x-display-name: Maximum Polled Events
-        maxrewrite:
-          type: integer
-          x-display-name: Maximum Rewrite Space
-        memory_hot_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Per-thread Amount of Memory
-        notsent_lowat_client:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Client Not Sent Low Watermark
-          x-size: true
-        notsent_lowat_server:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Server Not Sent Low Watermark
-          x-size: true
-        pattern_cache_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Pattern Lookup Cache Size
-        peers_max_updates_at_once:
-          description: Maximum number of stick-table updates at once
-          type: integer
-        pool_high_fd_ratio:
-          type: integer
-          x-display-name: Max Used High FD Ratio
-        pool_low_fd_ratio:
-          type: integer
-          x-display-name: Max Used Low FD Ratio
-        pt_zero_copy_forwarding:
-          description: enable or disable the zero-copy forwarding of data for the pass-through multiplexer
-          enum:
-          - enabled
-          - disabled
-          type: string
-        renice_runtime:
-          description: Scheduling priority applied after the configuration parsing
-          maximum: 19
-          minimum: -20
-          type:
-          - integer
-          - 'null'
-        renice_startup:
-          description: Scheduling priority applied before the rest of the configuration
-          maximum: 19
-          minimum: -20
-          type:
-          - integer
-          - 'null'
-        ring_queues:
-          description: Number of write queues in front of ring buffers
-          type:
-          - integer
-          - 'null'
-        runqueue_depth:
-          type: integer
-          x-display-name: Max Tasks in Run Queue
-        sched_low_latency:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: Low Latency Task Scheduler
-        stick_counters:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Number of stick-counters
-        takeover_other_tg_connections:
-          enum:
-          - none
-          - restricted
-          - full
-          type: string
-          x-display-name: Takeover Other Thread Groups Connections
-      type: object
-    wurfl_options:
-      properties:
-        cache_size:
-          description: Sets the WURFL Useragent cache size
-          type: integer
-        data_file:
-          description: The path of the WURFL data file
-          type: string
-        information_list:
-          description: A space-delimited list of WURFL capabilities
-          type: string
-        information_list_separator:
-          description: A char that will be used to separate values in a response header containing WURFL results
-          type: string
-        patch_file:
-          description: A list of WURFL patch file paths
-          type: string
-      type: object
-    bind_params:
-      additionalProperties: false
-      properties:
-        accept_netscaler_cip:
-          type: integer
-        accept_proxy:
-          type: boolean
-        allow_0rtt:
-          type: boolean
-        alpn:
-          pattern: ^[^\s]+$
-          type: string
-          x-display-name: ALPN Protocols
-        backlog:
-          type: string
-        ca_ignore_err:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        ca_sign_file:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        ca_sign_pass:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-          x-display-name: Passphrase
-        ca_verify_file:
-          type: string
-          x-dependency:
-            ca_file:
-              value: true
-        cc:
-          type: string
-          x-display-name: TCP Congestion Control Algorithm
-        ciphers:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        ciphersuites:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        client_sigalgs:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        crl_file:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        crt_ignore_err:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        crt_list:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        curves:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        default_crt_list:
-          items:
-            pattern: ^[^\s]+$
-            type: string
-          type: array
-          x-omitempty: true
-        defer_accept:
-          type: boolean
-        ecdhe:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        expose_fd_listeners:
-          type: boolean
-        force_sslv3:
-          description: This field is deprecated in favor of sslv3, and will be removed in a future release
-          type: boolean
-          x-deprecated: true
-        force_strict_sni:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        force_tlsv10:
-          description: This field is deprecated in favor of tlsv10, and will be removed in a future release
-          type: boolean
-          x-deprecated: true
-        force_tlsv11:
-          description: This field is deprecated in favor of tlsv11, and will be removed in a future release
-          type: boolean
-          x-deprecated: true
-        force_tlsv12:
-          description: This field is deprecated in favor of tlsv12, and will be removed in a future release
-          type: boolean
-          x-deprecated: true
-        force_tlsv13:
-          description: This field is deprecated in favor of tlsv13, and will be removed in a future release
-          type: boolean
-          x-deprecated: true
-        generate_certificates:
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-        gid:
-          type: integer
-          x-display-name: Group ID
-        group:
-          type: string
-          x-display-name: Group name
-        guid_prefix:
-          pattern: ^[A-Za-z0-9-_.:]+$
-          type: string
-        id:
-          type: string
-          x-display-name: Socket ID
-        idle_ping:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        interface:
-          type: string
-        ktls:
-          enum:
-          - 'on'
-          - 'off'
-          type: string
-          x-display-name: 'Enables or disables ktls for those sockets. If enabled, kTLS will be used if the kernel supports it and the cipher is compatible.
-
-            This is only available on Linux kernel 4.17 and above.
-
-            EXPERIMENTAL OPTION.'
-        label:
-          type: string
-        level:
-          enum:
-          - user
-          - operator
-          - admin
-          example: user
-          type: string
-        maxconn:
-          example: 1234
-          type: integer
-        mode:
-          type: string
-        mss:
-          type: string
-        namespace:
-          example: app
-          type: string
-        nbconn:
-          type: integer
-          x-display-name: Number of connection
-        nice:
-          example: 1
-          type: integer
-        no_alpn:
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-        no_ca_names:
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-        no_sslv3:
-          description: This field is deprecated in favor of sslv3, and will be removed in a future release
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-          x-deprecated: true
-        no_strict_sni:
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-          x-deprecated: true
-        no_tls_tickets:
-          description: This field is deprecated in favor of tls_tickets, and will be removed in a future release
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-          x-deprecated: true
-        no_tlsv10:
-          description: This field is deprecated in favor of tlsv10, and will be removed in a future release
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-          x-deprecated: true
-        no_tlsv11:
-          description: This field is deprecated in favor of tlsv11, and will be removed in a future release
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-          x-deprecated: true
-        no_tlsv12:
-          description: This field is deprecated in favor of tlsv12, and will be removed in a future release
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-          x-deprecated: true
-        no_tlsv13:
-          description: This field is deprecated in favor of tlsv13, and will be removed in a future release
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-          x-deprecated: true
-        npn:
-          type: string
-        prefer_client_ciphers:
-          type: boolean
-        proto:
-          type: string
-          x-display-name: Protocol name
-        quic-cc-algo:
-          enum:
-          - cubic
-          - newreno
-          - bbr
-          - nocc
-          type: string
-        quic-force-retry:
-          type: boolean
-        quic-socket:
-          enum:
-          - connection
-          - listener
-          type: string
-        quic_cc_algo_burst_size:
-          maximum: 1024
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-dependency:
-            quic-cc-algo: null
-        quic_cc_algo_max_window:
-          maximum: 4194304
-          minimum: 10
-          type:
-          - integer
-          - 'null'
-          x-default-unit: k
-          x-dependency:
-            quic-cc-algo: null
-          x-size: true
-        severity_output:
-          enum:
-          - none
-          - number
-          - string
-          example: none
-          type: string
-          x-display-name: Format
-        shards:
-          pattern: ^(by-thread|by-group|[0-9]+)$
-          type: string
-          x-display-name: Shards
-        sigalgs:
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        ssl:
-          type: boolean
-        ssl_cafile:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-          x-display-name: SSL CA File
-        ssl_certificate:
-          description: All of the certificates delimited by ':' as mentioned as a crt on the bind line.
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        ssl_max_ver:
-          enum:
-          - SSLv3
-          - TLSv1.0
-          - TLSv1.1
-          - TLSv1.2
-          - TLSv1.3
-          type: string
-        ssl_min_ver:
-          enum:
-          - SSLv3
-          - TLSv1.0
-          - TLSv1.1
-          - TLSv1.2
-          - TLSv1.3
-          type: string
-        sslv3:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        strict_sni:
-          type: boolean
-          x-dependency:
-            ssl:
-              value: true
-          x-deprecated: true
-        tcp_md5sig:
-          pattern: ^[^\s]+$
-          type: string
-        tcp_ss:
-          description: Sets the TCP Save SYN option for all incoming connections instantiated from this listening socket
-          enum:
-          - 1
-          - 2
-          - 3
-          type: integer
-        tcp_user_timeout:
-          type:
-          - integer
-          - 'null'
-        tfo:
-          type: boolean
-        thread:
-          type: string
-        tls_ticket_keys:
-          type: string
-        tls_tickets:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        tlsv10:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        tlsv11:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        tlsv12:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        tlsv13:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-dependency:
-            ssl:
-              value: true
-        transparent:
-          type: boolean
-        uid:
-          type: string
-        user:
-          type: string
-        v4v6:
-          type: boolean
-        v6only:
-          type: boolean
-        verify:
-          enum:
-          - none
-          - optional
-          - required
-          example: none
-          type: string
-          x-dependency:
-            ssl:
-              value: enabled
-      type: object
-    tune_lua_options:
-      properties:
-        bool_sample_conversion:
-          enum:
-          - normal
-          - pre-3.1-bug
-          type: string
-        burst_timeout:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-display-name: Burst execution timeout
-          x-duration: true
-        forced_yield:
-          type: integer
-          x-display-name: Lua Forced Yield
-        log_loggers:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: Send Lua Logs to the Loggers
-        log_stderr:
-          enum:
-          - auto
-          - enabled
-          - disabled
-          type: string
-          x-display-name: Send Lua Logs to stderr
-        maxmem:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Lua Maximum Memory Usage
-        openlibs:
-          description: 'Selects which Lua standard libraries are loaded. Accepts "all", "none", or a comma-separated list of: table, io, os, string, math, utf8, package, debug.'
-          type: string
-          x-display-name: Lua Open Libraries
-        service_timeout:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-display-name: Lua Service timeout
-          x-duration: true
-        session_timeout:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-display-name: Lua Session Timeout
-          x-duration: true
-        task_timeout:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-display-name: Lua Task Timeout
-          x-duration: true
-      type: object
-    tune_buffer_options:
-      properties:
-        buffers_limit:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Buffers Limit
-        buffers_reserve:
-          minimum: 2
-          type: integer
-          x-display-name: Buffers Reserve
-        bufsize:
-          type: integer
-          x-display-name: Buffer Size
-          x-size: true
-        bufsize_large:
-          description: Size in bytes of large buffers. By default, support for large buffers is not enabled.
-          type:
-          - integer
-          - 'null'
-          x-size: true
-        bufsize_small:
-          description: Size of small buffers (for memory-restrained situations)
-          minimum: 1
-          type:
-          - integer
-          - 'null'
-          x-size: true
-        pipesize:
-          type: integer
-          x-display-name: Pipe Buffer Size
-          x-size: true
-        rcvbuf_backend:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Backend Receive Buffer Size
-          x-size: true
-        rcvbuf_client:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Client Receive Buffer Size
-          x-size: true
-        rcvbuf_frontend:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Frontend Receive Buffer Size
-          x-size: true
-        rcvbuf_server:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Server Receive Buffer Size
-          x-size: true
-        recv_enough:
-          type: integer
-          x-display-name: Receive Enough Socket Buffer Size
-          x-size: true
-        sndbuf_backend:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Backend Send Buffer Size
-          x-size: true
-        sndbuf_client:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Client Send Buffer Size
-          x-size: true
-        sndbuf_frontend:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Frontend Send Buffer Size
-          x-size: true
-        sndbuf_server:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Server Send Buffer Size
-          x-size: true
-      type: object
-    environment_options:
-      properties:
-        presetenv:
-          items:
-            properties:
-              name:
-                type: string
-                x-display-name: Name
-              value:
-                type: string
-                x-display-name: Value
-            required:
-            - name
-            - value
-            type: object
-            x-go-name: PresetEnv
-          type: array
-          x-display-name: Preset environment variables
-          x-go-name: PresetEnvs
-          x-omitempty: true
-        resetenv:
-          description: Remove all environment variables except the ones specified
-          type: string
-        setenv:
-          items:
-            properties:
-              name:
-                type: string
-                x-display-name: Name
-              value:
-                type: string
-                x-display-name: Value
-            required:
-            - name
-            - value
-            type: object
-            x-go-name: SetEnv
-          type: array
-          x-display-name: Set environment variables
-          x-go-name: SetEnvs
-          x-omitempty: true
-        unsetenv:
-          description: Removes environment variables specified in arguments
-          type: string
-      type: object
-    tune_ssl_options:
-      properties:
-        cachesize:
-          type:
-          - integer
-          - 'null'
-          x-display-name: SSL Cache Size
-        capture_buffer_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: SSL Maximum Size of Cipherlist Buffer
-        certificate_compression:
-          enum:
-          - auto
-          - disabled
-          type: string
-          x-display-name: Force SSL compression off, or let the SSL library decide
-        ctx_cache_size:
-          type: integer
-          x-display-name: SSL Number of Certificates in Cache
-        default_dh_param:
-          type: integer
-          x-display-name: SSL Default DH Parameter Size
-        force_private_cache:
-          type: boolean
-          x-display-name: SSL Force Private Cache
-        keylog:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: SSL Log TLS Keys
-        lifetime:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: s
-          x-display-name: SSL Session Lifetime
-          x-duration: true
-        maxrecord:
-          type:
-          - integer
-          - 'null'
-          x-display-name: SSL Maximum Size
-          x-size: false
-        ocsp_update_max_delay:
-          description: SSL Maximum Interval Between Two Automatic Updates of the same OCSP Response
-          type:
-          - integer
-          - 'null'
-        ocsp_update_min_delay:
-          description: SSL Minimum Interval Between Two Automatic Updates of the same OCSP Response
-          type:
-          - integer
-          - 'null'
-      type: object
-    log_target:
-      additionalProperties: false
-      description: Per-instance logging of events and traffic.
-      properties:
-        address:
-          pattern: ^[^\s]+$
-          type: string
-          x-dependency:
-            global:
-              required: true
-              value: false
-            nolog:
-              required: true
-              value: false
-        facility:
-          enum:
-          - kern
-          - user
-          - mail
-          - daemon
-          - auth
-          - syslog
-          - lpr
-          - news
-          - uucp
-          - cron
-          - auth2
-          - ftp
-          - ntp
-          - audit
-          - alert
-          - cron2
-          - local0
-          - local1
-          - local2
-          - local3
-          - local4
-          - local5
-          - local6
-          - local7
-          type: string
-          x-dependency:
-            global:
-              required: true
-              value: false
-            nolog:
-              required: true
-              value: false
-        format:
-          enum:
-          - local
-          - rfc3164
-          - rfc5424
-          - priority
-          - short
-          - timed
-          - iso
-          - raw
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        global:
-          type: boolean
-        length:
-          type: integer
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        level:
-          enum:
-          - emerg
-          - alert
-          - crit
-          - err
-          - warning
-          - notice
-          - info
-          - debug
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        metadata:
-          additionalProperties:
-            type: object
-        minlevel:
-          enum:
-          - emerg
-          - alert
-          - crit
-          - err
-          - warning
-          - notice
-          - info
-          - debug
-          type: string
-          x-dependency:
-            global:
-              value: false
-            level:
-              required: false
-            nolog:
-              value: false
-        nolog:
-          type: boolean
-        profile:
-          type: string
-        sample_range:
-          type: string
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-        sample_size:
-          type: integer
-          x-dependency:
-            global:
-              value: false
-            nolog:
-              value: false
-            sample_range:
-              required: true
-      title: Log Target
-      type: object
-    http_client_options:
-      properties:
-        resolvers_disabled:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: HTTP Client Resolvers Disabled
-        resolvers_id:
-          type: string
-          x-display-name: HTTP Client Resolvers ID
-        resolvers_prefer:
-          enum:
-          - ipv4
-          - ipv6
-          type: string
-          x-display-name: HTTP Client Resolvers Prefer
-        retries:
-          type: integer
-          x-display-name: HTTP Client Retries
-        ssl_ca_file:
-          type: string
-          x-display-name: HTTP Client SSL CA File
-        ssl_verify:
-          enum:
-          - ''
-          - none
-          - required
-          type:
-          - string
-          - 'null'
-          x-display-name: HTTP Client SSL Verify
-        timeout_connect:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-display-name: HTTP Client Connect Timeout
-          x-duration: true
-      type: object
-    performance_options:
-      properties:
-        busy_polling:
-          type: boolean
-        fd_hard_limit:
-          type:
-          - integer
-          - 'null'
-        max_spread_checks:
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-          x-default-unit: ms
-          x-duration: true
-        maxcompcpuusage:
-          type: integer
-          x-display-name: Maximum HAProxy CPU usage
-        maxcomprate:
-          description: Maximum per-process input compression rate
-          type: integer
-        maxconn:
-          type: integer
-          x-display-name: Max Connections
-        maxconnrate:
-          description: Maximum per-process number of concurrent connections
-          type: integer
-        maxpipes:
-          type: integer
-          x-display-name: Maximum per-process number of pipes
-        maxsessrate:
-          description: Maximum per-process number of sessions per second
-          type: integer
-        maxzlibmem:
-          description: Maximum amount of RAM in megabytes per process usable by the zlib
-          type: integer
-        noepoll:
-          description: Disable the use of the "epoll" event polling system on Linux
-          type: boolean
-        noevports:
-          description: Disable the use of the event ports event polling system on SunOS system derived from Solaris 10 and later
-          type: boolean
-        nogetaddrinfo:
-          description: Disable the use of getaddrinfo for name resolving
-          type: boolean
-        nokqueue:
-          description: Disable the use of the "kqueue" event polling system on BSD
-          type: boolean
-        noktls:
-          description: Disables the use of ktls. It is equivalent to the command line argument "-dT"
-          type: boolean
-        nopoll:
-          description: Disable the use of the "poll" event polling system
-          type: boolean
-        noreuseport:
-          type: boolean
-          x-display-name: Disable the use of SO_REUSEPORT
-        nosplice:
-          description: Disable the use of kernel tcp splicing between sockets on Linux
-          type: boolean
-        profiling_memory:
-          description: Enable or disables per-function memory profiling
-          enum:
-          - enabled
-          - disabled
-          type: string
-        profiling_tasks:
-          description: Enable or disables per-task CPU profiling
-          enum:
-          - auto
-          - enabled
-          - disabled
-          type: string
-        server_state_base:
-          pattern: ^[^\s]+$
-          type: string
-          x-display-name: Server State Base
-        server_state_file:
-          pattern: ^[^\s]+$
-          type: string
-          x-display-name: Server State File
-        spread_checks:
-          description: Add some randomness in the check interval
-          type: integer
-        thread_hard_limit:
-          type:
-          - integer
-          - 'null'
-      type: object
-    log_targets:
-      title: Log Target Array
-      description: HAProxy log target array (corresponds to log directives)
-      type: array
-      items:
-        $ref: '#/components/schemas/log_target'
-    error:
-      additionalProperties:
+  parameters:
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
         type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    tune_vars_options:
-      properties:
-        global_max_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Variables Global Max Size
-          x-size: false
-        proc_max_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Variables Process Max Size
-          x-size: false
-        reqres_max_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Variables Request/Response Max Size
-          x-size: false
-        sess_max_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Variables Session Max Size
-          x-size: false
-        txn_max_size:
-          type:
-          - integer
-          - 'null'
-          x-display-name: Variables Transaction Max Size
-          x-size: false
-      type: object
-    device_atlas_options:
-      properties:
-        json_file:
-          type: string
-          x-display-name: JSON file
-        log_level:
-          type: string
-          x-display-name: Log Level
-        properties_cookie:
-          type: string
-          x-display-name: Properties Cookie
-        separator:
-          type: string
-          x-display-name: Separator
-      type: object
-    http_codes:
-      properties:
-        value:
-          pattern: ^[a-zA-Z0-9 +\-,]+$
-          type: string
-          x-display-name: Value
-      required:
-      - value
-      type: object
-      x-go-name: HTTPCodes
-    ssl_options:
-      properties:
-        acme_scheduler:
-          enum:
-          - auto
-          - 'off'
-          type: string
-          x-display-name: ACME Scheduler
-        ca_base:
-          type: string
-          x-display-name: SSL CA Certificates Base Directory
-        crt_base:
-          type: string
-          x-display-name: SSL Certificates Base Directory
-        default_bind_ciphers:
-          type: string
-          x-display-name: SSL Default Bind Ciphers
-        default_bind_ciphersuites:
-          type: string
-          x-display-name: SSL Default Bind Ciphersuites
-        default_bind_client_sigalgs:
-          type: string
-          x-display-name: SSL Default Bind Client Sigalgs
-        default_bind_curves:
-          type: string
-          x-display-name: SSL Default Bind Curves
-        default_bind_options:
-          type: string
-          x-display-name: SSL Default Bind Options
-        default_bind_sigalgs:
-          type: string
-          x-display-name: SSL Default Bind Sigalgs
-        default_server_ciphers:
-          type: string
-          x-display-name: SSL Default Server Ciphers
-        default_server_ciphersuites:
-          type: string
-          x-display-name: SSL Default Server Ciphersuites
-        default_server_client_sigalgs:
-          type: string
-          x-display-name: SSL Default Server Client Sigalgs
-        default_server_curves:
-          type: string
-          x-display-name: SSL Default Server Curves
-        default_server_options:
-          type: string
-          x-display-name: SSL Default Server Options
-        default_server_sigalgs:
-          type: string
-          x-display-name: SSL Default Server Sigalgs
-        dh_param_file:
-          type: string
-        engines:
-          items:
-            properties:
-              algorithms:
-                type:
-                - string
-                - 'null'
-                x-display-name: Algorithms
-              name:
-                type: string
-                x-display-name: Name
-            required:
-            - name
-            type: object
-            x-go-name: SslEngine
-          type: array
-          x-display-name: SSL Engines
-          x-go-name: SslEngines
-          x-omitempty: true
-        issuers_chain_path:
-          type: string
-        load_extra_files:
-          type: string
-          x-display-name: SSL Load Extra Files
-        maxsslconn:
-          description: Maximum per-process number of concurrent SSL connections
-          type: integer
-        maxsslrate:
-          description: Maximum per-process number of SSL sessions per second
-          type: integer
-        mode_async:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: Asynchronous TLS I/O operations
-        passphrase_cmd:
-          type: string
-        propquery:
-          type: string
-          x-display-name: SSL Query String Property
-        provider:
-          type: string
-          x-display-name: SSL Provider
-        provider_path:
-          type: string
-          x-display-name: SSL Provider Path
-        security_level:
-          maximum: 5
-          minimum: 0
-          type:
-          - integer
-          - 'null'
-        server_verify:
-          enum:
-          - none
-          - required
-          type: string
-          x-display-name: Verify server certificates
-        skip_self_issued_ca:
-          type: boolean
-          x-display-name: Self issued CA, aka x509 root CA
-      type: object
-    lua_options:
-      properties:
-        load_per_thread:
-          type: string
-        loads:
-          items:
-            properties:
-              file:
-                pattern: ^[^\s]+$
-                type: string
-            required:
-            - file
-            type: object
-            x-go-name: LuaLoad
-          type: array
-          x-omitempty: true
-        prepend_path:
-          items:
-            properties:
-              path:
-                pattern: ^[^\s]+$
-                type: string
-              type:
-                enum:
-                - path
-                - cpath
-                type: string
-            required:
-            - path
-            type: object
-            x-go-name: LuaPrependPath
-          type: array
-          x-omitempty: true
-      type: object
-    tune_zlib_options:
-      properties:
-        memlevel:
-          maximum: 9
-          minimum: 1
-          type: integer
-          x-display-name: Zlib Memory Level
-        windowsize:
-          maximum: 15
-          minimum: 8
-          type: integer
-          x-display-name: Zlib Window Size
-      type: object
-    ocsp_update_options:
-      properties:
-        disable:
-          default: false
-          type:
-          - boolean
-          - 'null'
-          x-display-name: Disable OCSP Update
-        httpproxy:
-          properties:
-            address:
-              example: 127.0.0.1
-              pattern: ^[^\s]+$
-              type: string
-            port:
-              example: 80
-              maximum: 65535
-              minimum: 1
-              type:
-              - integer
-              - 'null'
-          type: object
-          x-display-name: OCSP Update HTTP Proxy
-          x-omitempty: true
-        maxdelay:
-          description: Sets the maximum interval between two automatic updates of the same OCSP response.This time is expressed in seconds
-          type:
-          - integer
-          - 'null'
-          x-default-unit: s
-          x-display-name: OCSP Update Maximum Delay
-          x-duration: false
-        mindelay:
-          description: Sets the minimum interval between two automatic updates of the same OCSP response. This time is expressed in seconds
-          type:
-          - integer
-          - 'null'
-          x-default-unit: s
-          x-display-name: OCSP Update Minimum Delay
-          x-duration: false
-        mode:
-          enum:
-          - enabled
-          - disabled
-          type: string
-          x-display-name: OCSP Update Mode
-      type: object
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+  schemas:
     global_base:
       additionalProperties: false
       description: HAProxy global configuration
@@ -2143,20 +580,294 @@ components:
           $ref: '#/components/schemas/wurfl_options'
       title: Global Base
       type: object
-    fifty_one_degrees_options:
+    tune_options:
       properties:
-        cache_size:
+        applet_zero_copy_forwarding:
+          description: Enables of disabled the zero-copy forwarding of data for the applets
+          enum:
+          - enabled
+          - disabled
+          type: string
+        cli_max_payload_size:
+          description: Maximum size in bytes allowed for the payload passed to a command on the CLI
+          type:
+          - integer
+          - 'null'
+          x-display-name: CLI Maximum Payload Size
+          x-size: true
+        comp_maxlevel:
           type: integer
-          x-display-name: Cache Size
-        data_file:
+          x-display-name: Maximum Compression Level
+        defaults_purge:
+          type: boolean
+          x-display-name: Force deletion of defaults section after parsing to save memory
+        disable_fast_forward:
+          type: boolean
+          x-display-name: Disable fast-forwarding
+        disable_zero_copy_forwarding:
+          type: boolean
+          x-display-name: Disable zero-copy forwarding
+        epoll_mask_events:
+          items:
+            enum:
+            - err
+            - hup
+            - rdhup
+            type: string
+          type: array
+          x-omitempty: true
+        events_max_events_at_once:
+          maximum: 10000
+          minimum: 1
+          type: integer
+        fail_alloc:
+          type: boolean
+          x-display-name: Failed Allocation Chance
+        fd_edge_triggered:
+          enum:
+          - enabled
+          - disabled
           type: string
-          x-display-name: Data File
-        property_name_list:
+          x-display-name: Edge-triggered polling mode
+        glitches_kill_cpu_usage:
+          maximum: 100
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-display-name: CPU Usage Kill glitched Connections
+        h1_be_glitches_threshold:
+          minimum: 0
+          type: integer
+          x-display-name: Number of connection glitches before killing the connection with the backend
+        h1_fe_glitches_threshold:
+          minimum: 0
+          type: integer
+          x-display-name: Number of connection glitches before killing the connection with the frontend
+        h1_zero_copy_fwd_recv:
+          description: enable or disable the zero-copy receives of data for the HTTP/1 multiplexer
+          enum:
+          - enabled
+          - disabled
           type: string
-          x-display-name: Name List
-        property_separator:
+        h1_zero_copy_fwd_send:
+          description: enable or disable the zero-copy sends of data for the HTTP/1 multiplexer
+          enum:
+          - enabled
+          - disabled
           type: string
-          x-display-name: Property Separator
+        h2_be_glitches_threshold:
+          description: Automatically kill a backend connection past a number of glitches
+          type:
+          - integer
+          - 'null'
+        h2_be_initial_window_size:
+          description: Initial window size for outgoing connections
+          type: integer
+        h2_be_max_concurrent_streams:
+          description: Maximum number of concurrent streams per outgoing connection
+          type: integer
+        h2_be_max_frames_at_once:
+          description: Maximum number of HTTP/2 incoming frames processed at once on a backend connection
+          type: integer
+        h2_be_rxbuf:
+          description: HTTP/2 receive buffer size for outgoing connections
+          type:
+          - integer
+          - 'null'
+          x-size: true
+        h2_fe_glitches_threshold:
+          description: Automatically kill a frontend connection past a number of glitches
+          type:
+          - integer
+          - 'null'
+        h2_fe_initial_window_size:
+          description: Initial window size for incoming connections
+          type: integer
+        h2_fe_max_concurrent_streams:
+          description: Maximum number of concurrent streams per incoming connection
+          type: integer
+        h2_fe_max_frames_at_once:
+          description: Maximum number of HTTP/2 incoming frames processed at once on a frontend connection
+          type: integer
+        h2_fe_max_rst_at_once:
+          description: Maximum number of HTTP/2 incoming RST_STREAM frames processed at once on a frontend connection
+          type: integer
+        h2_fe_max_total_streams:
+          description: Maximum number of total streams processed per incoming HTTP/2 connection
+          type:
+          - integer
+          - 'null'
+        h2_fe_rxbuf:
+          description: HTTP/2 receive buffer size for incoming connections
+          type:
+          - integer
+          - 'null'
+          x-size: true
+        h2_header_table_size:
+          maximum: 65535
+          type: integer
+          x-display-name: HTTP/2 Dynamic Header Table Size
+        h2_initial_window_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: HTTP/2 Initial Window Size
+        h2_log_errors:
+          description: Level of HTTP/2 demultiplexer errors that will generate a log
+          enum:
+          - none
+          - connection
+          - stream
+          type: string
+        h2_max_concurrent_streams:
+          type: integer
+          x-display-name: HTTP/2 Maximum Number of Concurrent Streams
+        h2_max_frame_size:
+          type: integer
+          x-display-name: HTTP/2 Maximum Frame Size
+        h2_zero_copy_fwd_send:
+          description: enable or disable the zero-copy sends of data for the HTTP/2 multiplexer
+          enum:
+          - enabled
+          - disabled
+          type: string
+        http_cookielen:
+          type: integer
+          x-display-name: Maximum Cookie Length
+        http_logurilen:
+          type: integer
+          x-display-name: Maximum URI Length
+        http_maxhdr:
+          maximum: 32767
+          minimum: 1
+          type: integer
+          x-display-name: Maximum Number of Headers
+        idle_pool_shared:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-display-name: Share Idle Connections
+        idletimer:
+          maximum: 65535
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-display-name: Idle Stream Duration
+          x-duration: true
+        listener_default_shards:
+          enum:
+          - by-process
+          - by-thread
+          - by-group
+          type: string
+          x-display-name: Listener Default Shards
+        listener_multi_queue:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-display-name: Listener Multi Queue Accept
+        max_checks_per_thread:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Maximum checks per thread
+        max_rules_at_once:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-display-name: Maximum rules at once
+        maxaccept:
+          type: integer
+          x-display-name: Maximum Accept Events
+        maxpollevents:
+          type: integer
+          x-display-name: Maximum Polled Events
+        maxrewrite:
+          type: integer
+          x-display-name: Maximum Rewrite Space
+        memory_hot_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Per-thread Amount of Memory
+        notsent_lowat_client:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Client Not Sent Low Watermark
+          x-size: true
+        notsent_lowat_server:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Server Not Sent Low Watermark
+          x-size: true
+        pattern_cache_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Pattern Lookup Cache Size
+        peers_max_updates_at_once:
+          description: Maximum number of stick-table updates at once
+          type: integer
+        pool_high_fd_ratio:
+          type: integer
+          x-display-name: Max Used High FD Ratio
+        pool_low_fd_ratio:
+          type: integer
+          x-display-name: Max Used Low FD Ratio
+        pt_zero_copy_forwarding:
+          description: enable or disable the zero-copy forwarding of data for the pass-through multiplexer
+          enum:
+          - enabled
+          - disabled
+          type: string
+        renice_runtime:
+          description: Scheduling priority applied after the configuration parsing
+          maximum: 19
+          minimum: -20
+          type:
+          - integer
+          - 'null'
+        renice_startup:
+          description: Scheduling priority applied before the rest of the configuration
+          maximum: 19
+          minimum: -20
+          type:
+          - integer
+          - 'null'
+        ring_queues:
+          description: Number of write queues in front of ring buffers
+          type:
+          - integer
+          - 'null'
+        runqueue_depth:
+          type: integer
+          x-display-name: Max Tasks in Run Queue
+        sched_low_latency:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-display-name: Low Latency Task Scheduler
+        stick_counters:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Number of stick-counters
+        takeover_other_tg_connections:
+          enum:
+          - none
+          - restricted
+          - full
+          type: string
+          x-display-name: Takeover Other Thread Groups Connections
       type: object
     debug_options:
       properties:
@@ -2177,6 +888,132 @@ components:
         zero_warning:
           type: boolean
       type: object
+    ocsp_update_options:
+      properties:
+        disable:
+          default: false
+          type:
+          - boolean
+          - 'null'
+          x-display-name: Disable OCSP Update
+        httpproxy:
+          properties:
+            address:
+              example: 127.0.0.1
+              pattern: ^[^\s]+$
+              type: string
+            port:
+              example: 80
+              maximum: 65535
+              minimum: 1
+              type:
+              - integer
+              - 'null'
+          type: object
+          x-display-name: OCSP Update HTTP Proxy
+          x-omitempty: true
+        maxdelay:
+          description: Sets the maximum interval between two automatic updates of the same OCSP response.This time is expressed in seconds
+          type:
+          - integer
+          - 'null'
+          x-default-unit: s
+          x-display-name: OCSP Update Maximum Delay
+          x-duration: false
+        mindelay:
+          description: Sets the minimum interval between two automatic updates of the same OCSP response. This time is expressed in seconds
+          type:
+          - integer
+          - 'null'
+          x-default-unit: s
+          x-display-name: OCSP Update Minimum Delay
+          x-duration: false
+        mode:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-display-name: OCSP Update Mode
+      type: object
+    lua_options:
+      properties:
+        load_per_thread:
+          type: string
+        loads:
+          items:
+            properties:
+              file:
+                pattern: ^[^\s]+$
+                type: string
+            required:
+            - file
+            type: object
+            x-go-name: LuaLoad
+          type: array
+          x-omitempty: true
+        prepend_path:
+          items:
+            properties:
+              path:
+                pattern: ^[^\s]+$
+                type: string
+              type:
+                enum:
+                - path
+                - cpath
+                type: string
+            required:
+            - path
+            type: object
+            x-go-name: LuaPrependPath
+          type: array
+          x-omitempty: true
+      type: object
+    environment_options:
+      properties:
+        presetenv:
+          items:
+            properties:
+              name:
+                type: string
+                x-display-name: Name
+              value:
+                type: string
+                x-display-name: Value
+            required:
+            - name
+            - value
+            type: object
+            x-go-name: PresetEnv
+          type: array
+          x-display-name: Preset environment variables
+          x-go-name: PresetEnvs
+          x-omitempty: true
+        resetenv:
+          description: Remove all environment variables except the ones specified
+          type: string
+        setenv:
+          items:
+            properties:
+              name:
+                type: string
+                x-display-name: Name
+              value:
+                type: string
+                x-display-name: Value
+            required:
+            - name
+            - value
+            type: object
+            x-go-name: SetEnv
+          type: array
+          x-display-name: Set environment variables
+          x-go-name: SetEnvs
+          x-omitempty: true
+        unsetenv:
+          description: Removes environment variables specified in arguments
+          type: string
+      type: object
     global:
       allOf:
       - $ref: '#/components/schemas/global_base'
@@ -2188,37 +1025,1200 @@ components:
       description: Frontend with all its children resources
       type: object
       x-go-name: Global
-  parameters:
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
+    tune_quic_options:
+      properties:
+        frontend_conn_tx_buffers_limit:
+          type:
+          - integer
+          - 'null'
+          x-display-name: QUIC Frontend Connection TX Buffer Limit
+        frontend_max_idle_timeout:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-display-name: QUIC Frontend Max Idle Timeout
+          x-duration: true
+        frontend_max_streams_bidi:
+          type:
+          - integer
+          - 'null'
+          x-display-name: QUIC Max Number of Bidirectional Streams
+        frontend_max_tx_memory:
+          type:
+          - integer
+          - 'null'
+          x-display-name: QUIC Frontend Max Tx Memory
+          x-size: true
+        frontend_stream_max_total:
+          description: Maximum number of requests handled by a single QUIC frontend connection before graceful shutdown
+          type:
+          - integer
+          - 'null'
+          x-display-name: QUIC Frontend Stream Max Total
+        max_frame_loss:
+          type:
+          - integer
+          - 'null'
+          x-display-name: QUIC Max Limit for Frame Loss
+        reorder_ratio:
+          description: Ratio applied to the packet reordering threshold
+          maximum: 100
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+        retry_threshold:
+          type:
+          - integer
+          - 'null'
+          x-display-name: QUIC Retry Threshold
+        socket_owner:
+          enum:
+          - listener
+          - connection
+          type: string
+          x-display-name: QUIC Socket Owner
+        zero_copy_fwd_send:
+          description: Enables or disables the zero-copy sends for the QUIC multiplexer
+          enum:
+          - enabled
+          - disabled
+          type: string
+      type: object
+    tune_vars_options:
+      properties:
+        global_max_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Variables Global Max Size
+          x-size: false
+        proc_max_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Variables Process Max Size
+          x-size: false
+        reqres_max_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Variables Request/Response Max Size
+          x-size: false
+        sess_max_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Variables Session Max Size
+          x-size: false
+        txn_max_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Variables Transaction Max Size
+          x-size: false
+      type: object
+    http_client_options:
+      properties:
+        resolvers_disabled:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-display-name: HTTP Client Resolvers Disabled
+        resolvers_id:
+          type: string
+          x-display-name: HTTP Client Resolvers ID
+        resolvers_prefer:
+          enum:
+          - ipv4
+          - ipv6
+          type: string
+          x-display-name: HTTP Client Resolvers Prefer
+        retries:
+          type: integer
+          x-display-name: HTTP Client Retries
+        ssl_ca_file:
+          type: string
+          x-display-name: HTTP Client SSL CA File
+        ssl_verify:
+          enum:
+          - ''
+          - none
+          - required
+          type:
+          - string
+          - 'null'
+          x-display-name: HTTP Client SSL Verify
+        timeout_connect:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-display-name: HTTP Client Connect Timeout
+          x-duration: true
+      type: object
+    tune_buffer_options:
+      properties:
+        buffers_limit:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Buffers Limit
+        buffers_reserve:
+          minimum: 2
+          type: integer
+          x-display-name: Buffers Reserve
+        bufsize:
+          type: integer
+          x-display-name: Buffer Size
+          x-size: true
+        bufsize_large:
+          description: Size in bytes of large buffers. By default, support for large buffers is not enabled.
+          type:
+          - integer
+          - 'null'
+          x-size: true
+        bufsize_small:
+          description: Size of small buffers (for memory-restrained situations)
+          minimum: 1
+          type:
+          - integer
+          - 'null'
+          x-size: true
+        pipesize:
+          type: integer
+          x-display-name: Pipe Buffer Size
+          x-size: true
+        rcvbuf_backend:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Backend Receive Buffer Size
+          x-size: true
+        rcvbuf_client:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Client Receive Buffer Size
+          x-size: true
+        rcvbuf_frontend:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Frontend Receive Buffer Size
+          x-size: true
+        rcvbuf_server:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Server Receive Buffer Size
+          x-size: true
+        recv_enough:
+          type: integer
+          x-display-name: Receive Enough Socket Buffer Size
+          x-size: true
+        sndbuf_backend:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Backend Send Buffer Size
+          x-size: true
+        sndbuf_client:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Client Send Buffer Size
+          x-size: true
+        sndbuf_frontend:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Frontend Send Buffer Size
+          x-size: true
+        sndbuf_server:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Server Send Buffer Size
+          x-size: true
+      type: object
+    tune_zlib_options:
+      properties:
+        memlevel:
+          maximum: 9
+          minimum: 1
+          type: integer
+          x-display-name: Zlib Memory Level
+        windowsize:
+          maximum: 15
+          minimum: 8
+          type: integer
+          x-display-name: Zlib Window Size
+      type: object
+    log_targets:
+      title: Log Target Array
+      description: HAProxy log target array (corresponds to log directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/log_target'
+    tune_lua_options:
+      properties:
+        bool_sample_conversion:
+          enum:
+          - normal
+          - pre-3.1-bug
+          type: string
+        burst_timeout:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-display-name: Burst execution timeout
+          x-duration: true
+        forced_yield:
+          type: integer
+          x-display-name: Lua Forced Yield
+        log_loggers:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-display-name: Send Lua Logs to the Loggers
+        log_stderr:
+          enum:
+          - auto
+          - enabled
+          - disabled
+          type: string
+          x-display-name: Send Lua Logs to stderr
+        maxmem:
+          type:
+          - integer
+          - 'null'
+          x-display-name: Lua Maximum Memory Usage
+        openlibs:
+          description: 'Selects which Lua standard libraries are loaded. Accepts "all", "none", or a comma-separated list of: table, io, os, string, math, utf8, package, debug.'
+          type: string
+          x-display-name: Lua Open Libraries
+        service_timeout:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-display-name: Lua Service timeout
+          x-duration: true
+        session_timeout:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-display-name: Lua Session Timeout
+          x-duration: true
+        task_timeout:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-display-name: Lua Task Timeout
+          x-duration: true
+      type: object
+    performance_options:
+      properties:
+        busy_polling:
+          type: boolean
+        fd_hard_limit:
+          type:
+          - integer
+          - 'null'
+        max_spread_checks:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        maxcompcpuusage:
+          type: integer
+          x-display-name: Maximum HAProxy CPU usage
+        maxcomprate:
+          description: Maximum per-process input compression rate
+          type: integer
+        maxconn:
+          type: integer
+          x-display-name: Max Connections
+        maxconnrate:
+          description: Maximum per-process number of concurrent connections
+          type: integer
+        maxpipes:
+          type: integer
+          x-display-name: Maximum per-process number of pipes
+        maxsessrate:
+          description: Maximum per-process number of sessions per second
+          type: integer
+        maxzlibmem:
+          description: Maximum amount of RAM in megabytes per process usable by the zlib
+          type: integer
+        noepoll:
+          description: Disable the use of the "epoll" event polling system on Linux
+          type: boolean
+        noevports:
+          description: Disable the use of the event ports event polling system on SunOS system derived from Solaris 10 and later
+          type: boolean
+        nogetaddrinfo:
+          description: Disable the use of getaddrinfo for name resolving
+          type: boolean
+        nokqueue:
+          description: Disable the use of the "kqueue" event polling system on BSD
+          type: boolean
+        noktls:
+          description: Disables the use of ktls. It is equivalent to the command line argument "-dT"
+          type: boolean
+        nopoll:
+          description: Disable the use of the "poll" event polling system
+          type: boolean
+        noreuseport:
+          type: boolean
+          x-display-name: Disable the use of SO_REUSEPORT
+        nosplice:
+          description: Disable the use of kernel tcp splicing between sockets on Linux
+          type: boolean
+        profiling_memory:
+          description: Enable or disables per-function memory profiling
+          enum:
+          - enabled
+          - disabled
+          type: string
+        profiling_tasks:
+          description: Enable or disables per-task CPU profiling
+          enum:
+          - auto
+          - enabled
+          - disabled
+          type: string
+        server_state_base:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: Server State Base
+        server_state_file:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: Server State File
+        spread_checks:
+          description: Add some randomness in the check interval
+          type: integer
+        thread_hard_limit:
+          type:
+          - integer
+          - 'null'
+      type: object
+    device_atlas_options:
+      properties:
+        json_file:
+          type: string
+          x-display-name: JSON file
+        log_level:
+          type: string
+          x-display-name: Log Level
+        properties_cookie:
+          type: string
+          x-display-name: Properties Cookie
+        separator:
+          type: string
+          x-display-name: Separator
+      type: object
+    wurfl_options:
+      properties:
+        cache_size:
+          description: Sets the WURFL Useragent cache size
+          type: integer
+        data_file:
+          description: The path of the WURFL data file
+          type: string
+        information_list:
+          description: A space-delimited list of WURFL capabilities
+          type: string
+        information_list_separator:
+          description: A char that will be used to separate values in a response header containing WURFL results
+          type: string
+        patch_file:
+          description: A list of WURFL patch file paths
+          type: string
+      type: object
+    http_codes:
+      properties:
+        value:
+          pattern: ^[a-zA-Z0-9 +\-,]+$
+          type: string
+          x-display-name: Value
+      required:
+      - value
+      type: object
+      x-go-name: HTTPCodes
+    ssl_options:
+      properties:
+        acme_scheduler:
+          enum:
+          - auto
+          - 'off'
+          type: string
+          x-display-name: ACME Scheduler
+        ca_base:
+          type: string
+          x-display-name: SSL CA Certificates Base Directory
+        crt_base:
+          type: string
+          x-display-name: SSL Certificates Base Directory
+        default_bind_ciphers:
+          type: string
+          x-display-name: SSL Default Bind Ciphers
+        default_bind_ciphersuites:
+          type: string
+          x-display-name: SSL Default Bind Ciphersuites
+        default_bind_client_sigalgs:
+          type: string
+          x-display-name: SSL Default Bind Client Sigalgs
+        default_bind_curves:
+          type: string
+          x-display-name: SSL Default Bind Curves
+        default_bind_options:
+          type: string
+          x-display-name: SSL Default Bind Options
+        default_bind_sigalgs:
+          type: string
+          x-display-name: SSL Default Bind Sigalgs
+        default_server_ciphers:
+          type: string
+          x-display-name: SSL Default Server Ciphers
+        default_server_ciphersuites:
+          type: string
+          x-display-name: SSL Default Server Ciphersuites
+        default_server_client_sigalgs:
+          type: string
+          x-display-name: SSL Default Server Client Sigalgs
+        default_server_curves:
+          type: string
+          x-display-name: SSL Default Server Curves
+        default_server_options:
+          type: string
+          x-display-name: SSL Default Server Options
+        default_server_sigalgs:
+          type: string
+          x-display-name: SSL Default Server Sigalgs
+        dh_param_file:
+          type: string
+        engines:
+          items:
+            properties:
+              algorithms:
+                type:
+                - string
+                - 'null'
+                x-display-name: Algorithms
+              name:
+                type: string
+                x-display-name: Name
+            required:
+            - name
+            type: object
+            x-go-name: SslEngine
+          type: array
+          x-display-name: SSL Engines
+          x-go-name: SslEngines
+          x-omitempty: true
+        issuers_chain_path:
+          type: string
+        load_extra_files:
+          type: string
+          x-display-name: SSL Load Extra Files
+        maxsslconn:
+          description: Maximum per-process number of concurrent SSL connections
+          type: integer
+        maxsslrate:
+          description: Maximum per-process number of SSL sessions per second
+          type: integer
+        mode_async:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-display-name: Asynchronous TLS I/O operations
+        passphrase_cmd:
+          type: string
+        propquery:
+          type: string
+          x-display-name: SSL Query String Property
+        provider:
+          type: string
+          x-display-name: SSL Provider
+        provider_path:
+          type: string
+          x-display-name: SSL Provider Path
+        security_level:
+          maximum: 5
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+        server_verify:
+          enum:
+          - none
+          - required
+          type: string
+          x-display-name: Verify server certificates
+        skip_self_issued_ca:
+          type: boolean
+          x-display-name: Self issued CA, aka x509 root CA
+      type: object
+    log_target:
+      additionalProperties: false
+      description: Per-instance logging of events and traffic.
+      properties:
+        address:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        facility:
+          enum:
+          - kern
+          - user
+          - mail
+          - daemon
+          - auth
+          - syslog
+          - lpr
+          - news
+          - uucp
+          - cron
+          - auth2
+          - ftp
+          - ntp
+          - audit
+          - alert
+          - cron2
+          - local0
+          - local1
+          - local2
+          - local3
+          - local4
+          - local5
+          - local6
+          - local7
+          type: string
+          x-dependency:
+            global:
+              required: true
+              value: false
+            nolog:
+              required: true
+              value: false
+        format:
+          enum:
+          - local
+          - rfc3164
+          - rfc5424
+          - priority
+          - short
+          - timed
+          - iso
+          - raw
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        global:
+          type: boolean
+        length:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        level:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        metadata:
+          additionalProperties:
+            type: object
+        minlevel:
+          enum:
+          - emerg
+          - alert
+          - crit
+          - err
+          - warning
+          - notice
+          - info
+          - debug
+          type: string
+          x-dependency:
+            global:
+              value: false
+            level:
+              required: false
+            nolog:
+              value: false
+        nolog:
+          type: boolean
+        profile:
+          type: string
+        sample_range:
+          type: string
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+        sample_size:
+          type: integer
+          x-dependency:
+            global:
+              value: false
+            nolog:
+              value: false
+            sample_range:
+              required: true
+      title: Log Target
+      type: object
+    bind_params:
+      additionalProperties: false
+      properties:
+        accept_netscaler_cip:
+          type: integer
+        accept_proxy:
+          type: boolean
+        allow_0rtt:
+          type: boolean
+        alpn:
+          pattern: ^[^\s]+$
+          type: string
+          x-display-name: ALPN Protocols
+        backlog:
+          type: string
+        ca_ignore_err:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ca_sign_file:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ca_sign_pass:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+          x-display-name: Passphrase
+        ca_verify_file:
+          type: string
+          x-dependency:
+            ca_file:
+              value: true
+        cc:
+          type: string
+          x-display-name: TCP Congestion Control Algorithm
+        ciphers:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ciphersuites:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        client_sigalgs:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        crl_file:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        crt_ignore_err:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        crt_list:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        curves:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        default_crt_list:
+          items:
+            pattern: ^[^\s]+$
+            type: string
+          type: array
+          x-omitempty: true
+        defer_accept:
+          type: boolean
+        ecdhe:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        expose_fd_listeners:
+          type: boolean
+        force_sslv3:
+          description: This field is deprecated in favor of sslv3, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        force_strict_sni:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        force_tlsv10:
+          description: This field is deprecated in favor of tlsv10, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        force_tlsv11:
+          description: This field is deprecated in favor of tlsv11, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        force_tlsv12:
+          description: This field is deprecated in favor of tlsv12, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        force_tlsv13:
+          description: This field is deprecated in favor of tlsv13, and will be removed in a future release
+          type: boolean
+          x-deprecated: true
+        generate_certificates:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+        gid:
+          type: integer
+          x-display-name: Group ID
+        group:
+          type: string
+          x-display-name: Group name
+        guid_prefix:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+        id:
+          type: string
+          x-display-name: Socket ID
+        idle_ping:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: ms
+          x-duration: true
+        interface:
+          type: string
+        ktls:
+          enum:
+          - 'on'
+          - 'off'
+          type: string
+          x-display-name: 'Enables or disables ktls for those sockets. If enabled, kTLS will be used if the kernel supports it and the cipher is compatible.
+
+            This is only available on Linux kernel 4.17 and above.
+
+            EXPERIMENTAL OPTION.'
+        label:
+          type: string
+        level:
+          enum:
+          - user
+          - operator
+          - admin
+          example: user
+          type: string
+        maxconn:
+          example: 1234
+          type: integer
+        mode:
+          type: string
+        mss:
+          type: string
+        namespace:
+          example: app
+          type: string
+        nbconn:
+          type: integer
+          x-display-name: Number of connection
+        nice:
+          example: 1
+          type: integer
+        no_alpn:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+        no_ca_names:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+        no_sslv3:
+          description: This field is deprecated in favor of sslv3, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_strict_sni:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tls_tickets:
+          description: This field is deprecated in favor of tls_tickets, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tlsv10:
+          description: This field is deprecated in favor of tlsv10, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tlsv11:
+          description: This field is deprecated in favor of tlsv11, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tlsv12:
+          description: This field is deprecated in favor of tlsv12, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        no_tlsv13:
+          description: This field is deprecated in favor of tlsv13, and will be removed in a future release
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        npn:
+          type: string
+        prefer_client_ciphers:
+          type: boolean
+        proto:
+          type: string
+          x-display-name: Protocol name
+        quic-cc-algo:
+          enum:
+          - cubic
+          - newreno
+          - bbr
+          - nocc
+          type: string
+        quic-force-retry:
+          type: boolean
+        quic-socket:
+          enum:
+          - connection
+          - listener
+          type: string
+        quic_cc_algo_burst_size:
+          maximum: 1024
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-dependency:
+            quic-cc-algo: null
+        quic_cc_algo_max_window:
+          maximum: 4194304
+          minimum: 10
+          type:
+          - integer
+          - 'null'
+          x-default-unit: k
+          x-dependency:
+            quic-cc-algo: null
+          x-size: true
+        severity_output:
+          enum:
+          - none
+          - number
+          - string
+          example: none
+          type: string
+          x-display-name: Format
+        shards:
+          pattern: ^(by-thread|by-group|[0-9]+)$
+          type: string
+          x-display-name: Shards
+        sigalgs:
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ssl:
+          type: boolean
+        ssl_cafile:
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+          x-display-name: SSL CA File
+        ssl_certificate:
+          description: All of the certificates delimited by ':' as mentioned as a crt on the bind line.
+          pattern: ^[^\s]+$
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        ssl_max_ver:
+          enum:
+          - SSLv3
+          - TLSv1.0
+          - TLSv1.1
+          - TLSv1.2
+          - TLSv1.3
+          type: string
+        ssl_min_ver:
+          enum:
+          - SSLv3
+          - TLSv1.0
+          - TLSv1.1
+          - TLSv1.2
+          - TLSv1.3
+          type: string
+        sslv3:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        strict_sni:
+          type: boolean
+          x-dependency:
+            ssl:
+              value: true
+          x-deprecated: true
+        tcp_md5sig:
+          pattern: ^[^\s]+$
+          type: string
+        tcp_ss:
+          description: Sets the TCP Save SYN option for all incoming connections instantiated from this listening socket
+          enum:
+          - 1
+          - 2
+          - 3
+          type: integer
+        tcp_user_timeout:
+          type:
+          - integer
+          - 'null'
+        tfo:
+          type: boolean
+        thread:
+          type: string
+        tls_ticket_keys:
+          type: string
+        tls_tickets:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        tlsv10:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        tlsv11:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        tlsv12:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        tlsv13:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-dependency:
+            ssl:
+              value: true
+        transparent:
+          type: boolean
+        uid:
+          type: string
+        user:
+          type: string
+        v4v6:
+          type: boolean
+        v6only:
+          type: boolean
+        verify:
+          enum:
+          - none
+          - optional
+          - required
+          example: none
+          type: string
+          x-dependency:
+            ssl:
+              value: enabled
+      type: object
+    fifty_one_degrees_options:
+      properties:
+        cache_size:
+          type: integer
+          x-display-name: Cache Size
+        data_file:
+          type: string
+          x-display-name: Data File
+        property_name_list:
+          type: string
+          x-display-name: Name List
+        property_separator:
+          type: string
+          x-display-name: Property Separator
+      type: object
+    tune_ssl_options:
+      properties:
+        cachesize:
+          type:
+          - integer
+          - 'null'
+          x-display-name: SSL Cache Size
+        capture_buffer_size:
+          type:
+          - integer
+          - 'null'
+          x-display-name: SSL Maximum Size of Cipherlist Buffer
+        certificate_compression:
+          enum:
+          - auto
+          - disabled
+          type: string
+          x-display-name: Force SSL compression off, or let the SSL library decide
+        ctx_cache_size:
+          type: integer
+          x-display-name: SSL Number of Certificates in Cache
+        default_dh_param:
+          type: integer
+          x-display-name: SSL Default DH Parameter Size
+        force_private_cache:
+          type: boolean
+          x-display-name: SSL Force Private Cache
+        keylog:
+          enum:
+          - enabled
+          - disabled
+          type: string
+          x-display-name: SSL Log TLS Keys
+        lifetime:
+          minimum: 0
+          type:
+          - integer
+          - 'null'
+          x-default-unit: s
+          x-display-name: SSL Session Lifetime
+          x-duration: true
+        maxrecord:
+          type:
+          - integer
+          - 'null'
+          x-display-name: SSL Maximum Size
+          x-size: false
+        ocsp_update_max_delay:
+          description: SSL Maximum Interval Between Two Automatic Updates of the same OCSP Response
+          type:
+          - integer
+          - 'null'
+        ocsp_update_min_delay:
+          description: SSL Minimum Interval Between Two Automatic Updates of the same OCSP Response
+          type:
+          - integer
+          - 'null'
+      type: object
+    error:
+      additionalProperties:
         type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   responses:
     DefaultError:
       description: General Error

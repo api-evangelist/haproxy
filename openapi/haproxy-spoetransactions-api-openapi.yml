@@ -167,9 +167,26 @@ paths:
       tags:
       - SpoeTransactions
 components:
+  parameters:
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
   responses:
-    NotFound:
-      description: The specified resource was not found
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -179,8 +196,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    DefaultError:
-      description: General Error
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -201,30 +218,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-  parameters:
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
   schemas:
-    spoe_transactions:
-      title: SPOE Transactions array
-      description: SPOE Configuration transactions array
-      type: array
-      items:
-        $ref: '#/components/schemas/spoe_transaction'
     spoe_transaction:
       description: SPOE configuration transaction
       example:
@@ -245,6 +239,12 @@ components:
           type: string
       title: SPOE configuration transaction
       type: object
+    spoe_transactions:
+      title: SPOE Transactions array
+      description: SPOE Configuration transactions array
+      type: array
+      items:
+        $ref: '#/components/schemas/spoe_transaction'
     error:
       additionalProperties:
         type: string

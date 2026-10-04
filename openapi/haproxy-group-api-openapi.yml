@@ -213,13 +213,6 @@ paths:
         required: true
 components:
   parameters:
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
     force_reload:
       name: force_reload
       in: query
@@ -235,9 +228,16 @@ components:
       required: false
       schema:
         type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   responses:
-    NotFound:
-      description: The specified resource was not found
+    AlreadyExists:
+      description: The specified resource already exists
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -258,8 +258,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    BadRequest:
-      description: Bad request
+    NotFound:
+      description: The specified resource was not found
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -269,8 +269,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
+    BadRequest:
+      description: Bad request
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -287,21 +287,6 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/group'
-    group:
-      description: HAProxy userlist group
-      properties:
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_.:${}"]+$
-          type: string
-        users:
-          type: string
-      required:
-      - name
-      title: Group
-      type: object
     error:
       additionalProperties:
         type: string
@@ -319,6 +304,21 @@ components:
       - code
       - message
       title: Error
+      type: object
+    group:
+      description: HAProxy userlist group
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:${}"]+$
+          type: string
+        users:
+          type: string
+      required:
+      - name
+      title: Group
       type: object
   securitySchemes:
     basic_auth:

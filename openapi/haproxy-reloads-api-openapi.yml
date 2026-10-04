@@ -69,17 +69,6 @@ paths:
       - Reloads
 components:
   responses:
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
     DefaultError:
       description: General Error
       headers:
@@ -91,7 +80,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   schemas:
+    reloads:
+      title: HAProxy Reloads Array
+      description: HAProxy reloads array
+      type: array
+      items:
+        $ref: '#/components/schemas/reload'
     reload:
       description: HAProxy reload
       example:
@@ -113,12 +119,6 @@ components:
           type: string
       title: HAProxy reload
       type: object
-    reloads:
-      title: HAProxy Reloads Array
-      description: HAProxy reloads array
-      type: array
-      items:
-        $ref: '#/components/schemas/reload'
     error:
       additionalProperties:
         type: string
