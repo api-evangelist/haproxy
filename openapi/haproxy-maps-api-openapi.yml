@@ -293,12 +293,24 @@ paths:
         required: true
 components:
   schemas:
-    map_entries:
-      title: Maps Entries
-      description: Entries of one runtime map
-      type: array
-      items:
-        $ref: '#/components/schemas/map_entry'
+    map:
+      description: Map File
+      properties:
+        description:
+          type: string
+        file:
+          type: string
+        id:
+          type: string
+        size:
+          description: File size in bytes.
+          type:
+          - integer
+          - 'null'
+        storage_name:
+          type: string
+      title: Map File
+      type: object
     maps:
       title: Map Files Array
       description: Array of runtime map files
@@ -317,6 +329,12 @@ components:
           type: string
       title: One Map Entry
       type: object
+    map_entries:
+      title: Maps Entries
+      description: Entries of one runtime map
+      type: array
+      items:
+        $ref: '#/components/schemas/map_entry'
     error:
       additionalProperties:
         type: string
@@ -334,24 +352,6 @@ components:
       - code
       - message
       title: Error
-      type: object
-    map:
-      description: Map File
-      properties:
-        description:
-          type: string
-        file:
-          type: string
-        id:
-          type: string
-        size:
-          description: File size in bytes.
-          type:
-          - integer
-          - 'null'
-        storage_name:
-          type: string
-      title: Map File
       type: object
   responses:
     AlreadyExists:

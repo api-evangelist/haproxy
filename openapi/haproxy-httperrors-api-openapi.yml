@@ -187,110 +187,9 @@ paths:
               $ref: '#/components/schemas/http_errors_section'
         required: true
 components:
-  parameters:
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-  schemas:
-    errorfile:
-      properties:
-        code:
-          enum:
-          - 200
-          - 400
-          - 401
-          - 403
-          - 404
-          - 405
-          - 407
-          - 408
-          - 410
-          - 413
-          - 425
-          - 429
-          - 500
-          - 501
-          - 502
-          - 503
-          - 504
-          type: integer
-        file:
-          type: string
-      type: object
-      x-display-name: Error File
-    http_errors_sections:
-      title: http-errors sections
-      description: An array of HAProxy http-error sections
-      type: array
-      items:
-        $ref: '#/components/schemas/http_errors_section'
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    http_errors_section:
-      additionalProperties: false
-      description: A globally declared group of HTTP errors
-      example:
-        error_files:
-        - code: 400
-          name: /etc/haproxy/errorfiles/site1/400.http
-        - code: 404
-          name: /etc/haproxy/errorfiles/site1/404.http
-        name: website-1
-      properties:
-        error_files:
-          items:
-            $ref: '#/components/schemas/errorfile'
-          type: array
-          x-go-name: ErrorFiles
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_]+$
-          type: string
-      required:
-      - name
-      - error_files
-      title: http-errors section
-      type: object
   responses:
-    DefaultError:
-      description: General Error
+    AlreadyExists:
+      description: The specified resource already exists
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -300,8 +199,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -333,6 +232,107 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+  schemas:
+    http_errors_sections:
+      title: http-errors sections
+      description: An array of HAProxy http-error sections
+      type: array
+      items:
+        $ref: '#/components/schemas/http_errors_section'
+    http_errors_section:
+      additionalProperties: false
+      description: A globally declared group of HTTP errors
+      example:
+        error_files:
+        - code: 400
+          name: /etc/haproxy/errorfiles/site1/400.http
+        - code: 404
+          name: /etc/haproxy/errorfiles/site1/404.http
+        name: website-1
+      properties:
+        error_files:
+          items:
+            $ref: '#/components/schemas/errorfile'
+          type: array
+          x-go-name: ErrorFiles
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_]+$
+          type: string
+      required:
+      - name
+      - error_files
+      title: http-errors section
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    errorfile:
+      properties:
+        code:
+          enum:
+          - 200
+          - 400
+          - 401
+          - 403
+          - 404
+          - 405
+          - 407
+          - 408
+          - 410
+          - 413
+          - 425
+          - 429
+          - 500
+          - 501
+          - 502
+          - 503
+          - 504
+          type: integer
+        file:
+          type: string
+      type: object
+      x-display-name: Error File
+  parameters:
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   securitySchemes:
     basic_auth:
       type: http

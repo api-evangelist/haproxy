@@ -56,30 +56,13 @@ paths:
       tags:
       - AcmeRuntime
 components:
-  responses:
-    DefaultError:
-      description: General Error
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
-    NotFound:
-      description: The specified resource was not found
-      headers:
-        Configuration-Version:
-          description: Configuration file version
-          schema:
-            type: string
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
   schemas:
+    acme_status:
+      title: ACME status
+      description: Status of all the ACME certificates from runtime.
+      type: array
+      items:
+        $ref: '#/components/schemas/acme_certificate_status'
     acme_certificate_status:
       description: Status of a single ACME certificate from runtime.
       properties:
@@ -126,12 +109,29 @@ components:
       - message
       title: Error
       type: object
-    acme_status:
-      title: ACME status
-      description: Status of all the ACME certificates from runtime.
-      type: array
-      items:
-        $ref: '#/components/schemas/acme_certificate_status'
+  responses:
+    DefaultError:
+      description: General Error
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: The specified resource was not found
+      headers:
+        Configuration-Version:
+          description: Configuration file version
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
   securitySchemes:
     basic_auth:
       type: http

@@ -144,37 +144,6 @@ paths:
       tags:
       - User List
 components:
-  parameters:
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
   responses:
     AlreadyExists:
       description: The specified resource already exists
@@ -221,25 +190,21 @@ components:
           schema:
             $ref: '#/components/schemas/error'
   schemas:
-    userlist_base:
-      description: HAProxy configuration of access control
+    group:
+      description: HAProxy userlist group
       properties:
         metadata:
           additionalProperties:
             type: object
         name:
-          pattern: ^[A-Za-z0-9-_.:]+$
+          pattern: ^[A-Za-z0-9-_.:${}"]+$
+          type: string
+        users:
           type: string
       required:
       - name
-      title: Userlist Base
+      title: Group
       type: object
-    userlists:
-      title: Userlists
-      description: HAProxy userlists array
-      type: array
-      items:
-        $ref: '#/components/schemas/userlist'
     userlist:
       allOf:
       - $ref: '#/components/schemas/userlist_base'
@@ -275,6 +240,19 @@ components:
       - password
       title: User
       type: object
+    userlist_base:
+      description: HAProxy configuration of access control
+      properties:
+        metadata:
+          additionalProperties:
+            type: object
+        name:
+          pattern: ^[A-Za-z0-9-_.:]+$
+          type: string
+      required:
+      - name
+      title: Userlist Base
+      type: object
     error:
       additionalProperties:
         type: string
@@ -293,21 +271,43 @@ components:
       - message
       title: Error
       type: object
-    group:
-      description: HAProxy userlist group
-      properties:
-        metadata:
-          additionalProperties:
-            type: object
-        name:
-          pattern: ^[A-Za-z0-9-_.:${}"]+$
-          type: string
-        users:
-          type: string
-      required:
-      - name
-      title: Group
-      type: object
+    userlists:
+      title: Userlists
+      description: HAProxy userlists array
+      type: array
+      items:
+        $ref: '#/components/schemas/userlist'
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   securitySchemes:
     basic_auth:
       type: http

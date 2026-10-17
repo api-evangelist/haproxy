@@ -219,37 +219,6 @@ paths:
               $ref: '#/components/schemas/trace_entry'
         required: true
 components:
-  parameters:
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
   responses:
     AlreadyExists:
       description: The specified resource already exists
@@ -296,11 +265,6 @@ components:
           schema:
             $ref: '#/components/schemas/error'
   schemas:
-    trace_entries:
-      description: list of entries in a traces section
-      type: array
-      items:
-        $ref: '#/components/schemas/trace_entry'
     trace_entry:
       description: Configure a trace event
       properties:
@@ -315,6 +279,17 @@ components:
       - trace
       title: Trace event
       type: object
+    traces:
+      additionalProperties: false
+      description: Trace events configuration
+      properties:
+        entries:
+          $ref: '#/components/schemas/trace_entries'
+        metadata:
+          additionalProperties:
+            type: object
+      type: object
+      x-go-name: Traces
     error:
       additionalProperties:
         type: string
@@ -333,17 +308,42 @@ components:
       - message
       title: Error
       type: object
-    traces:
-      additionalProperties: false
-      description: Trace events configuration
-      properties:
-        entries:
-          $ref: '#/components/schemas/trace_entries'
-        metadata:
-          additionalProperties:
-            type: object
-      type: object
-      x-go-name: Traces
+    trace_entries:
+      description: list of entries in a traces section
+      type: array
+      items:
+        $ref: '#/components/schemas/trace_entry'
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   securitySchemes:
     basic_auth:
       type: http

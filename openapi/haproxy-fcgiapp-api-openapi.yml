@@ -191,37 +191,6 @@ paths:
               $ref: '#/components/schemas/fcgi_app'
         required: true
 components:
-  parameters:
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
-    full_section:
-      name: full_section
-      in: query
-      description: Indicates if the action affects the specified child resources as well
-      required: false
-      schema:
-        type: boolean
-        default: false
   responses:
     AlreadyExists:
       description: The specified resource already exists
@@ -268,6 +237,32 @@ components:
           schema:
             $ref: '#/components/schemas/error'
   schemas:
+    acl:
+      additionalProperties: false
+      description: 'The use of Access Control Lists (ACL) provides a flexible solution to perform
+
+        content switching and generally to take decisions based on content extracted
+
+        from the request, the response or any environmental status.
+
+        '
+      properties:
+        acl_name:
+          pattern: ^[^\s]+$
+          type: string
+        criterion:
+          pattern: ^[^\s]+$
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+        value:
+          type: string
+      required:
+      - acl_name
+      - criterion
+      title: ACL Lines
+      type: object
     fcgi_pass_header:
       description: 'Specifies the name of a request header to pass to the FastCGI application.
 
@@ -296,10 +291,45 @@ components:
         name:
           type: string
       type: object
+    fcgi_app:
+      allOf:
+      - $ref: '#/components/schemas/fcgi_app_base'
+      - properties:
+          acl_list:
+            $ref: '#/components/schemas/acls'
+            x-go-name: AclList
+        type: object
+      description: App with all its children resources
+      type: object
+      x-go-name: FCGIApp
     fcgi_apps:
       type: array
       items:
         $ref: '#/components/schemas/fcgi_app'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    acls:
+      title: ACL Lines Array
+      description: HAProxy ACL lines array (corresponds to acl directives)
+      type: array
+      items:
+        $ref: '#/components/schemas/acl'
     fcgi_set_param:
       description: 'Sets a FastCGI parameter to pass to this application.
 
@@ -323,6 +353,51 @@ components:
           type: string
         name:
           type: string
+      type: object
+    fcgi_log_stderr:
+      description: 'Enables logging of STDERR messages that the FastCGI application reports.
+
+        It is an optional setting. By default, HAProxy Enterprise ignores STDERR messages.'
+      properties:
+        address:
+          type: string
+        facility:
+          title: Facility
+          type: string
+        format:
+          title: Format
+          type: string
+        global:
+          title: Global
+          type: boolean
+        len:
+          title: Length
+          type: integer
+        level:
+          title: Level
+          type: string
+          x-dependency:
+            facility:
+              required: true
+        minlevel:
+          title: Minimum level
+          type: string
+          x-dependency:
+            facility:
+              required: true
+        sample:
+          properties:
+            ranges:
+              title: Range
+              type: string
+            size:
+              title: Size
+              type: integer
+          required:
+          - ranges
+          - size
+          title: Sample
+          type: object
       type: object
     fcgi_app_base:
       description: HAProxy FastCGI application configuration
@@ -392,112 +467,37 @@ components:
       - docroot
       title: FCGI application base
       type: object
-    acls:
-      title: ACL Lines Array
-      description: HAProxy ACL lines array (corresponds to acl directives)
-      type: array
-      items:
-        $ref: '#/components/schemas/acl'
-    acl:
-      additionalProperties: false
-      description: 'The use of Access Control Lists (ACL) provides a flexible solution to perform
-
-        content switching and generally to take decisions based on content extracted
-
-        from the request, the response or any environmental status.
-
-        '
-      properties:
-        acl_name:
-          pattern: ^[^\s]+$
-          type: string
-        criterion:
-          pattern: ^[^\s]+$
-          type: string
-        metadata:
-          additionalProperties:
-            type: object
-        value:
-          type: string
-      required:
-      - acl_name
-      - criterion
-      title: ACL Lines
-      type: object
-    fcgi_app:
-      allOf:
-      - $ref: '#/components/schemas/fcgi_app_base'
-      - properties:
-          acl_list:
-            $ref: '#/components/schemas/acls'
-            x-go-name: AclList
-        type: object
-      description: App with all its children resources
-      type: object
-      x-go-name: FCGIApp
-    error:
-      additionalProperties:
+  parameters:
+    full_section:
+      name: full_section
+      in: query
+      description: Indicates if the action affects the specified child resources as well
+      required: false
+      schema:
+        type: boolean
+        default: false
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
         type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    fcgi_log_stderr:
-      description: 'Enables logging of STDERR messages that the FastCGI application reports.
-
-        It is an optional setting. By default, HAProxy Enterprise ignores STDERR messages.'
-      properties:
-        address:
-          type: string
-        facility:
-          title: Facility
-          type: string
-        format:
-          title: Format
-          type: string
-        global:
-          title: Global
-          type: boolean
-        len:
-          title: Length
-          type: integer
-        level:
-          title: Level
-          type: string
-          x-dependency:
-            facility:
-              required: true
-        minlevel:
-          title: Minimum level
-          type: string
-          x-dependency:
-            facility:
-              required: true
-        sample:
-          properties:
-            ranges:
-              title: Range
-              type: string
-            size:
-              title: Size
-              type: integer
-          required:
-          - ranges
-          - size
-          title: Sample
-          type: object
-      type: object
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
   securitySchemes:
     basic_auth:
       type: http

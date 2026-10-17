@@ -564,105 +564,6 @@ paths:
         required: true
 components:
   schemas:
-    ssl_crt_list_entry:
-      description: SSL Crt List Entry
-      properties:
-        file:
-          type: string
-        line_number:
-          minimum: 0
-          type: integer
-        sni_filter:
-          items:
-            type: string
-          type: array
-          x-go-name: SNIFilter
-          x-omitempty: true
-        ssl_bind_config:
-          type: string
-          x-go-name: SSLBindConfig
-      title: SSL Crt List Entry
-      type: object
-    ssl_crt_list:
-      description: SSL Crt List file
-      properties:
-        file:
-          type: string
-      title: SSL Crt List
-      type: object
-    ssl_crls:
-      title: SSL CRL Files Array
-      description: Array of ssl crl files
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_crl'
-    ssl_ca_file:
-      description: A file containing one or more SSL/TLS certificates and keys
-      properties:
-        count:
-          type: string
-        file:
-          type: string
-        storage_name:
-          type: string
-      title: SSL File
-      type: object
-    ssl_certificates:
-      title: SSL Certificate Files Array
-      description: Array of ssl certificate files
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_certificate'
-    ssl_crl:
-      description: A file containing one or more SSL/TLS CRLs
-      properties:
-        description:
-          type: string
-        file:
-          type: string
-        storage_name:
-          type: string
-      title: SSL CRL File
-      type: object
-    ssl_crl_entry:
-      description: A certificate revocation list entry.
-      properties:
-        issuer:
-          type: string
-        last_update:
-          format: date
-          type: string
-        next_update:
-          format: date
-          type: string
-        revoked_certificates:
-          items:
-            properties:
-              revocation_date:
-                format: date
-                type: string
-              serial_number:
-                type: string
-            type: object
-            x-go-name: RevokedCertificates
-          type: array
-          x-omitempty: true
-        signature_algorithm:
-          type: string
-        status:
-          type: string
-        storage_name:
-          type: string
-        version:
-          type: string
-      title: One CRL Entry
-      type: object
-    ssl_crt_list_entries:
-      title: SSL Crt List Entry Array
-      description: Array of SSL Crt List Entry
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_crt_list_entry'
     ssl_certificate:
       description: A file containing one or more SSL/TLS certificates and keys
       properties:
@@ -745,6 +646,67 @@ components:
           type: string
       title: SSL File
       type: object
+    ssl_crls:
+      title: SSL CRL Files Array
+      description: Array of ssl crl files
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crl'
+    ssl_certificates:
+      title: SSL Certificate Files Array
+      description: Array of ssl certificate files
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_certificate'
+    ssl_crt_lists:
+      title: SSL Crt List Array
+      description: Array of SSL Crt List
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crt_list'
+    ssl_crl_entries:
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_crl_entry'
+    ssl_crl_entry:
+      description: A certificate revocation list entry.
+      properties:
+        issuer:
+          type: string
+        last_update:
+          format: date
+          type: string
+        next_update:
+          format: date
+          type: string
+        revoked_certificates:
+          items:
+            properties:
+              revocation_date:
+                format: date
+                type: string
+              serial_number:
+                type: string
+            type: object
+            x-go-name: RevokedCertificates
+          type: array
+          x-omitempty: true
+        signature_algorithm:
+          type: string
+        status:
+          type: string
+        storage_name:
+          type: string
+        version:
+          type: string
+      title: One CRL Entry
+      type: object
+    ssl_ca_files:
+      title: SSL CA Files Array
+      description: Array of SSL CA files
+      type: array
+      items:
+        $ref: '#/components/schemas/ssl_ca_file'
     error:
       additionalProperties:
         type: string
@@ -763,22 +725,60 @@ components:
       - message
       title: Error
       type: object
-    ssl_ca_files:
-      title: SSL CA Files Array
-      description: Array of SSL CA files
+    ssl_crt_list_entries:
+      title: SSL Crt List Entry Array
+      description: Array of SSL Crt List Entry
       type: array
       items:
-        $ref: '#/components/schemas/ssl_ca_file'
-    ssl_crt_lists:
-      title: SSL Crt List Array
-      description: Array of SSL Crt List
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_crt_list'
-    ssl_crl_entries:
-      type: array
-      items:
-        $ref: '#/components/schemas/ssl_crl_entry'
+        $ref: '#/components/schemas/ssl_crt_list_entry'
+    ssl_crl:
+      description: A file containing one or more SSL/TLS CRLs
+      properties:
+        description:
+          type: string
+        file:
+          type: string
+        storage_name:
+          type: string
+      title: SSL CRL File
+      type: object
+    ssl_crt_list_entry:
+      description: SSL Crt List Entry
+      properties:
+        file:
+          type: string
+        line_number:
+          minimum: 0
+          type: integer
+        sni_filter:
+          items:
+            type: string
+          type: array
+          x-go-name: SNIFilter
+          x-omitempty: true
+        ssl_bind_config:
+          type: string
+          x-go-name: SSLBindConfig
+      title: SSL Crt List Entry
+      type: object
+    ssl_ca_file:
+      description: A file containing one or more SSL/TLS certificates and keys
+      properties:
+        count:
+          type: string
+        file:
+          type: string
+        storage_name:
+          type: string
+      title: SSL File
+      type: object
+    ssl_crt_list:
+      description: SSL Crt List file
+      properties:
+        file:
+          type: string
+      title: SSL Crt List
+      type: object
   responses:
     AlreadyExists:
       description: The specified resource already exists

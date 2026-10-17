@@ -192,6 +192,52 @@ paths:
       tags:
       - Transactions
 components:
+  schemas:
+    transactions:
+      title: Transactions array
+      description: Configuration transactions array
+      type: array
+      items:
+        $ref: '#/components/schemas/transaction'
+    transaction:
+      description: HAProxy configuration transaction
+      example:
+        _version: 2
+        id: 273e3385-2d0c-4fb1-aa27-93cbb31ff203
+        status: in_progress
+      properties:
+        _version:
+          type: integer
+        id:
+          pattern: ^[^\s]+$
+          type: string
+        status:
+          enum:
+          - failed
+          - outdated
+          - in_progress
+          - success
+          type: string
+      title: Configuration transaction
+      type: object
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
   parameters:
     force_reload:
       name: force_reload
@@ -246,52 +292,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-  schemas:
-    transactions:
-      title: Transactions array
-      description: Configuration transactions array
-      type: array
-      items:
-        $ref: '#/components/schemas/transaction'
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    transaction:
-      description: HAProxy configuration transaction
-      example:
-        _version: 2
-        id: 273e3385-2d0c-4fb1-aa27-93cbb31ff203
-        status: in_progress
-      properties:
-        _version:
-          type: integer
-        id:
-          pattern: ^[^\s]+$
-          type: string
-        status:
-          enum:
-          - failed
-          - outdated
-          - in_progress
-          - success
-          type: string
-      title: Configuration transaction
-      type: object
   securitySchemes:
     basic_auth:
       type: http

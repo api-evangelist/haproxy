@@ -237,78 +237,6 @@ paths:
               $ref: '#/components/schemas/capture'
         required: true
 components:
-  schemas:
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
-    captures:
-      title: Declare capture array
-      type: array
-      items:
-        $ref: '#/components/schemas/capture'
-    capture:
-      properties:
-        length:
-          type: integer
-        metadata:
-          additionalProperties:
-            type: object
-        type:
-          enum:
-          - request
-          - response
-          type: string
-      required:
-      - type
-      - length
-      title: Declare Capture
-      type: object
-  parameters:
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
   responses:
     AlreadyExists:
       description: The specified resource already exists
@@ -354,6 +282,78 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+  parameters:
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+  schemas:
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    captures:
+      title: Declare capture array
+      type: array
+      items:
+        $ref: '#/components/schemas/capture'
+    capture:
+      properties:
+        length:
+          type: integer
+        metadata:
+          additionalProperties:
+            type: object
+        type:
+          enum:
+          - request
+          - response
+          type: string
+      required:
+      - type
+      - length
+      title: Declare Capture
+      type: object
   securitySchemes:
     basic_auth:
       type: http

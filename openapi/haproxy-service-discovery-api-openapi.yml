@@ -256,12 +256,110 @@ paths:
         required: true
 components:
   schemas:
+    awsRegion:
+      description: AWS region configuration
+      example:
+        access_key_id: '****************L7GT'
+        allowlist:
+        - key: tag-key
+          value: Instance:Having:This:Tag
+        denylist:
+        - key: tag:Environment
+          value: development
+        enabled: true
+        id: '0'
+        ipv4_address: private
+        name: frontend-service
+        region: us-east-1
+        retry_timeout: 1
+        secret_access_key: '****************soLl'
+      properties:
+        access_key_id:
+          description: AWS Access Key ID.
+          type: string
+        allowlist:
+          description: Specify the AWS filters used to filter the EC2 instances to add
+          items:
+            $ref: '#/components/schemas/awsFilters'
+          type: array
+          x-omitempty: true
+        denylist:
+          description: Specify the AWS filters used to filter the EC2 instances to ignore
+          items:
+            $ref: '#/components/schemas/awsFilters'
+          type: array
+          x-omitempty: true
+        description:
+          type: string
+        enabled:
+          type: boolean
+        id:
+          description: Auto generated ID.
+          pattern: ^[^\s]+$
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        ipv4_address:
+          description: Select which IPv4 address the Service Discovery has to use for the backend server entry
+          enum:
+          - private
+          - public
+          type: string
+        name:
+          type: string
+        region:
+          type: string
+        retry_timeout:
+          description: Duration in seconds in-between data pulling requests to the AWS region
+          minimum: 1
+          type: integer
+        secret_access_key:
+          description: AWS Secret Access Key.
+          type: string
+        server_slots_base:
+          default: 10
+          type: integer
+        server_slots_growth_increment:
+          type: integer
+        server_slots_growth_type:
+          default: exponential
+          enum:
+          - linear
+          - exponential
+          type: string
+      required:
+      - name
+      - region
+      - enabled
+      - retry_timeout
+      - ipv4_address
+      title: AWS region
+      type: object
     consuls:
       title: Consuls
       description: Consuls array
       type: array
       items:
         $ref: '#/components/schemas/consul'
+    error:
+      additionalProperties:
+        type: string
+      description: API Error
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - message
+      title: Error
+      type: object
     consul:
       additionalProperties: false
       description: Consul server configuration
@@ -356,110 +454,6 @@ components:
       - retry_timeout
       title: Consul server
       type: object
-    awsRegions:
-      title: AWS
-      description: AWS regions array
-      type: array
-      items:
-        $ref: '#/components/schemas/awsRegion'
-    awsRegion:
-      description: AWS region configuration
-      example:
-        access_key_id: '****************L7GT'
-        allowlist:
-        - key: tag-key
-          value: Instance:Having:This:Tag
-        denylist:
-        - key: tag:Environment
-          value: development
-        enabled: true
-        id: '0'
-        ipv4_address: private
-        name: frontend-service
-        region: us-east-1
-        retry_timeout: 1
-        secret_access_key: '****************soLl'
-      properties:
-        access_key_id:
-          description: AWS Access Key ID.
-          type: string
-        allowlist:
-          description: Specify the AWS filters used to filter the EC2 instances to add
-          items:
-            $ref: '#/components/schemas/awsFilters'
-          type: array
-          x-omitempty: true
-        denylist:
-          description: Specify the AWS filters used to filter the EC2 instances to ignore
-          items:
-            $ref: '#/components/schemas/awsFilters'
-          type: array
-          x-omitempty: true
-        description:
-          type: string
-        enabled:
-          type: boolean
-        id:
-          description: Auto generated ID.
-          pattern: ^[^\s]+$
-          readOnly: true
-          type:
-          - string
-          - 'null'
-        ipv4_address:
-          description: Select which IPv4 address the Service Discovery has to use for the backend server entry
-          enum:
-          - private
-          - public
-          type: string
-        name:
-          type: string
-        region:
-          type: string
-        retry_timeout:
-          description: Duration in seconds in-between data pulling requests to the AWS region
-          minimum: 1
-          type: integer
-        secret_access_key:
-          description: AWS Secret Access Key.
-          type: string
-        server_slots_base:
-          default: 10
-          type: integer
-        server_slots_growth_increment:
-          type: integer
-        server_slots_growth_type:
-          default: exponential
-          enum:
-          - linear
-          - exponential
-          type: string
-      required:
-      - name
-      - region
-      - enabled
-      - retry_timeout
-      - ipv4_address
-      title: AWS region
-      type: object
-    error:
-      additionalProperties:
-        type: string
-      description: API Error
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-      required:
-      - code
-      - message
-      title: Error
-      type: object
     awsFilters:
       properties:
         key:
@@ -472,9 +466,15 @@ components:
       - key
       - value
       type: object
+    awsRegions:
+      title: AWS
+      description: AWS regions array
+      type: array
+      items:
+        $ref: '#/components/schemas/awsRegion'
   responses:
-    DefaultError:
-      description: General Error
+    AlreadyExists:
+      description: The specified resource already exists
       headers:
         Configuration-Version:
           description: Configuration file version
@@ -484,8 +484,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
-    AlreadyExists:
-      description: The specified resource already exists
+    DefaultError:
+      description: General Error
       headers:
         Configuration-Version:
           description: Configuration file version

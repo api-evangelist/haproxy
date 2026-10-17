@@ -192,81 +192,7 @@ paths:
               $ref: '#/components/schemas/server_template'
         required: true
 components:
-  parameters:
-    force_reload:
-      name: force_reload
-      in: query
-      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
-      required: false
-      schema:
-        type: boolean
-        default: false
-    parent_name:
-      name: parent_name
-      in: path
-      description: Parent name
-      required: true
-      schema:
-        type: string
-        pattern: ^[^\r\n<>*;$#&{}"]+$
-    transaction_id:
-      name: transaction_id
-      in: query
-      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
-      required: false
-      schema:
-        type: string
-    version:
-      name: version
-      in: query
-      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
-      required: false
-      schema:
-        type: integer
   schemas:
-    server_templates:
-      title: Server templates
-      description: HAProxy backend server templates array
-      type: array
-      items:
-        $ref: '#/components/schemas/server_template'
-    server_template:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/server_params'
-      - properties:
-          fqdn:
-            type: string
-          id:
-            type:
-            - integer
-            - 'null'
-          metadata:
-            additionalProperties:
-              type: object
-          num_or_range:
-            type: string
-          port:
-            maximum: 65535
-            minimum: 1
-            type:
-            - integer
-            - 'null'
-          prefix:
-            pattern: ^[^\s]+$
-            type: string
-        required:
-        - prefix
-        - num_or_range
-        - fqdn
-        type: object
-      description: Set a template to initialize servers with shared parameters.
-      example:
-        fqdn: google.com
-        num_or_range: 1-3
-        port: 80
-        prefix: srv
-      title: Server template
     server_params:
       properties:
         agent-addr:
@@ -856,6 +782,43 @@ components:
           type: string
           x-display-name: Relaying websocket stream protocol
       type: object
+    server_template:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/server_params'
+      - properties:
+          fqdn:
+            type: string
+          id:
+            type:
+            - integer
+            - 'null'
+          metadata:
+            additionalProperties:
+              type: object
+          num_or_range:
+            type: string
+          port:
+            maximum: 65535
+            minimum: 1
+            type:
+            - integer
+            - 'null'
+          prefix:
+            pattern: ^[^\s]+$
+            type: string
+        required:
+        - prefix
+        - num_or_range
+        - fqdn
+        type: object
+      description: Set a template to initialize servers with shared parameters.
+      example:
+        fqdn: google.com
+        num_or_range: 1-3
+        port: 80
+        prefix: srv
+      title: Server template
     error:
       additionalProperties:
         type: string
@@ -874,6 +837,12 @@ components:
       - message
       title: Error
       type: object
+    server_templates:
+      title: Server templates
+      description: HAProxy backend server templates array
+      type: array
+      items:
+        $ref: '#/components/schemas/server_template'
   responses:
     AlreadyExists:
       description: The specified resource already exists
@@ -919,6 +888,37 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+  parameters:
+    force_reload:
+      name: force_reload
+      in: query
+      description: If set, do a force reload, do not wait for the configured reload-delay. Cannot be used when transaction is specified, as changes in transaction are not applied directly to configuration.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    transaction_id:
+      name: transaction_id
+      in: query
+      description: ID of the transaction where we want to add the operation. Cannot be used when version is specified.
+      required: false
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version used for checking configuration version. Cannot be used when transaction is specified, transaction has it's own version.
+      required: false
+      schema:
+        type: integer
+    parent_name:
+      name: parent_name
+      in: path
+      description: Parent name
+      required: true
+      schema:
+        type: string
+        pattern: ^[^\r\n<>*;$#&{}"]+$
   securitySchemes:
     basic_auth:
       type: http
