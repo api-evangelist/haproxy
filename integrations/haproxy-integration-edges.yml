@@ -1,0 +1,85 @@
+edges:
+- partner_name: Go module proxy
+  partner: null
+  partner_match: null
+  type: register
+  direction: provider-built
+  category: official SDK (Go)
+  evidence: https://pkg.go.dev/github.com/haproxytech/client-native/v5
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: Go module proxy (public registry JSON)
+    spec_file: null
+    language: Go
+    packages:
+    - name: github.com/haproxytech/client-native/v5
+      version: v5.1.29
+      released: '2026-10-08'
+      released_field: Time
+      lapsed: false
+      page: https://pkg.go.dev/github.com/haproxytech/client-native/v5
+      repo_leg: github-org:haproxytech
+      publisher_leg: org:haproxytech
+      matched_by: github-org
+    - name: github.com/haproxytech/client-native/v6
+      version: v6.4.3
+      released: '2026-10-08'
+      released_field: Time
+      lapsed: false
+      page: https://pkg.go.dev/github.com/haproxytech/client-native/v6
+      repo_leg: github-org:haproxytech
+      publisher_leg: org:haproxytech
+      matched_by: github-org
+    - name: github.com/haproxytech/config-parser/v5
+      version: v5.1.6
+      released: '2024-09-24'
+      released_field: Time
+      lapsed: true
+      page: https://pkg.go.dev/github.com/haproxytech/config-parser/v5
+      repo_leg: github-org:haproxytech
+      publisher_leg: org:haproxytech
+      matched_by: github-org
+    - name: github.com/haproxytech/dataplaneapi
+      version: v1.2.5
+      released: '2020-04-15'
+      released_field: Time
+      lapsed: true
+      page: https://pkg.go.dev/github.com/haproxytech/dataplaneapi
+      repo_leg: github-org:haproxytech
+      publisher_leg: org:haproxytech
+      matched_by: github-org
+    - name: github.com/haproxytech/kubernetes-ingress
+      version: v1.11.12
+      released: '2025-02-25'
+      released_field: Time
+      lapsed: false
+      page: https://pkg.go.dev/github.com/haproxytech/kubernetes-ingress
+      repo_leg: github-org:haproxytech
+      publisher_leg: org:haproxytech
+      matched_by: github-org
+    current: true
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
+generated: '2026-10-18'
+method: searched
+source:
+- https://api.nuget.org/v3
+- https://crates.io/api/v1
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
+checked:
+- https://api.nuget.org/v3
+- https://crates.io/api/v1
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
